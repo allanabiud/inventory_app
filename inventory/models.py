@@ -3,6 +3,8 @@ from django.db import models
 from django.utils import timezone
 from django.utils.html import format_html
 
+from .utils import item_image_upload_path
+
 
 class UnitOfMeasure(models.Model):
     name = models.CharField(max_length=50)
@@ -56,7 +58,7 @@ class Item(models.Model):
 
 class ItemImage(models.Model):
     item = models.ForeignKey(Item, on_delete=models.CASCADE, related_name="images")
-    image = models.ImageField(upload_to="item_images")
+    image = models.ImageField(upload_to=item_image_upload_path)
     caption = models.CharField(max_length=200, blank=True, null=True)
     upload_date = models.DateTimeField(auto_now_add=True, null=True)
 
