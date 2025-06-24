@@ -1,0 +1,36 @@
+.asteriskField {
+  display: none;
+}
+
+a {
+  text-decoration: none;
+}
+.card {
+  border-radius: 10px;
+  max-width: 950px;
+  width: 100%;
+}
+
+.tooltip-icon {
+  margin-left: 0.2rem; /* smaller than Bootstrap's default .ms-2 */
+  font-size: 0.95rem;
+  cursor: pointer;
+}
+.tooltip-inner {
+  text-align: left;
+}
+
+.slide-in-left {
+  animation: slideInFromLeft 0.4s ease forwards;
+}
+
+@keyframes slideInFromLeft {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
