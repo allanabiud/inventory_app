@@ -1,23 +1,33 @@
+@import url("./_theme.css");
+
 .asteriskField {
   display: none;
 }
 
-a {
-  text-decoration: none;
-}
 .card {
   border-radius: 10px;
   max-width: 950px;
   width: 100%;
+  background-color: var(--card-bg-color);
+  color: var(--text-color);
+  box-shadow: 0 0.5rem 1rem var(--card-shadow-color);
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Light mode specific card visibility enhancements */
+[data-bs-theme="light"] .card {
+  box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
+  border: 1px solid rgba(0, 0, 0, 0.08);
 }
 
 .tooltip-icon {
-  margin-left: 0.2rem; /* smaller than Bootstrap's default .ms-2 */
+  margin-left: 0.2rem;
   font-size: 0.95rem;
   cursor: pointer;
-}
-.tooltip-inner {
-  text-align: left;
+  color: var(--text-color);
 }
 
 .slide-in-left {

@@ -1,0 +1,131 @@
+/* Global Color Variables */
+
+:root {
+  /* Light Theme Color Palette (Default) */
+  --primary-green: #28a745;
+  --emerald-green: #2ecc71;
+  --secondary-gold: #ffd700;
+  --secondary-amber: #f0ad4e;
+  --tertiary-teal: #17a2b8;
+  --warning-yellow-orange: #ffc107;
+  --danger-red: #dc3545;
+  --color-white: #ffffff;
+  --color-dark-gray: #212529;
+  --color-light-gray: #f0f2f5;
+  --color-medium-gray: #dee2e6;
+  --color-gray-dark-bootstrap: #6c757d;
+  --color-gray-light-border: #adb5bd;
+
+  /* Semantic Theme Colors */
+  --body-bg-color: var(--color-light-gray);
+  --sidebar-bg-color: var(--color-white);
+  --card-bg-color: var(--color-white);
+  --text-color: var(--color-dark-gray);
+  --link-color: var(--primary-green);
+  --link-hover-color: var(--emerald-green);
+  --sidebar-item-hover-bg: rgba(40, 167, 69, 0.1);
+  --sidebar-shadow-color: rgba(0, 0, 0, 0.15);
+  --card-shadow-color: rgba(0, 0, 0, 0.15);
+  --tooltip-bg-color: var(--color-dark-gray);
+  --tooltip-text-color: var(--color-white);
+
+  /* Bootstrap Global Variable Overrides */
+  --bs-primary: var(--primary-green);
+  --bs-secondary: var(--color-gray-dark-bootstrap);
+  --bs-success: var(--primary-green);
+  --bs-danger: var(--danger-red);
+  --bs-warning: var(--warning-yellow-orange);
+  --bs-info: var(--tertiary-teal);
+  --bs-body-color: var(--text-color);
+  --bs-body-bg: var(--body-bg-color);
+
+  /* Bootstrap Primary Button Overrides */
+  --bs-btn-color: var(--color-white);
+  --bs-btn-bg: var(--primary-green);
+  --bs-btn-border-color: var(--primary-green);
+  --bs-btn-hover-color: var(--color-white);
+  --bs-btn-hover-bg: var(--emerald-green);
+  --bs-btn-hover-border-color: var(--emerald-green);
+  --bs-btn-focus-shadow-rgb: 40, 167, 69;
+  --bs-btn-active-color: var(--color-white);
+  --bs-btn-active-bg: var(--emerald-green);
+  --bs-btn-active-border-color: var(--emerald-green);
+  --bs-btn-disabled-color: var(--color-white);
+  --bs-btn-disabled-bg: var(--primary-green);
+  --bs-btn-disabled-border-color: var(--primary-green);
+
+  /* Bootstrap Secondary Button Overrides */
+  --bs-btn-secondary-color: var(--text-color);
+  --bs-btn-secondary-bg: var(--card-bg-color);
+  --bs-btn-secondary-border-color: var(--color-medium-gray);
+  --bs-btn-secondary-hover-color: var(--link-hover-color);
+  --bs-btn-secondary-hover-bg: rgba(40, 167, 69, 0.1);
+  --bs-btn-secondary-hover-border-color: var(--primary-green);
+  --bs-btn-secondary-active-color: var(--link-color);
+  --bs-btn-secondary-active-bg: var(--sidebar-item-hover-bg);
+  --bs-btn-secondary-active-border-color: var(--link-color);
+  --bs-btn-secondary-disabled-color: var(--text-color);
+  --bs-btn-secondary-disabled-bg: var(--card-bg-color);
+  --bs-btn-secondary-disabled-border-color: var(--color-gray-light-border);
+}
+
+[data-bs-theme="dark"] {
+  /* Dark Theme Color Palette */
+  --primary-green: #1e8449;
+  --emerald-green: #27ae60;
+  --secondary-gold: #d4af37;
+  --secondary-amber: #d68910;
+  --tertiary-teal: #137989;
+  --warning-yellow-orange: #d39e00;
+  --danger-red: #b02a37;
+  --color-dark-gray: #212529;
+  --color-light-gray: #f8f9fa;
+  --color-medium-gray: #495057;
+  --color-gray-light-border: #6c757d;
+
+  /* Semantic Theme Colors */
+  --body-bg-color: var(--color-dark-gray);
+  --sidebar-bg-color: #343a40;
+  --card-bg-color: #343a40;
+  --text-color: var(--color-light-gray);
+  --link-color: var(--primary-green);
+  --link-hover-color: var(--emerald-green);
+  --sidebar-item-hover-bg: rgba(46, 204, 113, 0.2);
+  --sidebar-shadow-color: rgba(0, 0, 0, 0.3);
+  --card-shadow-color: rgba(0, 0, 0, 0.3);
+  --tooltip-bg-color: var(--color-light-gray);
+  --tooltip-text-color: var(--color-dark-gray);
+
+  /* Bootstrap Global Variable Overrides */
+  --bs-primary: var(--primary-green);
+  --bs-success: var(--primary-green);
+  --bs-danger: var(--danger-red);
+  --bs-warning: var(--warning-yellow-orange);
+  --bs-info: var(--tertiary-teal);
+  --bs-body-color: var(--text-color);
+  --bs-body-bg: var(--body-bg-color);
+
+  /* Bootstrap Primary Button Overrides */
+  --bs-btn-bg: var(--primary-green);
+  --bs-btn-border-color: var(--primary-green);
+  --bs-btn-hover-bg: var(--emerald-green);
+  --bs-btn-hover-border-color: var(--emerald-green);
+  --bs-btn-active-bg: var(--emerald-green);
+  --bs-btn-active-border-color: var(--emerald-green);
+  --bs-btn-disabled-bg: var(--primary-green);
+  --bs-btn-disabled-border-color: var(--primary-green);
+
+  /* Bootstrap Secondary Button Overrides */
+  --bs-btn-secondary-color: var(--text-color);
+  --bs-btn-secondary-bg: var(--sidebar-bg-color);
+  --bs-btn-secondary-border-color: var(--color-medium-gray);
+  --bs-btn-secondary-hover-color: var(--link-hover-color);
+  --bs-btn-secondary-hover-bg: var(--sidebar-item-hover-bg);
+  --bs-btn-secondary-hover-border-color: var(--primary-green);
+  --bs-btn-secondary-active-color: var(--link-color);
+  --bs-btn-secondary-active-bg: var(--sidebar-item-hover-bg);
+  --bs-btn-secondary-active-border-color: var(--link-color);
+  --bs-btn-secondary-disabled-color: var(--text-color);
+  --bs-btn-secondary-disabled-bg: var(--sidebar-bg-color);
+  --bs-btn-secondary-disabled-border-color: var(--color-gray-light-border);
+}

@@ -1,0 +1,201 @@
+@import url("./_theme.css");
+
+/* --- Sidebar Container --- */
+#sidebar {
+  border-radius: 0.75rem;
+  width: 200px; /* Default expanded width */
+  height: calc(100vh - 1rem);
+  transition:
+    width 0.3s ease,
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+  padding: 0; /* Remove default padding */
+  overflow: hidden;
+  background-color: var(--sidebar-bg-color);
+  box-shadow: 0 0.5rem 1rem var(--sidebar-shadow-color);
+}
+
+#sidebar.collapsed {
+  width: 74px; /* Collapsed sidebar width */
+}
+
+/* --- Scrollable Menu Area --- */
+.sidebar-menu-scrollable {
+  flex-grow: 1;
+  overflow-y: auto;
+  padding-right: 5px;
+  margin-top: 0.5rem;
+}
+
+#sidebar.collapsed .sidebar-menu-scrollable {
+  overflow-y: hidden;
+  padding-right: 0;
+}
+
+/* --- Sidebar Items --- */
+.sidebar-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  border-radius: 0.5rem;
+  transition: all 0.3s ease;
+  color: var(--text-color);
+  padding: 0.5rem 0.75rem;
+  justify-content: space-between;
+}
+
+.sidebar-item:hover {
+  background-color: var(--sidebar-item-hover-bg);
+  color: var(--link-hover-color);
+}
+
+.sidebar-item.active {
+  background-color: var(--primary-green);
+  color: var(--color-white); /* Use theme variable for white */
+}
+
+.sidebar-item.active i {
+  color: var(--color-white); /* Use theme variable for white */
+}
+
+.sidebar-item i {
+  flex-shrink: 0;
+}
+
+.sidebar-chevron {
+  transition: transform 0.3s ease;
+  font-size: 0.9em;
+}
+
+.sidebar-item[aria-expanded="true"] .sidebar-chevron {
+  transform: rotate(180deg);
+}
+
+/* --- Collapsed Sidebar Item Layout --- */
+#sidebar.collapsed .sidebar-item {
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  padding: 0.5rem 0;
+}
+
+#sidebar.collapsed .sidebar-item > div {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+#sidebar.collapsed .sidebar-label {
+  font-size: 0.75rem;
+  margin-top: 0.1rem;
+  margin-left: 0;
+  display: block;
+}
+
+#sidebar.collapsed #sidebar-brand-content .sidebar-label {
+  display: none;
+  visibility: hidden;
+  pointer-events: none;
+}
+
+#sidebar.collapsed .sidebar-item .sidebar-chevron {
+  display: none;
+}
+
+#sidebar.collapsed .collapse {
+  visibility: hidden;
+  height: 0 !important;
+  overflow: hidden;
+  padding: 0 !important;
+}
+
+#sidebar.collapsed .sidebar-item i {
+  margin: 0; /* Combine margin-left/right resets */
+}
+
+/* --- Sidebar Brand Section --- */
+#sidebar-brand {
+  display: flex;
+  align-items: center;
+  padding: 0.5rem 0;
+  color: var(--text-color);
+}
+
+#sidebar-brand-content {
+  display: flex;
+  align-items: center;
+  flex-grow: 1;
+  justify-content: center;
+  transition:
+    transform 0.3s ease,
+    opacity 0.3s ease;
+}
+
+#sidebar-brand #sidebar-icon {
+  color: var(--primary-green);
+}
+
+#sidebar:not(.collapsed) #sidebar-brand-content {
+  justify-content: center;
+}
+
+#sidebar.collapsed #sidebar-brand {
+  justify-content: center;
+  padding: 0.5rem 0;
+}
+
+#sidebar.collapsed #sidebar-brand-content #sidebar-icon {
+  margin: 0; /* Combine margin-left/right resets */
+}
+
+/* --- Expanded State Label Resets --- */
+#sidebar:not(.collapsed) .sidebar-label {
+  font-size: 0.95rem;
+  margin-left: 0.5rem;
+  display: inline;
+  visibility: visible;
+}
+
+/* --- Sidebar Toggle Button --- */
+#sidebarToggle {
+  background-color: var(--primary-green);
+  color: var(--color-white); /* Use theme variable for white */
+  border-color: var(--primary-green);
+  transition:
+    background-color 0.3s ease,
+    border-color 0.3s ease;
+}
+
+#sidebarToggle:hover {
+  background-color: var(--emerald-green);
+  border-color: var(--emerald-green);
+}
+
+/* --- Horizontal Rule --- */
+#sidebar hr {
+  margin-bottom: 0.5rem;
+  margin-top: 0;
+}
+
+/* --- Nested Sub-Menu Styles --- */
+.btn-toggle-nav {
+  padding-left: 2rem !important;
+  list-style: none;
+  padding-top: 0.25rem;
+  padding-bottom: 0.25rem;
+}
+
+.sidebar-sub-item {
+  display: block;
+  padding: 0.35rem 0.75rem;
+  border-radius: 0.4rem;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+.sidebar-sub-item:hover {
+  background-color: var(--sidebar-item-hover-bg);
+}

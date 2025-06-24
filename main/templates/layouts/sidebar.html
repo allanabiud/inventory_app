@@ -1,0 +1,137 @@
+<div class="sidebar d-flex flex-column p-2 rounded-2 shadow-lg mt-2 ms-2"
+     id="sidebar">
+  <a href="/"
+     class="d-flex text-decoration-none justify-content-start"
+     id="sidebar-brand">
+    <div class="d-flex align-items-center" id="sidebar-brand-content">
+      <i class="bi bi-box2-fill fs-4" id="sidebar-icon"></i>
+      <span class="fs-4 fw-semibold sidebar-label ms-2">Stockflow</span>
+    </div>
+  </a>
+  <div class="sidebar-menu-scrollable flex-grow-1 overflow-auto">
+    <ul class="nav nav-pills flex-column mb-auto mt-2">
+      <li class="nav-item">
+        <a href="#" class="nav-link link-body-emphasis sidebar-item">
+          <div>
+            <i class="bi bi-house fs-5"></i>
+            <span class="sidebar-label">Home</span>
+          </div>
+        </a>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis sidebar-item"
+           data-bs-toggle="collapse"
+           href="#inventoryCollapse"
+           role="button"
+           aria-expanded="false"
+           aria-controls="inventoryCollapse">
+          <div>
+            <i class="bi bi-box-seam fs-5"></i>
+            <span class="sidebar-label">Inventory</span>
+          </div>
+          <i class="bi bi-chevron-down ms-auto sidebar-chevron"></i>
+        </a>
+        <div class="collapse" id="inventoryCollapse">
+          <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">All Items</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Categories</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Adjustments</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis sidebar-item"
+           data-bs-toggle="collapse"
+           href="#salesCollapse"
+           role="button"
+           aria-expanded="false"
+           aria-controls="salesCollapse">
+          <div>
+            <i class="bi bi-cart2 fs-5"></i>
+            <span class="sidebar-label">Sales</span>
+          </div>
+          <i class="bi bi-chevron-down ms-auto sidebar-chevron"></i>
+        </a>
+        <div class="collapse" id="salesCollapse">
+          <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">New Sale</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Sales History</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Customers</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis sidebar-item"
+           data-bs-toggle="collapse"
+           href="#purchasesCollapse"
+           role="button"
+           aria-expanded="false"
+           aria-controls="purchasesCollapse">
+          <div>
+            <i class="bi bi-bag fs-5"></i>
+            <span class="sidebar-label">Purchases</span>
+          </div>
+          <i class="bi bi-chevron-down ms-auto sidebar-chevron"></i>
+        </a>
+        <div class="collapse" id="purchasesCollapse">
+          <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">New Purchase</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Purchase Orders</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Suppliers</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        <a class="nav-link link-body-emphasis sidebar-item"
+           data-bs-toggle="collapse"
+           href="#reportsCollapse"
+           role="button"
+           aria-expanded="false"
+           aria-controls="reportsCollapse">
+          <div>
+            <i class="bi bi-bar-chart fs-5"></i>
+            <span class="sidebar-label">Reports</span>
+          </div>
+          <i class="bi bi-chevron-down ms-auto sidebar-chevron"></i>
+        </a>
+        <div class="collapse" id="reportsCollapse">
+          <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Sales Report</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Inventory Report</a>
+            </li>
+            <li>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Profit & Loss</a>
+            </li>
+          </ul>
+        </div>
+      </li>
+    </ul>
+  </div>
+  <hr class="mt-auto">
+  <div class="text-center mt-auto">
+    <button class="btn btn-outline-secondary btn-sm w-100" id="sidebarToggle">
+      <i class="bi bi-chevron-left" id="sidebarToggleIcon"></i>
+    </button>
+  </div>
+</div>

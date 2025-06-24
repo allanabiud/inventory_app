@@ -34,7 +34,7 @@ def signin_view(request):
     else:
         if request.method == "POST":
             for error in form.non_field_errors():
-                messages.error(request, f"{error}")
+                messages.error(request, "Invalid login credentials.")
 
     return render(request, "signin.html", {"form": form})
 

@@ -1,0 +1,87 @@
+@import url("./_theme.css");
+
+/* --- Base Styles --- */
+* {
+  font-size: 0.95rem;
+  font-family:
+    "Inter",
+    system-ui,
+    -apple-system,
+    "Segoe UI",
+    Roboto,
+    "Helvetica Neue",
+    Arial,
+    sans-serif;
+  color: var(--text-color); /* Applied globally, can be inherited */
+}
+
+body {
+  background-color: var(--body-bg-color);
+}
+
+i {
+  font-size: 0.9rem;
+  color: var(--text-color); /* Icon color matches text by default */
+}
+
+a {
+  text-decoration: none;
+  color: var(--link-color);
+  transition: color 0.3s ease;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+/* --- Bootstrap Class Overrides --- */
+.bg-body-tertiary {
+  background-color: var(--sidebar-bg-color) !important;
+}
+
+.link-body-emphasis {
+  color: var(--text-color) !important;
+}
+
+.link-body-emphasis:hover {
+  color: var(--link-hover-color) !important;
+}
+
+/* --- Button Styling Overrides --- */
+/* These variables are already set via --bs-btn-* in _theme.css */
+/* This block can be removed if Bootstrap's default .btn-success and .btn-secondary */
+/* pick up the --bs-btn-* variables from :root in _theme.css automatically. */
+/* If not, keep this, but consider if they need to be in theme.css directly. */
+/* Assuming for now that Bootstrap's internal variables *are* being used. */
+
+/* Tooltip specific styles for theming */
+.tooltip-inner {
+  text-align: left;
+  background-color: var(--tooltip-bg-color);
+  color: var(--tooltip-text-color);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
+}
+
+/* Bootstrap tooltip arrow adaptation */
+.tooltip .tooltip-arrow::before {
+  border-top-color: var(--tooltip-bg-color);
+}
+.tooltip.bs-tooltip-auto[data-popper-placement^="top"] .tooltip-arrow::before,
+.tooltip.bs-tooltip-top .tooltip-arrow::before {
+  border-top-color: var(--tooltip-bg-color);
+}
+.tooltip.bs-tooltip-auto[data-popper-placement^="right"] .tooltip-arrow::before,
+.tooltip.bs-tooltip-right .tooltip-arrow::before {
+  border-right-color: var(--tooltip-bg-color);
+}
+.tooltip.bs-tooltip-auto[data-popper-placement^="bottom"]
+  .tooltip-arrow::before,
+.tooltip.bs-tooltip-bottom .tooltip-arrow::before {
+  border-bottom-color: var(--tooltip-bg-color);
+}
+.tooltip.bs-tooltip-auto[data-popper-placement^="left"] .tooltip-arrow::before,
+.tooltip.bs-tooltip-left .tooltip-arrow::before {
+  border-left-color: var(--tooltip-bg-color);
+}
