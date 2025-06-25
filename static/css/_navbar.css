@@ -1,37 +1,92 @@
 @import url("./_theme.css");
 
-/* --- Navbar Container --- */
+/* Navbar Container */
 .navbar {
+  background-color: var(--navbar-bg-color);
   border-radius: 0.75rem;
   height: 3rem;
-  transition: background-color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    box-shadow 0.3s ease;
+  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
 }
 
-/* --- Navbar Icons --- */
+/* Search Form and Input */
+.navbar .d-flex.me-auto {
+  flex-grow: 1;
+  max-width: 400px;
+  margin-right: 1rem !important;
+}
+
+.navbar .input-group {
+  width: 100%;
+}
+
+.navbar .form-control {
+  background-color: var(--navbar-input-bg-color); /* ADD THIS LINE */
+}
+
+/* Navbar Icons */
+.navbar-collapse {
+  display: flex;
+  flex-grow: 1;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.navbar-nav {
+  margin-left: auto !important;
+}
+
 .navbar-nav i {
   font-size: 1.2rem;
   color: var(--text-color);
+  transition:
+    color 0.2s ease,
+    transform 0.2s ease;
+}
+
+.navbar-nav button i {
+  color: var(--color-white);
 }
 
 .nav-item i:hover {
   color: var(--link-hover-color);
+  transform: scale(1.1);
 }
 
-.navbar .form-control::placeholder {
+.navbar-nav .nav-link {
+  padding: 0.5rem 0.75rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dropdown-menu .dropdown-item {
   font-size: 0.9rem;
 }
 
-/* For Webkit browsers (Chrome, Safari) */
+.dropdown-menu .dropdown-item i {
+  font-size: 1rem;
+  color: var(--text-color);
+}
+
+.dropdown-menu .dropdown-header {
+  font-size: 0.9rem;
+  padding-top: 0.5rem;
+  padding-bottom: 0.25rem;
+}
+
+/* Placeholder adjustments */
+.navbar .form-control::placeholder {
+  font-size: 0.85rem;
+}
 .navbar .form-control::-webkit-input-placeholder {
   font-size: 0.85rem;
 }
-
-/* For Mozilla Firefox */
 .navbar .form-control::-moz-placeholder {
   font-size: 0.85rem;
 }
-
-/* For Internet Explorer */
 .navbar .form-control:-ms-input-placeholder {
   font-size: 0.85rem;
 }

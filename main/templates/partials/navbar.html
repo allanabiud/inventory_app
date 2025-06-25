@@ -1,0 +1,78 @@
+<nav class="navbar navbar-expand-lg rounded-2">
+  <div class="container-fluid">
+    <div class="collapse navbar-collapse" id="navbarNavDropdown">
+      <form class="d-flex me-auto" role="search">
+        <div class="input-group">
+          <input class="form-control focus-ring"
+                 type="search"
+                 placeholder="Search Product Name or SKU"
+                 aria-label="Search">
+          <button class="btn btn-success" type="submit">
+            <i class="bi bi-search text-white"></i>
+          </button>
+        </div>
+      </form>
+      <ul class="navbar-nav d-flex align-items-center">
+        <li class="nav-item dropdown me-3">
+          {# Added dropdown class to nav-item #}
+          <button class="btn btn-success btn-sm dropdown-toggle" {# Added dropdown-toggle class #}
+            type="button"
+            id="quickAddDropdown" {# Unique ID for the dropdown #}
+            data-bs-toggle="dropdown" {# Data attribute to trigger dropdown #}
+            aria-expanded="false">
+            <i class="bi bi-plus-lg"></i>
+          </button>
+          <ul class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="quickAddDropdown">
+            {# Positioned to align to the end #}
+            <li>
+              <h6 class="dropdown-header">Quick Add</h6>
+              {# Optional header #}
+            </li>
+            <li>
+              <a class="dropdown-item" href="">
+                <i class="bi bi-box me-2"></i> Item
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="">
+                <i class="bi bi-tags me-2"></i> Category
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="">
+                <i class="bi bi-cart2 me-2"></i> Sale
+              </a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="">
+                <i class="bi bi-bag me-2"></i> Purchase
+              </a>
+            </li>
+          </ul>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="bi bi-bell"></i></a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link" href="#"><i class="bi bi-gear"></i></a>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle"
+             href="#"
+             role="button"
+             data-bs-toggle="dropdown"
+             aria-expanded="false">
+            <i class="bi bi-person-circle"></i>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item d-flex align-items-center"
+                 href="{% url 'signout' %}"><i class="bi bi-box-arrow-left me-2"></i>Sign Out</a>
+            </li>
+          </ul>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>

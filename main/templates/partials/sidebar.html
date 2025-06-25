@@ -1,4 +1,4 @@
-<div class="sidebar d-flex flex-column p-2 rounded-2 shadow-lg mt-2 ms-2"
+<div class="sidebar d-flex flex-column py-2 rounded-2 shadow-lg mt-2 ms-2"
      id="sidebar">
   <a href="{% url 'home' %}"
      class="d-flex text-decoration-none justify-content-start"
@@ -9,7 +9,7 @@
     </div>
   </a>
   <div class="sidebar-menu-scrollable flex-grow-1 overflow-auto">
-    <ul class="nav nav-pills flex-column mb-auto mt-2">
+    <ul class="nav nav-pills flex-column mb-auto">
       <li class="nav-item">
         <a href="{% url 'home' %}"
            class="nav-link sidebar-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
@@ -20,7 +20,7 @@
         </a>
       </li>
       <li class="nav-item">
-        <a class="nav-link link-body-emphasis sidebar-item"
+        <a class="nav-link sidebar-item {% if request.resolver_match.url_name == 'items' %}active{% endif %}"
            data-bs-toggle="collapse"
            href="#inventoryCollapse"
            role="button"
@@ -35,7 +35,8 @@
         <div class="collapse" id="inventoryCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">All Items</a>
+              <a href="{% url 'items' %}"
+                 class="nav-link link-body-emphasis sidebar-sub-item rounded {% if request.resolver_match.url_name == 'items' %}active{% endif %}">Items</a>
             </li>
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Categories</a>
@@ -130,7 +131,7 @@
     </ul>
   </div>
   <hr class="mt-auto">
-  <div class="text-center mt-auto">
+  <div class="text-center mt-auto px-2">
     <button class="btn btn-outline-secondary btn-sm w-100" id="sidebarToggle">
       <i class="bi bi-chevron-left" id="sidebarToggleIcon"></i>
     </button>

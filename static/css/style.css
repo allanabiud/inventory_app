@@ -1,0 +1,85 @@
+.btn {
+  color: var(--color-white);
+}
+
+.btn i {
+  color: var(--color-white);
+}
+
+.btn span {
+  color: var(--color-white);
+}
+
+.slide-in-right {
+  animation: slideInFromRight 0.4s ease forwards;
+}
+
+@keyframes slideInFromRight {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0%);
+    opacity: 1;
+  }
+}
+
+/* Prevent export button from forcing horizontal scroll */
+.datatable-header {
+  overflow-x: auto;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+/* Ensure DataTable elements don’t overflow */
+.dataTables_wrapper {
+  width: 100%;
+  overflow-x: auto;
+}
+
+/* Allow table to scroll inside card if necessary */
+.table-responsive {
+  overflow-x: auto;
+}
+
+.dt-buttons .btn {
+  white-space: nowrap;
+  color: var(--color-white);
+}
+
+/* Normal column header */
+table.dataTable thead th {
+  color: var(--text-color); /* Or any color */
+}
+
+/* Ascending sort */
+thead th.sorting_asc::before {
+  color: var(--primary-green); /* Change arrow color */
+}
+
+/* Descending sort (arrow) */
+thead th.sorting_desc::after {
+  color: var(--primary-green);
+}
+
+/* Pagination buttons */
+.dataTables_wrapper .dataTables_paginate .paginate_button {
+  padding: 0.5rem 0.3rem;
+}
+
+.dataTables_wrapper .dataTables_paginate .paginate_button .page-link {
+  color: var(--text-color); /* Text color */
+  background-color: transparent; /* Background */
+  border-radius: 0.25rem;
+  border-color: var(--color-dark-gray);
+}
+
+/* Active page */
+.dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
+  background-color: var(--primary-green) !important;
+  color: var(--color-white) !important;
+  font-weight: bold;
+  border-radius: 0.25rem;
+  border-color: var(--primary-green);
+}

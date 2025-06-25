@@ -17,13 +17,14 @@
   --color-gray-light-border: #adb5bd;
 
   /* RGB variables for your theme colors */
-  --primary-green-rgb: 40, 167, 69; /* RGB for #28a745 */
-  --emerald-green-rgb: 46, 204, 113; /* RGB for #2ecc71 */
+  --primary-green-rgb: 40, 167, 69;
+  --emerald-green-rgb: 46, 204, 113;
 
   /* Semantic Theme Colors */
-  --body-bg-color: var(--color-medium-gray);
-  --sidebar-bg-color: var(--color-white);
-  --card-bg-color: var(--color-white);
+  --body-bg-color: var(--color-light-gray);
+  --navbar-bg-color: transparent;
+  --sidebar-bg-color: var(--color-medium-gray);
+  --card-bg-color: var(--color-medium-gray);
   --text-color: var(--color-dark-gray);
   --link-color: var(--primary-green);
   --link-hover-color: var(--emerald-green);
@@ -32,6 +33,7 @@
   --card-shadow-color: rgba(0, 0, 0, 0.15);
   --tooltip-bg-color: var(--color-dark-gray);
   --tooltip-text-color: var(--color-white);
+  --navbar-input-bg-color: var(--color-medium-gray);
 
   /* Bootstrap Global Variable Overrides */
   --bs-primary: var(--primary-green);
@@ -48,7 +50,7 @@
   --bs-success-rgb: var(--primary-green-rgb);
 
   /* Customize Focus Ring Color for Light Theme */
-  --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
+  --bs-focus-ring-color: transparent;
 
   /* Bootstrap Primary Button Overrides */
   --bs-btn-color: var(--color-white);
@@ -57,7 +59,7 @@
   --bs-btn-hover-color: var(--color-white);
   --bs-btn-hover-bg: var(--emerald-green);
   --bs-btn-hover-border-color: var(--emerald-green);
-  --bs-btn-focus-shadow-rgb: 40, 167, 69;
+  --bs-btn-focus-shadow-rgb: var(--primary-green-rgb);
   --bs-btn-active-color: var(--color-white);
   --bs-btn-active-bg: var(--emerald-green);
   --bs-btn-active-border-color: var(--emerald-green);
@@ -67,7 +69,9 @@
 
   /* Bootstrap Secondary Button Overrides */
   --bs-btn-secondary-color: var(--text-color);
-  --bs-btn-secondary-bg: var(--card-bg-color);
+  --bs-btn-secondary-bg: var(
+    --card-bg-color
+  ); /* This will now be medium-gray */
   --bs-btn-secondary-border-color: var(--color-medium-gray);
   --bs-btn-secondary-hover-color: var(--link-hover-color);
   --bs-btn-secondary-hover-bg: rgba(40, 167, 69, 0.1);
@@ -95,11 +99,12 @@
   --color-gray-light-border: #6c757d;
 
   /* RGB variables for your dark theme colors */
-  --primary-green-rgb: 30, 132, 73; /* RGB for #1e8449 */
-  --emerald-green-rgb: 39, 174, 96; /* RGB for #27ae60 */
+  --primary-green-rgb: 30, 132, 73;
+  --emerald-green-rgb: 39, 174, 96;
 
   /* Semantic Theme Colors */
   --body-bg-color: var(--color-dark-gray);
+  --navbar-bg-color: transparent;
   --sidebar-bg-color: #343a40;
   --card-bg-color: #343a40;
   --text-color: var(--color-light-gray);
@@ -110,6 +115,7 @@
   --card-shadow-color: rgba(0, 0, 0, 0.3);
   --tooltip-bg-color: var(--color-light-gray);
   --tooltip-text-color: var(--color-dark-gray);
+  --navbar-input-bg-color: var(--color-medium-gray);
 
   /* Bootstrap Global Variable Overrides */
   --bs-primary: var(--primary-green);
@@ -125,7 +131,7 @@
   --bs-success-rgb: var(--primary-green-rgb);
 
   /* Customize Focus Ring Color for Dark Theme */
-  --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
+  --bs-focus-ring-color: transparent;
 
   /* Bootstrap Primary Button Overrides */
   --bs-btn-bg: var(--primary-green);
@@ -150,4 +156,30 @@
   --bs-btn-secondary-disabled-color: var(--text-color);
   --bs-btn-secondary-disabled-bg: var(--sidebar-bg-color);
   --bs-btn-secondary-disabled-border-color: var(--color-gray-light-border);
+}
+
+/* Ensure .btn-success explicitly uses your primary green variables in Light Mode */
+.btn-success {
+  --bs-btn-bg: var(--primary-green);
+  --bs-btn-border-color: var(--primary-green);
+  --bs-btn-hover-bg: var(--emerald-green);
+  --bs-btn-hover-border-color: var(--emerald-green);
+  --bs-btn-focus-shadow-rgb: var(--primary-green-rgb);
+  --bs-btn-active-bg: var(--emerald-green);
+  --bs-btn-active-border-color: var(--emerald-green);
+  --bs-btn-disabled-bg: var(--primary-green);
+  --bs-btn-disabled-border-color: var(--primary-green);
+}
+
+/* Ensure .btn-success explicitly uses your primary green variables in Dark Mode */
+[data-bs-theme="dark"] .btn-success {
+  --bs-btn-bg: var(--primary-green);
+  --bs-btn-border-color: var(--primary-green);
+  --bs-btn-hover-bg: var(--emerald-green);
+  --bs-btn-hover-border-color: var(--emerald-green);
+  --bs-btn-focus-shadow-rgb: var(--primary-green-rgb);
+  --bs-btn-active-bg: var(--emerald-green);
+  --bs-btn-active-border-color: var(--emerald-green);
+  --bs-btn-disabled-bg: var(--primary-green);
+  --bs-btn-disabled-border-color: var(--primary-green);
 }
