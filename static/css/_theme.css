@@ -11,13 +11,17 @@
   --danger-red: #dc3545;
   --color-white: #ffffff;
   --color-dark-gray: #212529;
-  --color-light-gray: #f0f2f5;
+  --color-light-gray: #e9ecef;
   --color-medium-gray: #dee2e6;
   --color-gray-dark-bootstrap: #6c757d;
   --color-gray-light-border: #adb5bd;
 
+  /* RGB variables for your theme colors */
+  --primary-green-rgb: 40, 167, 69; /* RGB for #28a745 */
+  --emerald-green-rgb: 46, 204, 113; /* RGB for #2ecc71 */
+
   /* Semantic Theme Colors */
-  --body-bg-color: var(--color-light-gray);
+  --body-bg-color: var(--color-medium-gray);
   --sidebar-bg-color: var(--color-white);
   --card-bg-color: var(--color-white);
   --text-color: var(--color-dark-gray);
@@ -38,6 +42,13 @@
   --bs-info: var(--tertiary-teal);
   --bs-body-color: var(--text-color);
   --bs-body-bg: var(--body-bg-color);
+
+  /* Set Bootstrap's primary RGB variable from your custom RGB variable */
+  --bs-primary-rgb: var(--primary-green-rgb);
+  --bs-success-rgb: var(--primary-green-rgb);
+
+  /* Customize Focus Ring Color for Light Theme */
+  --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
 
   /* Bootstrap Primary Button Overrides */
   --bs-btn-color: var(--color-white);
@@ -70,7 +81,7 @@
 }
 
 [data-bs-theme="dark"] {
-  /* Dark Theme Color Palette */
+  /* Dark Theme Color Palette (no changes here as requested) */
   --primary-green: #1e8449;
   --emerald-green: #27ae60;
   --secondary-gold: #d4af37;
@@ -82,6 +93,10 @@
   --color-light-gray: #f8f9fa;
   --color-medium-gray: #495057;
   --color-gray-light-border: #6c757d;
+
+  /* RGB variables for your dark theme colors */
+  --primary-green-rgb: 30, 132, 73; /* RGB for #1e8449 */
+  --emerald-green-rgb: 39, 174, 96; /* RGB for #27ae60 */
 
   /* Semantic Theme Colors */
   --body-bg-color: var(--color-dark-gray);
@@ -104,6 +119,13 @@
   --bs-info: var(--tertiary-teal);
   --bs-body-color: var(--text-color);
   --bs-body-bg: var(--body-bg-color);
+
+  /* Set Bootstrap's primary RGB variable from your custom RGB variable for dark theme */
+  --bs-primary-rgb: var(--primary-green-rgb);
+  --bs-success-rgb: var(--primary-green-rgb);
+
+  /* Customize Focus Ring Color for Dark Theme */
+  --bs-focus-ring-color: rgba(var(--bs-primary-rgb), 0.25);
 
   /* Bootstrap Primary Button Overrides */
   --bs-btn-bg: var(--primary-green);

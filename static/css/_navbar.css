@@ -1,0 +1,37 @@
+@import url("./_theme.css");
+
+/* --- Navbar Container --- */
+.navbar {
+  border-radius: 0.75rem;
+  height: 3rem;
+  transition: background-color 0.3s ease;
+}
+
+/* --- Navbar Icons --- */
+.navbar-nav i {
+  font-size: 1.2rem;
+  color: var(--text-color);
+}
+
+.nav-item i:hover {
+  color: var(--link-hover-color);
+}
+
+.navbar .form-control::placeholder {
+  font-size: 0.9rem;
+}
+
+/* For Webkit browsers (Chrome, Safari) */
+.navbar .form-control::-webkit-input-placeholder {
+  font-size: 0.85rem;
+}
+
+/* For Mozilla Firefox */
+.navbar .form-control::-moz-placeholder {
+  font-size: 0.85rem;
+}
+
+/* For Internet Explorer */
+.navbar .form-control:-ms-input-placeholder {
+  font-size: 0.85rem;
+}

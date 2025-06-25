@@ -39,7 +39,7 @@
   gap: 0.5rem;
   border-radius: 0.5rem;
   transition: all 0.3s ease;
-  color: var(--text-color);
+  color: var(--text-color); /* Default text color */
   padding: 0.5rem 0.75rem;
   justify-content: space-between;
 }
@@ -49,13 +49,15 @@
   color: var(--link-hover-color);
 }
 
-.sidebar-item.active {
-  background-color: var(--primary-green);
-  color: var(--color-white); /* Use theme variable for white */
+.sidebar-item.active,
+.sidebar-sub-item.active {
+  background-color: var(--primary-green) !important;
+  color: var(--color-white) !important;
 }
 
-.sidebar-item.active i {
-  color: var(--color-white); /* Use theme variable for white */
+.sidebar-item.active i,
+.sidebar-sub-item.active i {
+  color: var(--color-white) !important;
 }
 
 .sidebar-item i {
@@ -193,7 +195,7 @@
   border-radius: 0.4rem;
   transition:
     background-color 0.2s ease,
-    color 0.2s ease;
+    color 0.2s ease; /* Ensure transition for color too */
 }
 
 .sidebar-sub-item:hover {

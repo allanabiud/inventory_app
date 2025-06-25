@@ -1,6 +1,6 @@
 <div class="sidebar d-flex flex-column p-2 rounded-2 shadow-lg mt-2 ms-2"
      id="sidebar">
-  <a href="/"
+  <a href="{% url 'home' %}"
      class="d-flex text-decoration-none justify-content-start"
      id="sidebar-brand">
     <div class="d-flex align-items-center" id="sidebar-brand-content">
@@ -11,7 +11,8 @@
   <div class="sidebar-menu-scrollable flex-grow-1 overflow-auto">
     <ul class="nav nav-pills flex-column mb-auto mt-2">
       <li class="nav-item">
-        <a href="#" class="nav-link link-body-emphasis sidebar-item">
+        <a href="{% url 'home' %}"
+           class="nav-link sidebar-item {% if request.resolver_match.url_name == 'home' %}active{% endif %}">
           <div>
             <i class="bi bi-house fs-5"></i>
             <span class="sidebar-label">Home</span>

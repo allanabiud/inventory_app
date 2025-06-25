@@ -23,6 +23,7 @@
       icon.className = "bi"; // reset
       icon.classList.add(
         theme === "dark" ? "bi-moon-stars-fill" : "bi-sun-fill",
+        "text-white",
       );
     }
   };
