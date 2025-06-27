@@ -1,44 +1,43 @@
 @import url("./_theme.css");
 
-/* --- Sidebar Container --- */
 #sidebar {
-  border-radius: 0.75rem; /* Keep this for the overall sidebar rounding */
-  width: 200px; /* Default expanded width */
+  width: 200px;
   height: calc(100vh - 1rem);
   transition:
-    width 0.3s ease,
+    width 0.3s ease-in-out,
     background-color 0.3s ease,
     box-shadow 0.3s ease;
-  padding: 0; /* REMAINING: Important for full-width items */
+  padding: 0;
   overflow: hidden;
   background-color: var(--sidebar-bg-color);
-  box-shadow: 0 0.5rem 1rem var(--sidebar-shadow-color);
+  position: fixed;
+  z-index: 1000;
+  top: 0.5rem;
+  left: 0.5rem;
+  border: 1px solid var(--color-gray-light-border);
 }
 
 #sidebar.collapsed {
-  width: 74px; /* Collapsed sidebar width */
+  width: 74px;
 }
 
-/* --- Scrollable Menu Area --- */
 .sidebar-menu-scrollable {
   flex-grow: 1;
   overflow-y: auto;
-  padding-right: 0; /* CHANGED: Remove this padding */
   margin-top: 0.5rem;
 }
 
 #sidebar.collapsed .sidebar-menu-scrollable {
   overflow-y: hidden;
-  padding-right: 0; /* Ensure no padding when collapsed */
 }
 
-/* --- Sidebar Items --- */
 .sidebar-item {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  transition: all 0.3s ease;
-  color: var(--text-color);
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
   padding: 0.5rem 0.75rem;
   justify-content: space-between;
   width: 100%;
@@ -48,14 +47,15 @@
 .sidebar-item:hover {
   background-color: var(--sidebar-item-hover-bg);
   color: var(--link-hover-color);
-  border-radius: 0;
 }
 
 .sidebar-item.active {
   background-color: var(--primary-green) !important;
-  color: var(--color-white) !important;
-  border-radius: 0;
   font-weight: bold;
+}
+
+.sidebar-item.active .sidebar-label {
+  color: var(--color-white);
 }
 
 .sidebar-sub-item.active {
@@ -68,10 +68,6 @@
 .sidebar-sub-item.active i,
 #sidebarToggle i {
   color: var(--color-white) !important;
-}
-
-.sidebar-item.active .sidebar-label {
-  color: var(--color-white);
 }
 
 .sidebar-item i {
@@ -87,14 +83,12 @@
   transform: rotate(180deg);
 }
 
-/* --- Collapsed Sidebar Item Layout --- */
 #sidebar.collapsed .sidebar-item {
   flex-direction: column;
   justify-content: center;
   align-items: center;
   text-align: center;
   padding: 0.5rem 0;
-  border-radius: 0; /* ADDED: Ensure no radius when collapsed either */
 }
 
 #sidebar.collapsed .sidebar-item > div {
@@ -107,7 +101,6 @@
 #sidebar.collapsed .sidebar-label {
   font-size: 0.75rem;
   margin-top: 0.1rem;
-  margin-left: 0;
   display: block;
 }
 
@@ -122,17 +115,83 @@
 }
 
 #sidebar.collapsed .collapse {
+  display: none !important;
   visibility: hidden;
   height: 0 !important;
   overflow: hidden;
   padding: 0 !important;
 }
 
-#sidebar.collapsed .sidebar-item i {
-  margin: 0; /* Combine margin-left/right resets */
+#sidebar.collapsed .collapse.show-when-collapsed {
+  display: block !important;
+  visibility: visible;
+  height: auto !important;
+  overflow: visible;
+  position: static;
+  padding: 0 !important;
 }
 
-/* --- Sidebar Brand Section --- */
+#sidebar.collapsed .collapse.show-when-collapsed .btn-toggle-nav {
+  padding-left: 0 !important;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-top: 0.25rem;
+}
+
+#sidebar.collapsed .collapse.show-when-collapsed .sidebar-sub-item {
+  padding: 0.25rem 0;
+  text-align: center;
+  font-size: 0.7rem;
+}
+
+#sidebar.collapsed .sidebar-item i {
+  margin: 0;
+}
+
+.popover.sidebar-popover-custom {
+  --bs-popover-max-width: 200px;
+  --bs-popover-border-color: var(--border-color);
+  --bs-popover-header-bg: var(--sidebar-bg-color);
+  --bs-popover-body-padding-x: 0;
+  --bs-popover-body-padding-y: 0;
+  --bs-popover-bg: var(--sidebar-bg-color);
+  box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+}
+
+.popover.sidebar-popover-custom .popover-body {
+  padding: 0.5rem 0;
+}
+
+.popover.sidebar-popover-custom .btn-toggle-nav {
+  list-style: none;
+  padding: 0 !important;
+  margin: 0;
+}
+
+.popover.sidebar-popover-custom .sidebar-sub-item {
+  display: block;
+  padding: 0.5rem 1rem;
+  color: var(--color-white);
+  text-decoration: none;
+  white-space: nowrap;
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+  font-size: 0.9rem;
+}
+
+.popover.sidebar-popover-custom .sidebar-sub-item:hover {
+  background-color: transparent;
+  color: var(--link-hover-color);
+}
+
+.popover.sidebar-popover-custom .sidebar-sub-item.active {
+  background-color: transparent !important;
+  color: var(--primary-green) !important;
+  font-weight: bold;
+}
+
 #sidebar-brand {
   display: flex;
   align-items: center;
@@ -164,10 +223,9 @@
 }
 
 #sidebar.collapsed #sidebar-brand-content #sidebar-icon {
-  margin: 0; /* Combine margin-left/right resets */
+  margin: 0;
 }
 
-/* --- Expanded State Label Resets --- */
 #sidebar:not(.collapsed) .sidebar-label {
   font-size: 0.95rem;
   margin-left: 0.5rem;
@@ -175,10 +233,9 @@
   visibility: visible;
 }
 
-/* --- Sidebar Toggle Button --- */
 #sidebarToggle {
   background-color: var(--primary-green);
-  color: var(--color-white); /* Use theme variable for white */
+  color: var(--color-white);
   border-color: var(--primary-green);
   transition:
     background-color 0.3s ease,
@@ -190,15 +247,13 @@
   border-color: var(--emerald-green);
 }
 
-/* --- Horizontal Rule --- */
 #sidebar hr {
   margin-bottom: 0.5rem;
   margin-top: 0;
 }
 
-/* --- Nested Sub-Menu Styles --- */
 .btn-toggle-nav {
-  padding-left: 2rem !important; /* Keep indentation for sub-items */
+  padding-left: 2rem !important;
   list-style: none;
   padding-top: 0.25rem;
   padding-bottom: 0.25rem;
@@ -216,5 +271,4 @@
 
 .sidebar-sub-item:hover {
   background-color: var(--sidebar-item-hover-bg);
-  border-radius: 0; /* ADDED: Ensure hover also has no radius */
 }

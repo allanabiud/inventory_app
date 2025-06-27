@@ -10,19 +10,29 @@
   color: var(--color-white);
 }
 
-.slide-in-right {
-  animation: slideInFromRight 0.4s ease forwards;
+.slide-in-left {
+  animation: slideInFromLeft 0.4s ease forwards;
 }
 
-@keyframes slideInFromRight {
+@keyframes slideInFromLeft {
   from {
-    transform: translateX(100%);
+    transform: translateX(-100%);
     opacity: 0;
   }
   to {
     transform: translateX(0%);
     opacity: 1;
   }
+}
+
+#main-content {
+  transition: margin-left 0.3s ease;
+  margin-left: 200px;
+}
+
+.dropdown-item.active {
+  background-color: var(--primary-green);
+  color: var(--color-white);
 }
 
 /* Prevent export button from forcing horizontal scroll */

@@ -2,7 +2,7 @@
 {% load static %}
 {% block title %}Items{% endblock %}
 {% block content %}
-  <div class="container-fluid mt-3 slide-in-right">
+  <div class="container-fluid mt-3 slide-in-left">
     {% if not items %}
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2>Items</h2>
@@ -18,11 +18,11 @@
       <div class="d-flex justify-content-between align-items-center mb-3">
         <h2 class="mb-0">Items</h2>
         <div class="d-flex gap-2">
-          <div id="exportButtonsContainer"></div>
           <!-- Custom container for export buttons -->
           <a href="" class="btn btn-secondary">
             <i class="bi bi-upload"></i> Import
           </a>
+          <div id="exportButtonsContainer"></div>
           <a href="" class="btn btn-success">
             <i class="bi bi-plus-lg"></i> Add Item
           </a>

@@ -6,7 +6,7 @@ from django.shortcuts import redirect, render
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
 
 from .forms import CustomAuthenticationForm, CustomUserCreationForm
-from .models import InvitedUser
+from .models import InvitedUser, UserProfile
 
 
 def root_view(request):
@@ -60,6 +60,9 @@ def signup(request, token):
             user = form.save(commit=False)
             user.email = invited_user.email
             user.save()
+
+            # Create user profile
+            UserProfile.objects.create(user=user)
 
             # Link invited user
             invited_user.user = user

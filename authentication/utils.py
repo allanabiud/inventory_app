@@ -1,3 +1,7 @@
+import os
+import uuid
+from datetime import datetime
+
 from django.conf import settings
 from django.core.mail import EmailMultiAlternatives
 from django.template.loader import render_to_string
@@ -27,3 +31,12 @@ def send_invitation_email(invited_user):
     msg = EmailMultiAlternatives(subject, "", from_email, to_email)
     msg.attach_alternative(html_content, "text/html")
     msg.send()
+
+
+def user_image_upload_path(instance, filename):
+    ext = filename.split(".")[-1]
+    username = instance.user.username.replace(" ", "_").lower()
+    timestamp = datetime.now().strftime("%Y%m%d%H%M%S")
+    unique_id = uuid.uuid4().hex[:6]
+    filename = f"{username}_{timestamp}_{unique_id}.{ext}"
+    return os.path.join("profile_images", username, filename)
