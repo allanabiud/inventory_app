@@ -1,6 +1,7 @@
 {% extends 'layouts/home-base.html' %}
 {% load static %}
-{% block title %}Items{% endblock %}
+{% load humanize %}
+{% block title %}Items - Stockflow{% endblock %}
 {% block content %}
   <div class="container-fluid mt-3 slide-in-left">
     {% if not items %}
@@ -53,8 +54,8 @@
                     <td>{{ item.sku }}</td>
                     <td>{{ item.category.name|default:"N/A" }}</td>
                     <td>{{ item.unit.name }}</td>
-                    <td>KES {{ item.purchase_price|floatformat:2 }}</td>
-                    <td>KES {{ item.selling_price|floatformat:2 }}</td>
+                    <td>KES {{ item.purchase_price|floatformat:2|intcomma }}</td>
+                    <td>KES {{ item.selling_price|floatformat:2|intcomma }}</td>
                     <td>{{ item.opening_stock }}</td>
                     <td class="{% if item.track_inventory and item.current_stock <= item.reorder_point %}text-danger fw-bold{% endif %}">
                       {{ item.current_stock }}

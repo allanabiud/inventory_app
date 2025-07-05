@@ -27,6 +27,12 @@ document.addEventListener("DOMContentLoaded", function () {
             ],
           },
         ],
+        columnDefs: [
+          {
+            targets: -1, // disables ordering for the last column (Track Inv.)
+            orderable: false,
+          },
+        ],
       });
 
       // Export buttons to custom container
