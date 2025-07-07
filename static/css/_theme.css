@@ -84,6 +84,9 @@
   --bs-btn-secondary-disabled-bg: var(--card-bg-color);
   --bs-btn-secondary-disabled-border-color: var(--color-gray-light-border);
 
+  /* Bootstrap Checkbox Overrides */
+  --bs-form-check-input-checked-bg-color: var(--primary-green);
+
   body {
     background-color: var(--body-bg-color);
     background-image: url("/static/images/patterns/topography.svg");

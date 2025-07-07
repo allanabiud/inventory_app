@@ -1,0 +1,48 @@
+{% load static %}
+<div class="col-md-5 d-flex align-items-center justify-content-center">
+  <div id="loginCarousel"
+       class="carousel slide w-100 px-4"
+       data-bs-ride="carousel">
+    <!-- Carousel Indicators -->
+    <div class="carousel-indicators">
+      <button type="button"
+              data-bs-target="#loginCarousel"
+              data-bs-slide-to="0"
+              class="active"
+              aria-current="true"
+              aria-label="Slide 1"></button>
+      <button type="button"
+              data-bs-target="#loginCarousel"
+              data-bs-slide-to="1"
+              aria-label="Slide 2"></button>
+      <button type="button"
+              data-bs-target="#loginCarousel"
+              data-bs-slide-to="2"
+              aria-label="Slide 3"></button>
+    </div>
+    <!-- Carousel Slides -->
+    <div class="carousel-inner text-center">
+      <div class="carousel-item active" data-bs-interval="2500">
+        <img src="{% static 'images/illustrations/manage_inventory.svg' %}"
+             class="img-fluid mb-3"
+             style="max-height: 200px"
+             alt="Manage Inventory">
+        <h5 class="fw-semibold">Easily manage your inventory.</h5>
+      </div>
+      <div class="carousel-item" data-bs-interval="2500">
+        <img src="{% static 'images/illustrations/real_time_tracking.svg' %}"
+             class="img-fluid mb-3"
+             style="max-height: 200px"
+             alt="Track Stock">
+        <h5 class="fw-semibold">Track stock levels in real time.</h5>
+      </div>
+      <div class="carousel-item" data-bs-interval="2500">
+        <img src="{% static 'images/illustrations/generate_insights.svg' %}"
+             class="img-fluid mb-3"
+             style="max-height: 200px"
+             alt="Generate Insights">
+        <h5 class="fw-semibold">Generate insights with just a few clicks.</h5>
+      </div>
+    </div>
+  </div>
+</div>

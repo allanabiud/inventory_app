@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% block title %}Sign In{% endblock %}
+{% block title %}Sign In - Stockflow{% endblock %}
 {% load static %}
 {% load crispy_forms_tags %}
 {% block content %}
@@ -26,23 +26,7 @@
           <div style="border-left: 1px solid #dee2e6; height: 100%;"></div>
         </div>
         <!-- Carousel -->
-        <div class="col-md-5 d-flex align-items-center justify-content-center">
-          <div id="loginCarousel"
-               class="carousel slide w-100 px-4"
-               data-bs-ride="carousel">
-            <div class="carousel-inner text-center">
-              <div class="carousel-item active" data-bs-interval="2000">
-                <h5 class="fw-semibold">Easily manage your inventory.</h5>
-              </div>
-              <div class="carousel-item" data-bs-interval="2000">
-                <h5 class="fw-semibold">Track stock levels in real time.</h5>
-              </div>
-              <div class="carousel-item" data-bs-interval="2000">
-                <h5 class="fw-semibold">Generate insights with just a few clicks.</h5>
-              </div>
-            </div>
-          </div>
-        </div>
+        {% include 'partials/carousel.html' %}
       </div>
     </div>
   </div>

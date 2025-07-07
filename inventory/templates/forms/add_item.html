@@ -1,0 +1,194 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}Add Item - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <!-- Header -->
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Add Item</h4>
+        <a href="javascript:history.back()">
+          <i class="bi bi-x-lg fs-4"></i>
+        </a>
+      </div>
+      <!-- Scrollable Form Body -->
+      <div class="px-5 pt-3">
+        <form method="post" enctype="multipart/form-data" id="itemForm">
+          {% csrf_token %}
+          <!-- Basic Details -->
+          <div class="row g-4 mb-4 align-items-stretch">
+            <!-- Image Upload -->
+            <div class="col-md-3 d-flex flex-column">
+              <div class="w-100 d-flex flex-column justify-content-center align-items-center p-2"
+                   id="imageUploadContainer"
+                   onclick="document.getElementById('id_image').click();">
+                <!-- Image preview (hidden by default) -->
+                <div id="imagePreviewWrapper"
+                     class="position-absolute top-0 start-0 w-100 h-100 d-none">
+                  <img id="imagePreview"
+                       src="#"
+                       alt="Image Preview"
+                       class="img-fluid h-100 w-100 object-fit-cover d-none position-absolute top-0 start-0 rounded"
+                       style="object-fit: cover" />
+                  <!-- Clear Button -->
+                  <button type="button"
+                          id="clearImageBtn"
+                          class="btn btn-sm btn-danger position-absolute top-0 end-0 m-2 rounded-circle p-1"
+                          onclick="clearImage(event)">
+                    <i class="bi bi-x-lg"></i>
+                  </button>
+                </div>
+                <!-- Placeholder icon -->
+                <div class="d-flex flex-column justify-content-center align-items-center h-100 w-100 text-center"
+                     id="imagePlaceholder">
+                  <i class="bi bi-image fs-1 text-muted"></i>
+                  <p class="text-muted mb-0">Click to upload image</p>
+                </div>
+                <input type="file"
+                       name="image"
+                       id="id_image"
+                       class="d-none"
+                       accept="image/*">
+              </div>
+            </div>
+            <!-- Form Fields -->
+            <div class="col-md-9 d-flex align-items-center">
+              <div class="row g-5 w-100">
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="text"
+                           name="name"
+                           id="id_name"
+                           class="form-control"
+                           placeholder="Item name"
+                           required>
+                    <label for="id_name">Name</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <input type="text"
+                           name="sku"
+                           id="id_sku"
+                           class="form-control"
+                           placeholder="SKU"
+                           required>
+                    <label for="id_sku">SKU</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <select name="unit" id="id_unit" class="form-select" required>
+                      <option value="">--</option>
+                      {% for unit in units %}<option value="{{ unit.id }}">{{ unit.name }} ({{ unit.abbreviation }})</option>{% endfor %}
+                    </select>
+                    <label for="id_unit">Unit of Measure</label>
+                  </div>
+                </div>
+                <div class="col-md-6">
+                  <div class="form-floating">
+                    <select name="category" id="id_category" class="form-select">
+                      <option value="">--</option>
+                      {% for category in categories %}<option value="{{ category.id }}">{{ category.name }}</option>{% endfor %}
+                    </select>
+                    <label for="id_category">Category</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Divider -->
+          <div class="my-4">
+            <hr>
+          </div>
+          <!-- Pricing -->
+          <h5 class="mb-3">Pricing</h5>
+          <div class="row g-3 mb-4">
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text">KES</span>
+                <div class="form-floating">
+                  <input type="number"
+                         name="selling_price"
+                         id="id_selling_price"
+                         class="form-control"
+                         placeholder="Selling Price"
+                         step="0.01">
+                  <label for="id_selling_price">Selling Price</label>
+                </div>
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="input-group">
+                <span class="input-group-text">KES</span>
+                <div class="form-floating">
+                  <input type="number"
+                         name="purchase_price"
+                         id="id_purchase_price"
+                         class="form-control"
+                         placeholder="Purchase Price"
+                         step="0.01">
+                  <label for="id_purchase_price">Purchase Price</label>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Divider -->
+          <div class="my-4">
+            <hr>
+          </div>
+          <!-- Inventory -->
+          <h5 class="mb-3">Inventory</h5>
+          <div class="form-check mb-3">
+            <input type="checkbox"
+                   class="form-check-input"
+                   name="track_inventory"
+                   id="id_track_inventory">
+            <label class="form-check-label" for="id_track_inventory">Track Inventory</label>
+          </div>
+          <div id="inventoryFieldsContainer" class="row mb-4">
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="number"
+                       name="opening_stock"
+                       id="id_opening_stock"
+                       placeholder="Opening Stock"
+                       class="form-control">
+                <label for="id_opening_stock" class="form-label">Opening Stock</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="number"
+                       name="current_stock"
+                       id="id_current_stock"
+                       placeholder="Current Stock"
+                       class="form-control">
+                <label for="id_current_stock" class="form-label">Current Stock</label>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="form-floating">
+                <input type="number"
+                       name="reorder_point"
+                       id="id_reorder_point"
+                       placeholder="Reorder Point"
+                       class="form-control">
+                <label for="id_reorder_point" class="form-label">Reorder Point</label>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- Sticky Button Bar (Outside Scroll Area) -->
+      <div class="sticky-bottom-btn-bar border-top px-5 py-3">
+        <div class="d-flex gap-3">
+          <button type="submit" form="itemForm" class="btn btn-success">Save</button>
+          <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- JS to hide/show inventory fields -->
+  <script src="{% static 'js/forms/add_item.js' %}"></script>
+{% endblock %}

@@ -11,7 +11,7 @@
       <div class="d-flex flex-column justify-content-center align-items-center text-center py-5"
            style="min-height: calc(100vh - 200px)">
         <p class="lead mb-3 text-muted">No items.</p>
-        <a href="" class="btn btn-success">
+        <a href="{% url 'add_item' %}" class="btn btn-success">
           <i class="bi bi-plus-lg"></i> Add Item
         </a>
       </div>
@@ -24,7 +24,7 @@
             <i class="bi bi-upload"></i> Import
           </a>
           <div id="exportButtonsContainer"></div>
-          <a href="" class="btn btn-success">
+          <a href="{% url 'add_item' %}" class="btn btn-success">
             <i class="bi bi-plus-lg"></i> Add Item
           </a>
         </div>
@@ -42,9 +42,10 @@
                   <th>Unit</th>
                   <th>Purchase Price</th>
                   <th>Selling Price</th>
+                  <th>Track Inv.</th>
                   <th>Opening Stock</th>
                   <th>Current Stock</th>
-                  <th>Track Inv.</th>
+                  <th>Added</th>
                 </tr>
               </thead>
               <tbody>
@@ -56,10 +57,6 @@
                     <td>{{ item.unit.name }}</td>
                     <td>KES {{ item.purchase_price|floatformat:2|intcomma }}</td>
                     <td>KES {{ item.selling_price|floatformat:2|intcomma }}</td>
-                    <td>{{ item.opening_stock }}</td>
-                    <td class="{% if item.track_inventory and item.current_stock <= item.reorder_point %}text-danger fw-bold{% endif %}">
-                      {{ item.current_stock }}
-                    </td>
                     <td class="text-center">
                       {% if item.track_inventory %}
                         <i class="bi bi-check-circle-fill text-success"
@@ -68,6 +65,11 @@
                         <i class="bi bi-x-circle-fill text-danger" title="Inventory Not Tracked"></i>
                       {% endif %}
                     </td>
+                    <td>{{ item.opening_stock }}</td>
+                    <td class="{% if item.track_inventory and item.current_stock <= item.reorder_point %}text-danger fw-bold{% endif %}">
+                      {{ item.current_stock }}
+                    </td>
+                    <td class="d-none d-md-table-cell">{{ item.created_at|date:"Y-m-d H:i" }}</td>
                   </tr>
                 {% endfor %}
               </tbody>

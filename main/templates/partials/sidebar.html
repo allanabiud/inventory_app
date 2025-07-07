@@ -21,7 +21,7 @@
       </li>
       <!-- Inventory -->
       <li class="nav-item">
-        <a class="nav-link sidebar-item {% if request.resolver_match.url_name == 'items' %}active{% endif %}"
+        <a class="nav-link sidebar-item {% if request.resolver_match.url_name == 'items' or request.resolver_match.url_name == 'add_item' %}active{% endif %}"
            data-bs-toggle="collapse"
            href="#inventoryCollapse"
            role="button"
@@ -37,7 +37,7 @@
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
               <a href="{% url 'items' %}"
-                 class="nav-link link-body-emphasis sidebar-sub-item rounded {% if request.resolver_match.url_name == 'items' %}active{% endif %}">Items</a>
+                 class="nav-link link-body-emphasis sidebar-sub-item rounded {% if request.resolver_match.url_name == 'items' or request.resolver_match.url_name == 'add_item' %}active{% endif %}">Items</a>
             </li>
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Categories</a>

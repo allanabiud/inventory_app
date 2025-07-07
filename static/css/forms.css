@@ -6,21 +6,27 @@
 
 .card {
   border-radius: 10px;
-  max-width: 950px;
+  max-width: 900px;
   width: 100%;
   background-color: var(--card-bg-color);
   color: var(--text-color);
-  box-shadow: 0 1rem 2rem var(--card-shadow-color);
+  box-shadow: 0 1.5rem 3rem var(--card-shadow-color);
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease,
     color 0.3s ease;
+  border: 1px solid var(--color-gray-light-border);
 }
 
 /* Light mode specific card visibility enhancements */
 [data-bs-theme="light"] .card {
   box-shadow: 0 0.75rem 1.5rem rgba(0, 0, 0, 0.15);
   border: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.form-control:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
 }
 
 .tooltip-icon {
@@ -43,4 +49,14 @@
     transform: translateX(0%);
     opacity: 1;
   }
+}
+
+.carousel-indicators {
+  bottom: -50px;
+}
+
+.carousel-indicators [data-bs-target] {
+  width: 10px;
+  height: 10px;
+  background-color: var(--primary-green);
 }

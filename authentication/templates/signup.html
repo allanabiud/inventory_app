@@ -22,23 +22,7 @@
           <div style="border-left: 1px solid #dee2e6; height: 100%;"></div>
         </div>
         <!-- Carousel -->
-        <div class="col-md-5 d-flex align-items-center justify-content-center">
-          <div id="signupCarousel"
-               class="carousel slide w-100 px-4"
-               data-bs-ride="carousel">
-            <div class="carousel-inner text-center">
-              <div class="carousel-item active" data-bs-interval="2000">
-                <h5 class="fw-semibold">Organize your stock seamlessly.</h5>
-              </div>
-              <div class="carousel-item" data-bs-interval="2000">
-                <h5 class="fw-semibold">Track purchases and inventory in one place.</h5>
-              </div>
-              <div class="carousel-item" data-bs-interval="2000">
-                <h5 class="fw-semibold">Sign up and start saving time.</h5>
-              </div>
-            </div>
-          </div>
-        </div>
+        {% include 'partials/carousel.html' %}
       </div>
     </div>
   </div>

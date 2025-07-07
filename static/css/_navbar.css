@@ -50,7 +50,7 @@
 }
 
 .nav-item i:hover {
-  color: var(--link-hover-color);
+  color: var(--color-white);
   transform: scale(1.1);
 }
 
