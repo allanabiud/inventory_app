@@ -52,11 +52,12 @@
 }
 
 .carousel-indicators {
-  bottom: -50px;
+  bottom: -60px;
 }
 
 .carousel-indicators [data-bs-target] {
   width: 10px;
   height: 10px;
   background-color: var(--primary-green);
+  border-radius: 50%;
 }

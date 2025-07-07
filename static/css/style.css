@@ -14,7 +14,7 @@
     background-color 0.3s ease,
     box-shadow 0.3s ease,
     color 0.3s ease;
-  border: 1px solid var(--color-gray-light-border);
+  /* border: 1px solid var(--color-gray-light-border); */
 }
 
 .btn {
@@ -81,11 +81,16 @@
 #imageUploadContainer {
   border: 1px dashed rgba(var(--emerald-green-rgb), 0.7);
   border-radius: 10px;
-  background-color: rgba(var(--emerald-green-rgb), 0.2);
+  background-color: rgba(var(--emerald-green-rgb), 0.1);
   cursor: pointer;
-  min-height: 200px;
-  aspect-ratio: 1 / 1;
+  min-height: 120px;
+  aspect-ratio: 2 / 1.5;
   position: relative;
+}
+
+#imagePreview {
+  border-radius: 10px;
+  object-fit: cover;
 }
 
 #clearImageBtn {
@@ -155,4 +160,8 @@ thead th.sorting_desc::after {
   font-weight: bold;
   border-radius: 0.25rem;
   border-color: var(--primary-green);
+}
+
+.table-hover tbody tr.clickable-row:hover td {
+  color: var(--primary-green);
 }

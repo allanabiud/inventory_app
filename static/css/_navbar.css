@@ -3,17 +3,22 @@
 /* Navbar Container */
 .navbar {
   background-color: var(--navbar-bg-color);
+  border: 1px solid var(--color-gray-light-border);
   height: 3rem;
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease;
   /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
+  position: sticky;
+  top: 0.5rem;
+  z-index: 1020;
 }
 
 /* Search Form and Input */
 .navbar .d-flex.me-auto {
   flex-grow: 1;
   max-width: 400px;
+  margin-left: 0 !important;
   margin-right: 1rem !important;
 }
 
@@ -23,6 +28,11 @@
 
 .navbar .form-control {
   background-color: var(--navbar-input-bg-color); /* ADD THIS LINE */
+}
+
+.navbar .container-fluid {
+  padding-left: 5px !important;
+  padding-right: 0 !important;
 }
 
 /* Navbar Icons */
@@ -49,7 +59,7 @@
   color: var(--color-white);
 }
 
-.nav-item i:hover {
+nav .nav-item i:hover {
   color: var(--color-white);
   transform: scale(1.1);
 }

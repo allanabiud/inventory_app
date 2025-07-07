@@ -34,6 +34,10 @@ a:hover {
   color: var(--link-hover-color);
 }
 
+.card-header {
+  min-height: 3rem;
+}
+
 /* --- Bootstrap Class Overrides --- */
 .bg-body-tertiary {
   background-color: var(--sidebar-bg-color) !important;

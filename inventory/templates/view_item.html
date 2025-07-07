@@ -1,0 +1,180 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}View Item - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Item Details: {{ item.name }}</h4>
+        <div class="d-flex align-items-center gap-2">
+          {# New div to group buttons and close icon #}
+          <a href="{% url 'edit_item' item.pk %}" class="btn btn-sm btn-success">Edit Item</a>
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteItemModal">Delete Item</button>
+          <a href="{% url 'items' %}">
+            <i class="bi bi-x-lg fs-4"></i>
+          </a>
+        </div>
+      </div>
+      <div class="px-5 pt-3">
+        {% if messages %}
+          {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+        {% endif %}
+        <div class="row g-4 mb-4 align-items-stretch">
+          <div class="col-md-3 d-flex flex-column">
+            <div class="w-100 d-flex flex-column justify-content-center align-items-center p-2 border rounded"
+                 style="height: 200px">
+              {% with first_image=item.images.first %}
+                {# Get the first image related to this item #}
+                {% if first_image %}
+                  <img src="{{ first_image.image.url }}"
+                       alt="{{ item.name }} Image"
+                       class="img-fluid h-100 w-100 object-fit-contain p-2">
+                {% else %}
+                  <i class="bi bi-image fs-1 text-muted"></i>
+                  <p class="text-muted mb-0">No Image</p>
+                {% endif %}
+              {% endwith %}
+            </div>
+          </div>
+          <div class="col-md-9 d-flex align-items-center">
+            <div class="row g-3 w-100">
+              <div class="col-md-6">
+                <p class="mb-1 text-muted small">Name</p>
+                <p class="lead">{{ item.name }}</p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-1 text-muted small">SKU</p>
+                <p class="lead">{{ item.sku }}</p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-1 text-muted small">Unit of Measure</p>
+                <p class="lead">
+                  {% if item.unit %}
+                    {{ item.unit.name }} ({{ item.unit.abbreviation }})
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </p>
+              </div>
+              <div class="col-md-6">
+                <p class="mb-1 text-muted small">Category</p>
+                <p class="lead">
+                  {% if item.category %}
+                    {{ item.category.name }}
+                  {% else %}
+                    N/A
+                  {% endif %}
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="my-4">
+          <hr>
+        </div>
+        <h5 class="mb-3">Pricing</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Selling Price</p>
+            <p class="lead">KES {{ item.selling_price|default:"0.00" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Purchase Price</p>
+            <p class="lead">KES {{ item.purchase_price|default:"0.00" }}</p>
+          </div>
+        </div>
+        <div class="my-4">
+          <hr>
+        </div>
+        <h5 class="mb-3">Inventory</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <p class="mb-1 text-muted small">Track Inventory</p>
+            <p class="lead">
+              {% if item.track_inventory %}
+                <span class="badge bg-success">Yes</span>
+              {% else %}
+                <span class="badge bg-danger">No</span>
+              {% endif %}
+            </p>
+          </div>
+          {% if item.track_inventory %}
+            <div class="col-md-4">
+              <p class="mb-1 text-muted small">Opening Stock</p>
+              <p class="lead">{{ item.opening_stock|default:"0" }}</p>
+            </div>
+            <div class="col-md-4">
+              <p class="mb-1 text-muted small">Current Stock</p>
+              <p class="lead">{{ item.current_stock|default:"0" }}</p>
+            </div>
+            <div class="col-md-4">
+              <p class="mb-1 text-muted small">Reorder Point</p>
+              <p class="lead">{{ item.reorder_point|default:"0" }}</p>
+            </div>
+          {% endif %}
+        </div>
+        <div class="my-4">
+          <hr>
+        </div>
+        <h5 class="mb-3">Transactions (Coming Soon)</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <p class="text-muted">Details of sales, purchases, and stock adjustments related to this item will appear here.</p>
+            {# Placeholder for a table or list of transactions #}
+            <div class="border p-3 text-center text-muted">
+              <i class="bi bi-clock-history fs-3"></i>
+              <p class="mb-0">Transaction history will be displayed here.</p>
+            </div>
+          </div>
+        </div>
+        <div class="my-4">
+          <hr>
+        </div>
+        <h5 class="mb-3">Statistics (Coming Soon)</h5>
+        <div class="row g-3 mb-4">
+          <div class="col-12">
+            <p class="text-muted">Key statistics like sales trends, profit margins, and stock turnover will be available here.</p>
+            {# Placeholder for charts or summary statistics #}
+            <div class="border p-3 text-center text-muted">
+              <i class="bi bi-bar-chart-line fs-3"></i>
+              <p class="mb-0">Performance metrics will be displayed here.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      {# REMOVED: The old sticky-bottom-btn-bar div is gone #}
+    </div>
+  </div>
+  <div class="modal fade"
+       id="deleteItemModal"
+       tabindex="-1"
+       aria-labelledby="deleteItemModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteItemModalLabel">Confirm Delete</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete "<strong>{{ item.name }}</strong>"? This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_item' item.pk %}"
+                method="post"
+                class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

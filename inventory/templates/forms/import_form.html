@@ -1,0 +1,63 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}Import Items - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Import Items from CSV</h4>
+        {# Removed next_url logic. Using items page as default back. #}
+        <a href="{% url 'items' %}">
+          <i class="bi bi-x-lg fs-4"></i>
+        </a>
+      </div>
+      <div class="px-5 pt-3">
+        <form method="post" enctype="multipart/form-data" id="importForm">
+          {% csrf_token %}
+          {% if messages %}
+            <div class="mb-3">
+              {% for message in messages %}
+                <div class="alert alert-{{ message.tags }} alert-dismissible fade show"
+                     role="alert">
+                  {{ message }}
+                  <button type="button"
+                          class="btn-close"
+                          data-bs-dismiss="alert"
+                          aria-label="Close"></button>
+                </div>
+              {% endfor %}
+            </div>
+          {% endif %}
+          <div class="mb-4">
+            <p class="text-muted">
+              To import items, please download our CSV template, fill in your item data, and then upload the completed file.
+            </p>
+            <a href="{% url 'download_item_csv_template' %}"
+               class="btn btn-success btn-sm">
+              <i class="bi bi-download me-1"></i> Download CSV Template
+            </a>
+          </div>
+          <div class="mb-4">
+            <label for="id_csv_file" class="form-label fs-5">Upload CSV File</label>
+            <input type="file"
+                   name="csv_file"
+                   id="id_csv_file"
+                   class="form-control"
+                   accept=".csv"
+                   required>
+            <div class="form-text">Only CSV files are supported.</div>
+          </div>
+        </form>
+      </div>
+      <div class="sticky-bottom-btn-bar border-top p-3">
+        <div class="d-flex gap-3">
+          <button type="submit" form="importForm" class="btn btn-success">
+            <i class="bi bi-upload me-1"></i> Import Items
+          </button>
+          {# Removed next_url logic. Using items page as default back. #}
+          <a href="{% url 'items' %}" class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

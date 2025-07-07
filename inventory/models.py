@@ -12,7 +12,10 @@ class UnitOfMeasure(models.Model):
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
-        return f"{self.name} ({self.abbreviation})"
+        if self.abbreviation:
+            return f"{self.name} ({self.abbreviation})"
+        else:
+            return self.name
 
 
 class Category(models.Model):
@@ -51,6 +54,16 @@ class Item(models.Model):
                 raise ValidationError(
                     "Reorder point must be set if tracking inventory is enabled"
                 )
+            if self.current_stock is None:
+                self.current_stock = 0
+        else:  # If not tracking inventory, ensure these are null/0
+            self.opening_stock = None
+            self.reorder_point = None
+            self.current_stock = 0
+
+    def save(self, *args, **kwargs):
+        self.full_clean()  # Call full_clean to run validation including clean() method
+        super().save(*args, **kwargs)
 
     def __str__(self):
         return self.name
@@ -110,14 +123,21 @@ class InventoryAdjustment(models.Model):
 
         if is_new:
             if self.adjustment_type == self.DECREASE:
-                if self.item.current_stock < self.quantity_adjusted:
+                if (
+                    self.item.current_stock is not None
+                    and self.item.current_stock < self.quantity_adjusted
+                ):
                     raise ValidationError(
                         f"Cannot decrease stock by {self.quantity_adjusted}."
                         f" Only {self.item.current_stock} in stock."
                     )
-                self.item.current_stock -= self.quantity_adjusted
+                self.item.current_stock = (
+                    self.item.current_stock or 0
+                ) - self.quantity_adjusted
             elif self.adjustment_type == self.INCREASE:
-                self.item.current_stock += self.quantity_adjusted
+                self.item.current_stock = (
+                    self.item.current_stock or 0
+                ) + self.quantity_adjusted
             self.item.save()
 
         super().save(*args, **kwargs)
