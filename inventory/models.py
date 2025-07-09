@@ -1,3 +1,4 @@
+from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.db import models
 from django.utils import timezone
@@ -8,7 +9,7 @@ from .utils import item_image_upload_path
 
 class UnitOfMeasure(models.Model):
     name = models.CharField(max_length=50)
-    abbreviation = models.CharField(max_length=10)
+    abbreviation = models.CharField(max_length=10, blank=True, null=True)
     description = models.TextField(blank=True, null=True)
 
     def __str__(self):
@@ -36,30 +37,12 @@ class Item(models.Model):
     selling_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
     purchase_price = models.DecimalField(max_digits=10, decimal_places=2, null=True)
 
-    track_inventory = models.BooleanField(default=True)
     opening_stock = models.IntegerField(blank=True, null=True)
     reorder_point = models.IntegerField(blank=True, null=True)
     current_stock = models.IntegerField(default=0)
 
     created_at = models.DateTimeField(auto_now_add=True, null=True)
     updated_at = models.DateTimeField(auto_now=True)
-
-    def clean(self):
-        if self.track_inventory:
-            if self.opening_stock is None:
-                raise ValidationError(
-                    "Opening stock must be set if tracking inventory is enabled"
-                )
-            if self.reorder_point is None:
-                raise ValidationError(
-                    "Reorder point must be set if tracking inventory is enabled"
-                )
-            if self.current_stock is None:
-                self.current_stock = 0
-        else:  # If not tracking inventory, ensure these are null/0
-            self.opening_stock = None
-            self.reorder_point = None
-            self.current_stock = 0
 
     def save(self, *args, **kwargs):
         self.full_clean()  # Call full_clean to run validation including clean() method
@@ -76,12 +59,11 @@ class ItemImage(models.Model):
     upload_date = models.DateTimeField(auto_now_add=True, null=True)
 
     def thumbnail(self):
-        if self.image:
+        try:
             return format_html(
-                '<img src="{}" style="max-height: 100px;" />',
-                self.image.url,
+                '<img src="{}" style="max-height: 100px;" />', self.image.url
             )
-        else:
+        except Exception:
             return "No image"
 
     def __str__(self):
@@ -102,6 +84,7 @@ class InventoryAdjustment(models.Model):
     cost_price = models.DecimalField(
         max_digits=10, decimal_places=2, null=True, blank=True
     )
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     REASON_CHOICES = (
         ("PURCHASE", "Purchase"),

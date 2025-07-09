@@ -31,6 +31,12 @@
           <a href="{% url 'add_item' %}" class="btn btn-success">
             <i class="bi bi-plus-lg"></i> Add Item
           </a>
+          <button type="button"
+                  class="btn btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmDeleteAllModal">
+            <i class="bi bi-trash"></i> Delete All
+          </button>
         </div>
       </div>
       <div class="card shadow-sm">
@@ -46,7 +52,6 @@
                   <th>Unit</th>
                   <th>Purchase Price</th>
                   <th>Selling Price</th>
-                  <th>Track Inv.</th>
                   <th>Opening Stock</th>
                   <th>Current Stock</th>
                   <th>Added</th>
@@ -63,16 +68,8 @@
                     <td>{{ item.unit.name }}</td>
                     <td>KES {{ item.purchase_price|floatformat:2|intcomma }}</td>
                     <td>KES {{ item.selling_price|floatformat:2|intcomma }}</td>
-                    <td class="text-center">
-                      {% if item.track_inventory %}
-                        <i class="bi bi-check-circle-fill text-success"
-                           title="Inventory Tracked"></i>
-                      {% else %}
-                        <i class="bi bi-x-circle-fill text-danger" title="Inventory Not Tracked"></i>
-                      {% endif %}
-                    </td>
                     <td>{{ item.opening_stock }}</td>
-                    <td class="{% if item.track_inventory and item.current_stock <= item.reorder_point %}text-danger fw-bold{% endif %}">
+                    <td class="{% if item.current_stock <= item.reorder_point %}text-danger fw-bold{% endif %}">
                       {{ item.current_stock }}
                     </td>
                     <td class="d-none d-md-table-cell">{{ item.created_at|date:"Y-m-d H:i" }}</td>
@@ -85,6 +82,26 @@
       </div>
     {% endif %}
   </div>
+  {% include 'partials/delete-all-modal.html' %}
   <script src="{% static 'js/items.js' %}"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Get the button inside the modal that confirms deletion
+        const confirmDeleteAllBtn = document.getElementById('confirmDeleteAllBtn');
+        // Get the form that will actually perform the deletion
+        const deleteAllItemsForm = document.getElementById('deleteAllItemsForm');
+
+        if (confirmDeleteAllBtn && deleteAllItemsForm) {
+            confirmDeleteAllBtn.addEventListener('click', function(event) {
+                // Prevent the button's default submit action (which is already type="submit" in the form)
+                // and instead, explicitly submit the form. This is a bit redundant if the button is type="submit"
+                // within the form, but ensures the form is submitted correctly.
+                // If the button was outside the form, this would be crucial.
+                // Since it's inside, a simple type="submit" is enough, but this is harmless.
+                deleteAllItemsForm.submit();
+            });
+        }
+    });
+  </script>
   <script src="{% static 'js/datatables/items-table.js' %}"></script>
 {% endblock %}

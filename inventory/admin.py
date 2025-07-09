@@ -32,13 +32,12 @@ class ItemAdmin(admin.ModelAdmin):
         "category",
         "selling_price",
         "purchase_price",
-        "track_inventory",
         "opening_stock",
         "reorder_point",
         "current_stock",
         "created_at",
     )
-    list_filter = ("unit", "category", "track_inventory")
+    list_filter = ("unit", "category")
     search_fields = ("name", "sku")
     readonly_fields = ("created_at", "updated_at")
     inlines = (ItemImageInline,)

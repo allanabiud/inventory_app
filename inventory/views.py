@@ -1,5 +1,5 @@
 import csv
-from decimal import Decimal
+from decimal import Decimal, InvalidOperation
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from .models import Category, Item, ItemImage, UnitOfMeasure
+from .utils import generate_item_csv_template, process_item_csv_upload
 
 
 @login_required
@@ -36,37 +37,39 @@ def add_item(request):
     if request.method == "POST":
         # 1. Retrieve Data from POST & FILES
         name = request.POST.get("name", "").strip()
-        sku_prefix = request.POST.get("sku_prefix", "").strip()
-        sku_number = request.POST.get("sku_number", "").strip()
-        sku = request.POST.get("sku", "").strip()  # Combined SKU from JS
+        # SKU is received as a single combined string from the hidden field
+        sku = request.POST.get("sku", "").strip()
 
         unit_id = request.POST.get("unit")
         category_id = request.POST.get("category")
         selling_price_str = request.POST.get("selling_price")
         purchase_price_str = request.POST.get("purchase_price")
 
-        track_inventory = request.POST.get("track_inventory") == "on"
         opening_stock_str = request.POST.get("opening_stock")
         current_stock_str = request.POST.get("current_stock")
         reorder_point_str = request.POST.get("reorder_point")
 
         image_file = request.FILES.get("image")
 
-        # Store submitted data to re-populate the form in case of errors
+        split_sku = sku.split("-", 1)  # Split only on the first '-'
+        sku_prefix_for_form = split_sku[0] if split_sku else ""
+        sku_number_for_form = split_sku[1] if len(split_sku) > 1 else ""
+
         form_data = {
             "name": name,
-            "sku_prefix": sku_prefix,
-            "sku_number": sku_number,
-            "sku": sku,
+            "sku_prefix": sku_prefix_for_form,  # For re-populating the form's prefix field
+            "sku_number": sku_number_for_form,  # For re-populating the form's number field
+            "sku": sku,  # The actual combined SKU
             "unit": unit_id,
             "category": category_id,
             "selling_price": selling_price_str,
             "purchase_price": purchase_price_str,
-            "track_inventory": track_inventory,
             "opening_stock": opening_stock_str,
             "current_stock": current_stock_str,
             "reorder_point": reorder_point_str,
-            "image_exists": bool(image_file),
+            "image_exists": bool(
+                image_file
+            ),  # For previewing the uploaded image on error
         }
 
         # 2. Validation
@@ -81,84 +84,159 @@ def add_item(request):
         if not name:
             errors["name"] = ["Name is required."]
         if not sku:
-            errors["sku"] = ["SKU (Prefix and/or Number) is required."]
-        if not unit_id:
-            errors["unit"] = ["Unit of Measure is required."]
+            errors["sku"] = ["SKU is required."]  # Validation for the combined SKU
 
         if "sku" not in errors and sku and Item.objects.filter(sku=sku).exists():
             errors["sku"] = ["An item with this SKU already exists."]
 
-        if unit_id:
+        if not unit_id:
+            errors["unit"] = ["Unit of Measure is required."]
+        else:
             try:
                 validated_unit = UnitOfMeasure.objects.get(pk=unit_id)
             except UnitOfMeasure.DoesNotExist:
                 errors["unit"] = ["Invalid Unit of Measure selected."]
 
-        if category_id:
+        if category_id:  # Category is nullable
             try:
                 validated_category = Category.objects.get(pk=category_id)
             except Category.DoesNotExist:
                 errors["category"] = ["Invalid Category selected."]
 
+        # Validate and convert pricing fields
         try:
             if selling_price_str:
                 validated_selling_price = Decimal(selling_price_str)
-        except (ValueError, Decimal.InvalidOperation):
-            errors["selling_price"] = ["Please enter a valid selling price."]
+                if validated_selling_price < 0:
+                    errors.setdefault("selling_price", []).append(
+                        "Selling price cannot be negative."
+                    )
+            else:
+                validated_selling_price = None  # Set to None if blank
+        except (ValueError, InvalidOperation):
+            errors.setdefault("selling_price", []).append(
+                "Please enter a valid selling price."
+            )
 
         try:
             if purchase_price_str:
                 validated_purchase_price = Decimal(purchase_price_str)
-        except (ValueError, Decimal.InvalidOperation):
-            errors["purchase_price"] = ["Please enter a valid purchase price."]
-
-        if track_inventory:
-            try:
-                if not opening_stock_str:
-                    errors["opening_stock"] = [
-                        "Opening Stock is required when tracking inventory."
-                    ]
-                else:
-                    validated_opening_stock = int(opening_stock_str)
-            except ValueError:
-                errors["opening_stock"] = [
-                    "Please enter a valid number for Opening Stock."
-                ]
-
-            if current_stock_str:
-                try:
-                    validated_current_stock = int(current_stock_str)
-                except ValueError:
-                    errors["current_stock"] = [
-                        "Please enter a valid number for Current Stock."
-                    ]
-            elif validated_opening_stock is not None:
-                validated_current_stock = validated_opening_stock
+                if validated_purchase_price < 0:
+                    errors.setdefault("purchase_price", []).append(
+                        "Purchase price cannot be negative."
+                    )
             else:
-                validated_current_stock = 0
+                validated_purchase_price = None  # Set to None if blank
+        except (ValueError, InvalidOperation):
+            errors.setdefault("purchase_price", []).append(
+                "Please enter a valid purchase price."
+            )
 
-            try:
-                if not reorder_point_str:
-                    errors["reorder_point"] = [
-                        "Reorder Point is required when tracking inventory."
-                    ]
-                else:
-                    validated_reorder_point = int(reorder_point_str)
-            except ValueError:
-                errors["reorder_point"] = [
-                    "Please enter a valid number for Reorder Point."
-                ]
-        else:
-            validated_opening_stock = None
-            validated_current_stock = 0
-            validated_reorder_point = None
+        # Validate and convert inventory fields (now independent, no 'track_inventory' dependency)
+        try:
+            if opening_stock_str:  # opening_stock is nullable
+                validated_opening_stock = int(opening_stock_str)
+                if validated_opening_stock < 0:
+                    errors.setdefault("opening_stock", []).append(
+                        "Opening stock cannot be negative."
+                    )
+            else:
+                validated_opening_stock = None
+        except ValueError:
+            errors.setdefault("opening_stock", []).append(
+                "Please enter a valid number for Opening Stock."
+            )
+
+        try:
+            if (
+                current_stock_str
+            ):  # current_stock has default=0 but can be explicitly set
+                validated_current_stock = int(current_stock_str)
+                if validated_current_stock < 0:
+                    errors.setdefault("current_stock", []).append(
+                        "Current stock cannot be negative."
+                    )
+            else:
+                validated_current_stock = 0  # Default if not provided
+        except ValueError:
+            errors.setdefault("current_stock", []).append(
+                "Please enter a valid number for Current Stock."
+            )
+
+        try:
+            if reorder_point_str:  # reorder_point is nullable
+                validated_reorder_point = int(reorder_point_str)
+                if validated_reorder_point < 0:
+                    errors.setdefault("reorder_point", []).append(
+                        "Reorder point cannot be negative."
+                    )
+            else:
+                validated_reorder_point = None
+        except ValueError:
+            errors.setdefault("reorder_point", []).append(
+                "Please enter a valid number for Reorder Point."
+            )
 
         if errors:
+            # Add general messages for errors for user feedback
             for field, error_list in errors.items():
                 for error_msg in error_list:
-                    messages.error(
-                        request, f"{field.replace('_', ' ').title()}: {error_msg}"
-                    )
+                    # Avoid showing 'sku_prefix', 'sku_number' specific errors if the combined 'sku' error is sufficient
+                    if field not in [
+                        "sku_prefix",
+                        "sku_number",
+                    ]:  # Only show general messages for actual model fields
+                        messages.error(
+                            request, f"{field.replace('_', ' ').title()}: {error_msg}"
+                        )
+            messages.error(request, "Please correct the errors below.")
+
+            units = UnitOfMeasure.objects.all()
+            categories = Category.objects.all()
+            context = {
+                "units": units,
+                "categories": categories,
+                "form_data": form_data,
+                "errors": errors,  # Pass detailed errors for field-specific invalid-feedback
+            }
+            return render(request, "forms/add_item.html", context)
+
+        # 3. Create and Save Item if no errors
+        try:
+            with transaction.atomic():  # Use transaction for atomicity
+                item = Item(
+                    name=name,
+                    sku=sku,  # Use the combined SKU
+                    unit=validated_unit,
+                    category=validated_category,
+                    selling_price=validated_selling_price,
+                    purchase_price=validated_purchase_price,
+                    # Removed track_inventory=track_inventory
+                    opening_stock=validated_opening_stock,
+                    current_stock=validated_current_stock,
+                    reorder_point=validated_reorder_point,
+                )
+                item.full_clean()  # Perform model-level validation (e.g., unique SKU check)
+                item.save()
+
+                if image_file:
+                    ItemImage.objects.create(item=item, image=image_file)
+
+                messages.success(request, f'Item "{item.name}" added successfully!')
+                return redirect(
+                    "items"
+                )  # Adjust to your actual success URL, e.g., 'item_list'
+
+        except IntegrityError:
+            # This catches database-level errors, e.g., unique constraint violation for SKU
+            errors["sku"] = [
+                "An item with this SKU already exists (database conflict)."
+            ]
+            messages.error(
+                request,
+                "A database error occurred, possibly a duplicate SKU. Please try again.",
+            )
+
             units = UnitOfMeasure.objects.all()
             categories = Category.objects.all()
             context = {
@@ -169,53 +247,18 @@ def add_item(request):
             }
             return render(request, "forms/add_item.html", context)
 
-        # 3. Create and Save Item if no errors
-        try:
-            item = Item(
-                name=name,
-                sku=sku,
-                unit=validated_unit,
-                category=validated_category,
-                selling_price=validated_selling_price,
-                purchase_price=validated_purchase_price,
-                track_inventory=track_inventory,
-                opening_stock=validated_opening_stock,
-                current_stock=validated_current_stock,
-                reorder_point=validated_reorder_point,
-            )
-            item.full_clean()  # Perform model-level validation
-            item.save()
-
-            if image_file:
-                ItemImage.objects.create(item=item, image=image_file)
-
-            messages.success(request, f'Item "{item.name}" added successfully!')
-            return redirect("items")
-
-        except IntegrityError:
-            messages.error(
-                request,
-                "A database error occurred, possibly a duplicate SKU. Please try again.",
-            )
-            units = UnitOfMeasure.objects.all()
-            categories = Category.objects.all()
-            context = {
-                "units": units,
-                "categories": categories,
-                "form_data": form_data,
-                "errors": {
-                    "sku": ["A database error occurred, possibly a duplicate SKU."]
-                },
-            }
-            return render(request, "forms/add_item.html", context)
-
         except ValidationError as e:
+            # This catches model's clean() method errors (though our clean is empty now)
+            # and potentially default Django form validation if using ModelForms
             for field, field_errors in e.message_dict.items():
+                errors[field] = (
+                    errors.get(field, []) + field_errors
+                )  # Append to existing errors
                 for error_msg in field_errors:
                     messages.error(
                         request, f"{field.replace('_', ' ').title()}: {error_msg}"
                     )
-                    errors[field] = errors.get(field, []) + [error_msg]
+            messages.error(request, "Please correct the errors below.")
 
             units = UnitOfMeasure.objects.all()
             categories = Category.objects.all()
@@ -228,7 +271,12 @@ def add_item(request):
             return render(request, "forms/add_item.html", context)
 
         except Exception as e:
+            # Catch any other unexpected errors
             messages.error(request, f"An unexpected error occurred: {e}")
+            import traceback
+
+            traceback.print_exc()  # For debugging: print full traceback to console/logs
+
             units = UnitOfMeasure.objects.all()
             categories = Category.objects.all()
             context = {
@@ -239,21 +287,21 @@ def add_item(request):
             }
             return render(request, "forms/add_item.html", context)
 
-    else:  # GET request
+    else:  # GET request: Render empty form or with default values
         form_data = {
             "name": "",
-            "sku_prefix": "SKU",
+            "sku_prefix": "SKU",  # Default prefix
             "sku_number": "",
-            "sku": "",
+            "sku": "",  # This will be set by JS
             "unit": "",
             "category": "",
             "selling_price": "",
             "purchase_price": "",
-            "track_inventory": False,
+            # Removed "track_inventory": False
             "opening_stock": "",
             "current_stock": "",
             "reorder_point": "",
-            "image_exists": False,
+            "image_exists": False,  # No image on initial load
         }
 
     units = UnitOfMeasure.objects.all()
@@ -263,319 +311,19 @@ def add_item(request):
         "units": units,
         "categories": categories,
         "form_data": form_data,
-        "errors": errors,
+        "errors": errors,  # Will be empty on GET request
     }
     return render(request, "forms/add_item.html", context)
 
 
 @login_required
-def import_items_view(request):
-    """
-    Handles the import of items from a CSV file.
-    Allows users to upload a CSV with item data, which will either create new
-    items or update existing ones based on SKU.
-    Requires user to be logged in.
-    """
-    if request.method == "POST":
-        if "csv_file" in request.FILES:
-            csv_file = request.FILES["csv_file"]
-            if not csv_file.name.endswith(".csv"):
-                messages.error(
-                    request, "This is not a CSV file. Please upload a .csv file."
-                )
-                return render(request, "forms/import_form.html", {})
-
-            try:
-                decoded_file = csv_file.read().decode("utf-8").splitlines()
-                reader = csv.DictReader(decoded_file)
-
-                items_created_count = 0
-                items_updated_count = 0
-                errors = []
-
-                # --- Expected CSV headers ---
-                # name,sku_prefix,sku_number,unit,category,selling_price,purchase_price,track_inventory,opening_stock,current_stock,reorder_point
-
-                for i, row in enumerate(reader):
-                    row_num = i + 2  # +1 for 0-index, +1 for header row
-                    try:
-                        name = row.get("name")
-                        sku_prefix = row.get("sku_prefix", "").strip()  # Get prefix
-                        sku_number = row.get("sku_number", "").strip()  # Get number
-
-                        # --- NEW LOGIC: Combine SKU prefix and number ---
-                        if sku_prefix and sku_number:
-                            sku = f"{sku_prefix}-{sku_number}"
-                        elif sku_prefix:
-                            sku = sku_prefix
-                        elif sku_number:
-                            sku = sku_number
-                        else:
-                            sku = None  # Or raise an error if SKU is strictly required
-                        # --- END NEW LOGIC ---
-
-                        unit_name = row.get(
-                            "unit"
-                        )  # Changed from "unit_name" to "unit" to match CSV
-                        category_name = row.get(
-                            "category"
-                        )  # Changed from "category_name" to "category" to match CSV
-                        selling_price_str = row.get("selling_price")
-                        purchase_price_str = row.get("purchase_price")
-                        track_inventory_str = row.get(
-                            "track_inventory", "FALSE"
-                        ).upper()
-                        opening_stock_str = row.get("opening_stock")
-                        current_stock_str = row.get("current_stock")
-                        reorder_point_str = row.get("reorder_point")
-
-                        if not name or not sku or not unit_name:  # Check combined SKU
-                            errors.append(
-                                f"Row {row_num}: Missing required fields (Name, SKU, Unit). Skipping."
-                            )
-                            continue
-
-                        # Ensure UnitOfMeasure exists or create it
-                        unit, created_unit = UnitOfMeasure.objects.get_or_create(
-                            name=unit_name
-                        )
-                        if created_unit:
-                            messages.info(
-                                request, f"Created new Unit of Measure: {unit_name}"
-                            )
-
-                        # Ensure Category exists or create it (if provided)
-                        category = None
-                        if category_name:
-                            category, created_cat = Category.objects.get_or_create(
-                                name=category_name
-                            )
-                            if created_cat:
-                                messages.info(
-                                    request, f"Created new Category: {category_name}"
-                                )
-
-                        # Convert prices to Decimal
-                        selling_price = (
-                            Decimal(selling_price_str) if selling_price_str else None
-                        )
-                        purchase_price = (
-                            Decimal(purchase_price_str) if purchase_price_str else None
-                        )
-
-                        # Convert track_inventory to boolean
-                        track_inventory = track_inventory_str == "TRUE"
-
-                        opening_stock = 0
-                        current_stock = 0
-                        reorder_point = None
-
-                        if track_inventory:
-                            try:
-                                opening_stock = (
-                                    int(opening_stock_str) if opening_stock_str else 0
-                                )
-                            except ValueError:
-                                errors.append(
-                                    f"Row {row_num}: Invalid Opening Stock value '{opening_stock_str}'. Defaulting to 0."
-                                )
-                                opening_stock = 0
-
-                            try:
-                                current_stock = (
-                                    int(current_stock_str)
-                                    if current_stock_str
-                                    else opening_stock  # Default to opening_stock if current_stock is empty
-                                )
-                            except ValueError:
-                                errors.append(
-                                    f"Row {row_num}: Invalid Current Stock value '{current_stock_str}'. Defaulting to Opening Stock ({opening_stock})."
-                                )
-                                current_stock = opening_stock
-
-                            try:
-                                reorder_point = (
-                                    int(reorder_point_str)
-                                    if reorder_point_str
-                                    else None
-                                )
-                            except ValueError:
-                                errors.append(
-                                    f"Row {row_num}: Invalid Reorder Point value '{reorder_point_str}'. Setting to None."
-                                )
-                                reorder_point = None
-                        else:
-                            # If not tracking inventory, these fields should be None or 0 depending on your model definition
-                            opening_stock = None  # Or 0, match your Item model's field defaults/nullability
-                            current_stock = 0
-                            reorder_point = None
-
-                        # Try to get existing item by combined SKU, or create a new one
-                        item, created = Item.objects.get_or_create(
-                            sku=sku,
-                            defaults={
-                                "name": name,
-                                "unit": unit,
-                                "category": category,
-                                "selling_price": selling_price,
-                                "purchase_price": purchase_price,
-                                "track_inventory": track_inventory,
-                                "opening_stock": opening_stock,
-                                "current_stock": current_stock,
-                                "reorder_point": reorder_point,
-                            },
-                        )
-
-                        if not created:
-                            # Update existing item
-                            item.name = name
-                            item.unit = unit
-                            item.category = category
-                            item.selling_price = selling_price
-                            item.purchase_price = purchase_price
-                            item.track_inventory = track_inventory
-
-                            if track_inventory:
-                                item.opening_stock = opening_stock
-                                item.current_stock = current_stock
-                                item.reorder_point = reorder_point
-                            else:
-                                item.opening_stock = None  # Or 0
-                                item.current_stock = 0
-                                item.reorder_point = None
-                            item.save()
-                            items_updated_count += 1
-                        else:
-                            items_created_count += 1
-
-                    except (
-                        ValueError,
-                        TypeError,
-                        # UnitOfMeasure.DoesNotExist, # .get_or_create handles this
-                        # Category.DoesNotExist,      # .get_or_create handles this
-                    ) as e:
-                        errors.append(
-                            f"Row {row_num}: Data conversion error - {e}. Skipping row."
-                        )
-                    except Exception as e:
-                        errors.append(
-                            f"Row {row_num}: An unexpected error occurred - {e}. Skipping row."
-                        )
-
-                if items_created_count > 0 or items_updated_count > 0:
-                    messages.success(
-                        request,
-                        f"Import complete! Created {items_created_count} items, updated {items_updated_count} items.",
-                    )
-                if errors:
-                    for error_msg in errors:
-                        messages.warning(request, error_msg)
-                    if not (items_created_count > 0 or items_updated_count > 0):
-                        messages.error(
-                            request,
-                            "No items were imported due to errors. Please check the CSV file.",
-                        )
-
-                return redirect(
-                    "items"
-                )  # Assuming 'items' is the URL name for your item list view
-
-            except Exception as e:
-                messages.error(
-                    request,
-                    f"Error reading CSV file: {e}. Please ensure it is a valid CSV and the headers match.",
-                )
-                return render(request, "forms/import_form.html", {})
-        else:
-            messages.error(request, "No CSV file uploaded. Please select a file.")
-            return render(request, "forms/import_form.html", {})
-
-    return render(request, "forms/import_form.html", {})
-
-
-def download_item_csv_template_view(request):
-    """
-    Generates and downloads a CSV template for item import.
-    """
-    headers = [
-        "name",
-        "sku_prefix",
-        "sku_number",
-        "unit_name",
-        "category_name",
-        "selling_price",
-        "purchase_price",
-        "track_inventory",
-        "opening_stock",
-        "current_stock",
-        "reorder_point",
-    ]
-
-    example_data = [
-        [
-            "Example Item 1",
-            "SKU",
-            "001",
-            "Pieces",
-            "Electronics",
-            "150.00",
-            "100.00",
-            "TRUE",
-            "50",
-            "60",
-            "10",
-        ],
-        [
-            "Example Item 2",
-            "SKU",
-            "002",
-            "Kilograms",
-            "Groceries",
-            "5.50",
-            "3.00",
-            "TRUE",
-            "200",
-            "120",
-            "20",
-        ],
-    ]
-
-    response = HttpResponse(content_type="text/csv")
-    response["Content-Disposition"] = 'attachment; filename="item_import_template.csv"'
-
-    writer = csv.writer(response)
-    writer.writerow(headers)
-    for row in example_data:
-        writer.writerow(row)
-
-    return response
-
-
-def view_item(request, pk):
-    item = get_object_or_404(Item, pk=pk)
-    context = {
-        "item": item,
-        # Add any other context data if needed, e.g., form_data for an edit form
-    }
-    return render(request, "view_item.html", context)
-
-
 def edit_item(request, pk):
     item = get_object_or_404(Item, pk=pk)
-
-    # Get the current main image instance, if any
     current_item_image = item.images.first()
-
-    # Initialize errors dictionary (will be populated on POST if validation fails)
     errors = {}
-
-    # This dictionary will hold the data to pre-fill the form fields.
-    # On GET, it's populated from the existing item.
-    # On POST (with errors), it's populated from request.POST.
     form_data = {}
 
     if request.method == "POST":
-        # --- 1. Extract Data from request.POST and request.FILES ---
         name = request.POST.get("name", "").strip()
         sku_prefix = request.POST.get("sku_prefix", "").strip()
         sku_number = request.POST.get("sku_number", "").strip()
@@ -585,55 +333,35 @@ def edit_item(request, pk):
         selling_price_str = request.POST.get("selling_price", "").strip()
         purchase_price_str = request.POST.get("purchase_price", "").strip()
 
-        track_inventory = request.POST.get("track_inventory") == "on"  # Checkbox value
-
         opening_stock_str = request.POST.get("opening_stock", "").strip()
         current_stock_str = request.POST.get("current_stock", "").strip()
         reorder_point_str = request.POST.get("reorder_point", "").strip()
 
-        # Image file and clear flag
         new_image_file = request.FILES.get("image")
         clear_image_requested = request.POST.get("clear_image") == "true"
 
-        # Populate form_data with submitted values (for re-rendering if errors)
         form_data = request.POST.copy()
-        form_data["track_inventory"] = (
-            track_inventory  # Ensure checkbox state is correct
-        )
 
-        # --- 2. Perform Manual Validation ---
+        # --- Validation ---
 
-        # Name
         if not name:
             errors.setdefault("name", []).append("Item name is required.")
 
-        # SKU
-        # Combine SKU prefix and number to form the full SKU
+        # SKU logic
         combined_sku = ""
         if sku_prefix and sku_number:
             combined_sku = f"{sku_prefix}-{sku_number}"
-        elif sku_prefix:  # If only prefix is provided, use it as full SKU
+        elif sku_prefix:
             combined_sku = sku_prefix
         elif sku_number:
-            errors.setdefault("sku_prefix", []).append(
-                "SKU Prefix is required if only SKU Number is provided."
-            )
-            errors.setdefault("sku_number", []).append(
-                "SKU Prefix is required if only SKU Number is provided."
-            )
-        else:  # Both missing
-            errors.setdefault("sku_prefix", []).append(
-                "SKU Prefix or SKU Number is required."
-            )
-            errors.setdefault("sku_number", []).append(
-                "SKU Prefix or SKU Number is required."
-            )
+            errors.setdefault("sku_prefix", []).append("SKU Prefix is required.")
+            errors.setdefault("sku_number", []).append("SKU Prefix is required.")
+        else:
+            errors.setdefault("sku_prefix", []).append("SKU is required.")
+            errors.setdefault("sku_number", []).append("SKU is required.")
 
-        # Validate unique SKU
         if combined_sku:
-            existing_items = Item.objects.filter(sku=combined_sku)
-            # Exclude the current item being edited
-            existing_items = existing_items.exclude(pk=item.pk)
+            existing_items = Item.objects.filter(sku=combined_sku).exclude(pk=item.pk)
             if existing_items.exists():
                 errors.setdefault("sku", []).append(
                     "An item with this SKU already exists."
@@ -647,11 +375,9 @@ def edit_item(request, pk):
             try:
                 selected_unit = UnitOfMeasure.objects.get(pk=unit_id)
             except UnitOfMeasure.DoesNotExist:
-                errors.setdefault("unit", []).append(
-                    "Invalid Unit of Measure selected."
-                )
+                errors.setdefault("unit", []).append("Invalid Unit selected.")
 
-        # Category (optional)
+        # Category
         selected_category = None
         if category_id:
             try:
@@ -659,7 +385,7 @@ def edit_item(request, pk):
             except Category.DoesNotExist:
                 errors.setdefault("category", []).append("Invalid Category selected.")
 
-        # Selling Price
+        # Prices
         selling_price = None
         if selling_price_str:
             try:
@@ -669,12 +395,10 @@ def edit_item(request, pk):
                         "Selling Price cannot be negative."
                     )
             except InvalidOperation:
-                errors.setdefault("selling_price", []).append("Invalid selling price.")
+                errors.setdefault("selling_price", []).append("Invalid Selling Price.")
         else:
-            # If not explicitly required, but it's often a good idea to have it
             errors.setdefault("selling_price", []).append("Selling Price is required.")
 
-        # Purchase Price
         purchase_price = None
         if purchase_price_str:
             try:
@@ -685,159 +409,117 @@ def edit_item(request, pk):
                     )
             except InvalidOperation:
                 errors.setdefault("purchase_price", []).append(
-                    "Invalid purchase price."
+                    "Invalid Purchase Price."
                 )
         else:
             errors.setdefault("purchase_price", []).append(
                 "Purchase Price is required."
             )
 
-        # Inventory fields (conditional on track_inventory)
+        # Inventory fields
         opening_stock = None
         current_stock = None
         reorder_point = None
 
-        if track_inventory:
-            # Validate opening_stock
-            if not opening_stock_str:
-                errors.setdefault("opening_stock", []).append(
-                    "Opening Stock is required when tracking inventory."
-                )
-            else:
-                try:
-                    opening_stock = int(opening_stock_str)
-                    if opening_stock < 0:
-                        errors.setdefault("opening_stock", []).append(
-                            "Opening Stock cannot be negative."
-                        )
-                except ValueError:
+        # Opening Stock
+        if opening_stock_str:
+            try:
+                opening_stock = int(opening_stock_str)
+                if opening_stock < 0:
                     errors.setdefault("opening_stock", []).append(
-                        "Opening Stock must be a whole number."
+                        "Opening Stock cannot be negative."
                     )
-
-            # Validate current_stock (often derived or updated separately, but if user can set it directly)
-            if not current_stock_str:
-                errors.setdefault("current_stock", []).append(
-                    "Current Stock is required when tracking inventory."
+            except ValueError:
+                errors.setdefault("opening_stock", []).append(
+                    "Opening Stock must be a whole number."
                 )
-            else:
-                try:
-                    current_stock = int(current_stock_str)
-                    if current_stock < 0:
-                        errors.setdefault("current_stock", []).append(
-                            "Current Stock cannot be negative."
-                        )
-                except ValueError:
+
+        # Current Stock
+        if current_stock_str:
+            try:
+                current_stock = int(current_stock_str)
+                if current_stock < 0:
                     errors.setdefault("current_stock", []).append(
-                        "Current Stock must be a whole number."
+                        "Current Stock cannot be negative."
                     )
-
-            # Validate reorder_point
-            if not reorder_point_str:
-                errors.setdefault("reorder_point", []).append(
-                    "Reorder Point is required when tracking inventory."
+            except ValueError:
+                errors.setdefault("current_stock", []).append(
+                    "Current Stock must be a whole number."
                 )
-            else:
-                try:
-                    reorder_point = int(reorder_point_str)
-                    if reorder_point < 0:
-                        errors.setdefault("reorder_point", []).append(
-                            "Reorder Point cannot be negative."
-                        )
-                except ValueError:
-                    errors.setdefault("reorder_point", []).append(
-                        "Reorder Point must be a whole number."
-                    )
-        else:
-            # If not tracking, ensure values are None in the model
-            opening_stock = None
-            current_stock = None
-            reorder_point = None
 
-        # --- 3. Process if no validation errors ---
+        # Reorder Point
+        if reorder_point_str:
+            try:
+                reorder_point = int(reorder_point_str)
+                if reorder_point < 0:
+                    errors.setdefault("reorder_point", []).append(
+                        "Reorder Point cannot be negative."
+                    )
+            except ValueError:
+                errors.setdefault("reorder_point", []).append(
+                    "Reorder Point must be a whole number."
+                )
+
+        # --- Save if No Errors ---
         if not errors:
             try:
                 with transaction.atomic():
-                    # Update Item instance fields
                     item.name = name
-                    item.sku = combined_sku  # Use the validated, combined SKU
+                    item.sku = combined_sku
                     item.unit = selected_unit
                     item.category = selected_category
                     item.selling_price = selling_price
                     item.purchase_price = purchase_price
-                    item.track_inventory = track_inventory
                     item.opening_stock = opening_stock
                     item.current_stock = current_stock
                     item.reorder_point = reorder_point
-                    item.save()  # Save the main item
+                    item.save()
 
-                    # --- Image Handling Logic ---
-                    # 1. Handle clearing the existing image
-                    if clear_image_requested:
-                        if current_item_image:
-                            # Delete the actual image file from storage
-                            current_item_image.image.delete(save=False)
-                            # Delete the ItemImage model instance from the database
-                            current_item_image.delete()
-                        current_item_image = None  # Reset for clarity
+                    # Clear image if requested
+                    if clear_image_requested and current_item_image:
+                        current_item_image.image.delete(save=False)
+                        current_item_image.delete()
+                        current_item_image = None
 
-                    # 2. Handle new image upload
+                    # Upload new image
                     if new_image_file:
-                        # If there was an old image *and it wasn't just cleared*, delete it
-                        # (This `if` block implicitly handles if `current_item_image` became None from clearing)
                         if current_item_image:
                             current_item_image.image.delete(save=False)
                             current_item_image.delete()
-
-                        # Create a new ItemImage instance for the uploaded file, linked to the item
                         ItemImage.objects.create(item=item, image=new_image_file)
 
                 messages.success(request, f'Item "{item.name}" updated successfully!')
                 return redirect("view_item", pk=item.pk)
 
             except Exception as e:
-                # Catch any unexpected errors during save/image handling
                 messages.error(request, f"An unexpected error occurred: {e}")
-                # Log the error for debugging: print(f"Error saving item: {e}")
-                # You might want to add a general error to the form_data or errors dict
                 errors.setdefault("general", []).append(
                     f"Server error: {e}. Please try again."
                 )
 
-        # If there are errors (or an exception occurred), re-render the form with data and errors
-        # Determine the current_image_url for re-rendering with errors
-        # If a clear was requested, or a new file was uploaded, the preview might change
-        # For an error state, it's generally safest to show the *original* image
-        # unless a new one was successfully uploaded (which wouldn't happen if form.is_valid() failed).
-        current_image_url_for_template = (
+        current_image_url = (
             current_item_image.image.url
             if current_item_image and current_item_image.image
             else None
         )
-        image_exists_for_template = bool(
-            current_item_image and current_item_image.image
-        )
-
-        # If clear was requested in this POST, even if other errors, reflect that in template
+        image_exists = bool(current_item_image and current_item_image.image)
         if clear_image_requested:
-            current_image_url_for_template = None
-            image_exists_for_template = False
+            current_image_url = None
+            image_exists = False
 
         context = {
             "item": item,
-            "form_data": form_data,  # Contains request.POST values for re-population
-            "errors": errors,  # Contains validation errors
+            "form_data": form_data,
+            "errors": errors,
             "units": UnitOfMeasure.objects.all(),
             "categories": Category.objects.all(),
-            "current_image_url": current_image_url_for_template,
-            "image_exists": image_exists_for_template,
+            "current_image_url": current_image_url,
+            "image_exists": image_exists,
         }
 
-    else:  # GET request (initial load of the page)
-        # Populate form_data from the existing item instance
+    else:  # GET
         form_data = {
             "name": item.name,
-            # Handle SKU split for display
             "sku_prefix": item.sku.split("-", 1)[0] if item.sku else "",
             "sku_number": (
                 item.sku.split("-", 1)[1] if item.sku and "-" in item.sku else ""
@@ -846,33 +528,37 @@ def edit_item(request, pk):
             "category": item.category.pk if item.category else "",
             "selling_price": item.selling_price,
             "purchase_price": item.purchase_price,
-            "track_inventory": item.track_inventory,
             "opening_stock": item.opening_stock,
             "current_stock": item.current_stock,
             "reorder_point": item.reorder_point,
         }
-
-        # Determine current image URL for display
-        current_image_url_for_template = (
+        current_image_url = (
             current_item_image.image.url
             if current_item_image and current_item_image.image
             else None
         )
-        image_exists_for_template = bool(
-            current_item_image and current_item_image.image
-        )
+        image_exists = bool(current_item_image and current_item_image.image)
 
         context = {
             "item": item,
             "form_data": form_data,
-            "errors": errors,  # Empty on initial GET
+            "errors": errors,
             "units": UnitOfMeasure.objects.all(),
             "categories": Category.objects.all(),
-            "current_image_url": current_image_url_for_template,
-            "image_exists": image_exists_for_template,
+            "current_image_url": current_image_url,
+            "image_exists": image_exists,
         }
 
-    return render(request, "edit_item.html", context)  # Assuming template path
+    return render(request, "edit_item.html", context)
+
+
+def view_item(request, pk):
+    item = get_object_or_404(Item, pk=pk)
+    context = {
+        "item": item,
+        # Add any other context data if needed, e.g., form_data for an edit form
+    }
+    return render(request, "view_item.html", context)
 
 
 def delete_item(request, pk):
@@ -882,3 +568,102 @@ def delete_item(request, pk):
         messages.success(request, f'Item "{item.name}" deleted successfully.')
         return redirect("items")
     return redirect("view_item", pk=pk)  # If not POST, redirect back to item detail
+
+
+def delete_all_items(request):
+    """
+    View to delete all Item records from the database.
+    Requires a POST request for security.
+    """
+    if request.method == "POST":
+        try:
+            with transaction.atomic():
+                # Delete all Item records
+                # This will also cascade delete related ItemImage and InventoryAdjustment records
+                # due to CASCADE on_delete in those models.
+                deleted_count, _ = Item.objects.all().delete()
+                messages.success(
+                    request, f"Successfully deleted {deleted_count} items."
+                )
+        except Exception as e:
+            messages.error(request, f"An error occurred while deleting items: {e}")
+
+    return redirect("items")  # Redirect back to the items list page
+
+
+def generate_csv_template_view(request):
+    """
+    View to generate and download a CSV template for item import.
+    """
+    # Generate the CSV content using the utility function
+    csv_buffer = generate_item_csv_template()
+
+    # Create the HttpResponse object with the appropriate CSV header.
+    response = HttpResponse(csv_buffer.getvalue(), content_type="text/csv")
+    response["Content-Disposition"] = 'attachment; filename="item_template.csv"'
+
+    return response
+
+
+def import_items_view(request):
+    """
+    View to handle displaying the CSV import form and processing uploaded files.
+    """
+    if request.method == "POST":
+        csv_file = request.FILES.get("csv_file")
+
+        if not csv_file:
+            messages.error(request, "No CSV file was uploaded.")
+            return redirect("import_items")  # Redirect back to the import page
+
+        # Basic file type validation
+        if not csv_file.name.endswith(".csv"):
+            messages.error(request, "Invalid file type. Please upload a CSV file.")
+            return redirect("import_items")
+
+        try:
+            # Call the utility function to process the CSV
+            import_results = process_item_csv_upload(csv_file)
+
+            total_rows = import_results["total_rows"]
+            successful_imports = import_results["successful_imports"]
+            failed_imports = import_results["failed_imports"]
+            errors = import_results["errors"]
+
+            if successful_imports > 0:
+                messages.success(
+                    request,
+                    f"Successfully imported/updated {successful_imports} out of {total_rows} items.",
+                )
+
+            if failed_imports > 0:
+                error_message = f"Failed to import/update {failed_imports} items. See details below:"
+                messages.error(request, error_message)
+                # Store detailed errors in session or pass directly to context if re-rendering
+                # For simplicity, we'll add them as individual messages here.
+                for error_detail in errors:
+                    row_num = error_detail["row_num"]
+                    error_data = error_detail["data"]
+                    error_messages = "; ".join(error_detail["messages"])
+                    messages.warning(
+                        request,
+                        f"Row {row_num}: {error_messages} (Data: {error_data.get('name', 'N/A')}, SKU: {error_data.get('sku', 'N/A')})",
+                    )
+
+            if successful_imports == 0 and failed_imports == 0 and total_rows > 0:
+                messages.info(
+                    request, "No items were processed. Check CSV format and content."
+                )
+            elif total_rows == 0:
+                messages.info(request, "The uploaded CSV file was empty.")
+
+            return redirect("import_items")  # Redirect back to show messages
+
+        except Exception as e:
+            messages.error(
+                request, f"An unexpected error occurred during CSV processing: {e}"
+            )
+            return redirect("import_items")
+
+    # For GET requests, just render the form
+    return render(request, "forms/import_form.html")

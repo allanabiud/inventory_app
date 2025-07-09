@@ -71,211 +71,203 @@
                   <div class="input-group">
                     <div class="form-floating">
                       <input type="text"
-                        name="sku_prefix"
-                        id="id_sku_prefix"
-                        class="form-control {% if errors.sku_prefix or errors.sku %}is-invalid{% endif %}" {# Added sku_prefix error #}
-                        placeholder="SKU Prefix"
-                        value="{{ form_data.sku_prefix|default:'SKU' }}"
+                             name="sku_prefix"
+                             id="id_sku_prefix"
+                             class="form-control {% if errors.sku_prefix or errors.sku %}is-invalid{% endif %}"
+                             placeholder="SKU Prefix"
+                             value="{{ form_data.sku_prefix|default:'SKU' }}"
+                             required>
+                      <label for="id_sku_prefix">SKU Prefix</label>
+                    </div>
+                    <div class="form-floating">
+                      <input type="text"
+                        name="sku_number"
+                        id="id_sku_number"
+                        class="form-control {% if errors.sku_number or errors.sku %}is-invalid{% endif %}" {# Added sku_number error #}
+                        placeholder="001"
+                        value="{{ form_data.sku_number|default:'' }}"
                         required>
-                        <label for="id_sku_prefix">SKU Prefix</label>
-                      </div>
-                      <div class="form-floating">
-                        <input type="text"
-                          name="sku_number"
-                          id="id_sku_number"
-                          class="form-control {% if errors.sku_number or errors.sku %}is-invalid{% endif %}" {# Added sku_number error #}
-                          placeholder="001"
-                          value="{{ form_data.sku_number|default:'' }}"
-                          required>
-                          <label for="id_sku_number">SKU Number</label>
-                        </div>
-                      </div>
-                      {# The hidden SKU field is not strictly necessary for the view as it rebuilds SKU, but harmless #}
-                      <input type="hidden"
-                             name="sku"
-                             id="id_sku"
-                             value="{{ form_data.sku|default:'' }}">
-                      {% if errors.sku %}
-                        <div class="invalid-feedback d-block">
-                          {% for error in errors.sku %}{{ error }}{% endfor %}
-                        </div>
-                      {% endif %}
-                      {# Display errors specific to sku_prefix/sku_number #}
-                      {% if errors.sku_prefix %}
-                        <div class="invalid-feedback d-block">
-                          {% for error in errors.sku_prefix %}{{ error }}{% endfor %}
-                        </div>
-                      {% endif %}
-                      {% if errors.sku_number %}
-                        <div class="invalid-feedback d-block">
-                          {% for error in errors.sku_number %}{{ error }}{% endfor %}
-                        </div>
-                      {% endif %}
-                      <div class="form-text">e.g., "SKU-001", "PROD-A005"</div>
-                    </div>
-                    <div class="col-md-6">
-                      <div class="form-floating">
-                        <select name="unit"
-                                id="id_unit"
-                                class="form-select {% if errors.unit %}is-invalid{% endif %}"
-                                required>
-                          <option value="">--</option>
-                          {% for unit_obj in units %}
-                            <option value="{{ unit_obj.id }}"
-                                    {% if form_data.unit|stringformat:"s" == unit_obj.id|stringformat:"s" %}selected{% endif %}>
-                              {{ unit_obj.name }} ({{ unit_obj.abbreviation }})
-                            </option>
-                          {% endfor %}
-                        </select>
-                        <label for="id_unit">Unit of Measure</label>
-                        {% if errors.unit %}
-                          <div class="invalid-feedback">
-                            {% for error in errors.unit %}{{ error }}{% endfor %}
-                          </div>
-                        {% endif %}
+                        <label for="id_sku_number">SKU Number</label>
                       </div>
                     </div>
-                    <div class="col-md-6">
-                      <div class="form-floating">
-                        <select name="category"
-                                id="id_category"
-                                class="form-select {% if errors.category %}is-invalid{% endif %}">
-                          <option value="">--</option>
-                          {% for category_obj in categories %}
-                            <option value="{{ category_obj.id }}"
-                                    {% if form_data.category|stringformat:"s" == category_obj.id|stringformat:"s" %}selected{% endif %}>
-                              {{ category_obj.name }}
-                            </option>
-                          {% endfor %}
-                        </select>
-                        <label for="id_category">Category</label>
-                        {% if errors.category %}
-                          <div class="invalid-feedback">
-                            {% for error in errors.category %}{{ error }}{% endfor %}
-                          </div>
-                        {% endif %}
+                    {# The hidden SKU field is not strictly necessary for the view as it rebuilds SKU, but harmless #}
+                    <input type="hidden"
+                           name="sku"
+                           id="id_sku"
+                           value="{{ form_data.sku|default:'' }}">
+                    {% if errors.sku %}
+                      <div class="invalid-feedback d-block">
+                        {% for error in errors.sku %}{{ error }}{% endfor %}
                       </div>
-                    </div>
+                    {% endif %}
+                    {# Display errors specific to sku_prefix/sku_number #}
+                    {% if errors.sku_prefix %}
+                      <div class="invalid-feedback d-block">
+                        {% for error in errors.sku_prefix %}{{ error }}{% endfor %}
+                      </div>
+                    {% endif %}
+                    {% if errors.sku_number %}
+                      <div class="invalid-feedback d-block">
+                        {% for error in errors.sku_number %}{{ error }}{% endfor %}
+                      </div>
+                    {% endif %}
+                    <div class="form-text">e.g., "SKU-001", "PROD-A005"</div>
                   </div>
-                </div>
-              </div>
-              <div class="my-4">
-                <hr>
-              </div>
-              <h5 class="mb-3">Pricing</h5>
-              <div class="row g-3 mb-4">
-                <div class="col-md-6">
-                  <div class="input-group">
-                    <span class="input-group-text">KES</span>
+                  <div class="col-md-6">
                     <div class="form-floating">
-                      <input type="number"
-                             name="selling_price"
-                             id="id_selling_price"
-                             class="form-control {% if errors.selling_price %}is-invalid{% endif %}"
-                             placeholder="Selling Price"
-                             value="{{ form_data.selling_price|default:'' }}"
-                             step="0.01">
-                      <label for="id_selling_price">Selling Price</label>
-                      {% if errors.selling_price %}
+                      <select name="unit"
+                              id="id_unit"
+                              class="form-select {% if errors.unit %}is-invalid{% endif %}"
+                              required>
+                        <option value="">--</option>
+                        {% for unit_obj in units %}
+                          <option value="{{ unit_obj.id }}"
+                                  {% if form_data.unit|stringformat:"s" == unit_obj.id|stringformat:"s" %}selected{% endif %}>
+                            {{ unit_obj.name }} ({{ unit_obj.abbreviation }})
+                          </option>
+                        {% endfor %}
+                      </select>
+                      <label for="id_unit">Unit of Measure</label>
+                      {% if errors.unit %}
                         <div class="invalid-feedback">
-                          {% for error in errors.selling_price %}{{ error }}{% endfor %}
+                          {% for error in errors.unit %}{{ error }}{% endfor %}
                         </div>
                       {% endif %}
                     </div>
                   </div>
-                </div>
-                <div class="col-md-6">
-                  <div class="input-group">
-                    <span class="input-group-text">KES</span>
+                  <div class="col-md-6">
                     <div class="form-floating">
-                      <input type="number"
-                             name="purchase_price"
-                             id="id_purchase_price"
-                             class="form-control {% if errors.purchase_price %}is-invalid{% endif %}"
-                             placeholder="Purchase Price"
-                             value="{{ form_data.purchase_price|default:'' }}"
-                             step="0.01">
-                      <label for="id_purchase_price">Purchase Price</label>
-                      {% if errors.purchase_price %}
+                      <select name="category"
+                              id="id_category"
+                              class="form-select {% if errors.category %}is-invalid{% endif %}">
+                        <option value="">--</option>
+                        {% for category_obj in categories %}
+                          <option value="{{ category_obj.id }}"
+                                  {% if form_data.category|stringformat:"s" == category_obj.id|stringformat:"s" %}selected{% endif %}>
+                            {{ category_obj.name }}
+                          </option>
+                        {% endfor %}
+                      </select>
+                      <label for="id_category">Category</label>
+                      {% if errors.category %}
                         <div class="invalid-feedback">
-                          {% for error in errors.purchase_price %}{{ error }}{% endfor %}
+                          {% for error in errors.category %}{{ error }}{% endfor %}
                         </div>
                       {% endif %}
                     </div>
                   </div>
                 </div>
               </div>
-              <div class="my-4">
-                <hr>
-              </div>
-              <h5 class="mb-3">Inventory</h5>
-              <div class="form-check mb-3">
-                <input type="checkbox"
-                       class="form-check-input"
-                       name="track_inventory"
-                       id="id_track_inventory"
-                       {% if form_data.track_inventory %}checked{% endif %}>
-                <label class="form-check-label" for="id_track_inventory">Track Inventory</label>
-              </div>
-              <div id="inventoryFieldsContainer" class="row mb-4">
-                <div class="col-md-4">
-                  <div class="form-floating">
-                    <input type="number"
-                           name="opening_stock"
-                           id="id_opening_stock"
-                           placeholder="Opening Stock"
-                           class="form-control {% if errors.opening_stock %}is-invalid{% endif %}"
-                           value="{{ form_data.opening_stock|default:'' }}">
-                    <label for="id_opening_stock" class="form-label">Opening Stock</label>
-                    {% if errors.opening_stock %}
-                      <div class="invalid-feedback">
-                        {% for error in errors.opening_stock %}{{ error }}{% endfor %}
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="form-floating">
-                    <input type="number"
-                           name="current_stock"
-                           id="id_current_stock"
-                           placeholder="Current Stock"
-                           class="form-control {% if errors.current_stock %}is-invalid{% endif %}"
-                           value="{{ form_data.current_stock|default:'' }}">
-                    <label for="id_current_stock" class="form-label">Current Stock</label>
-                    {% if errors.current_stock %}
-                      <div class="invalid-feedback">
-                        {% for error in errors.current_stock %}{{ error }}{% endfor %}
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-                <div class="col-md-4">
-                  <div class="form-floating">
-                    <input type="number"
-                           name="reorder_point"
-                           id="id_reorder_point"
-                           placeholder="Reorder Point"
-                           class="form-control {% if errors.reorder_point %}is-invalid{% endif %}"
-                           value="{{ form_data.reorder_point|default:'' }}">
-                    <label for="id_reorder_point" class="form-label">Reorder Point</label>
-                    {% if errors.reorder_point %}
-                      <div class="invalid-feedback">
-                        {% for error in errors.reorder_point %}{{ error }}{% endfor %}
-                      </div>
-                    {% endif %}
-                  </div>
-                </div>
-              </div>
-            </form>
-          </div>
-          <div class="sticky-bottom-btn-bar border-top p-3">
-            <div class="d-flex gap-3">
-              <button type="submit" form="itemForm" class="btn btn-success">Save Changes</button>
-              <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
             </div>
+            <div class="my-4">
+              <hr>
+            </div>
+            <h5 class="mb-3">Pricing</h5>
+            <div class="row g-3 mb-4">
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text">KES</span>
+                  <div class="form-floating">
+                    <input type="number"
+                           name="selling_price"
+                           id="id_selling_price"
+                           class="form-control {% if errors.selling_price %}is-invalid{% endif %}"
+                           placeholder="Selling Price"
+                           value="{{ form_data.selling_price|default:'' }}"
+                           step="0.01">
+                    <label for="id_selling_price">Selling Price</label>
+                    {% if errors.selling_price %}
+                      <div class="invalid-feedback">
+                        {% for error in errors.selling_price %}{{ error }}{% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+              <div class="col-md-6">
+                <div class="input-group">
+                  <span class="input-group-text">KES</span>
+                  <div class="form-floating">
+                    <input type="number"
+                           name="purchase_price"
+                           id="id_purchase_price"
+                           class="form-control {% if errors.purchase_price %}is-invalid{% endif %}"
+                           placeholder="Purchase Price"
+                           value="{{ form_data.purchase_price|default:'' }}"
+                           step="0.01">
+                    <label for="id_purchase_price">Purchase Price</label>
+                    {% if errors.purchase_price %}
+                      <div class="invalid-feedback">
+                        {% for error in errors.purchase_price %}{{ error }}{% endfor %}
+                      </div>
+                    {% endif %}
+                  </div>
+                </div>
+              </div>
+            </div>
+            <div class="my-4">
+              <hr>
+            </div>
+            <h5 class="mb-3">Inventory</h5>
+            <div id="inventoryFieldsContainer" class="row mb-4">
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="number"
+                         name="opening_stock"
+                         id="id_opening_stock"
+                         placeholder="Opening Stock"
+                         class="form-control {% if errors.opening_stock %}is-invalid{% endif %}"
+                         value="{{ form_data.opening_stock|default:'' }}">
+                  <label for="id_opening_stock" class="form-label">Opening Stock</label>
+                  {% if errors.opening_stock %}
+                    <div class="invalid-feedback">
+                      {% for error in errors.opening_stock %}{{ error }}{% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="number"
+                         name="current_stock"
+                         id="id_current_stock"
+                         placeholder="Current Stock"
+                         class="form-control {% if errors.current_stock %}is-invalid{% endif %}"
+                         value="{{ form_data.current_stock|default:'' }}">
+                  <label for="id_current_stock" class="form-label">Current Stock</label>
+                  {% if errors.current_stock %}
+                    <div class="invalid-feedback">
+                      {% for error in errors.current_stock %}{{ error }}{% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="form-floating">
+                  <input type="number"
+                         name="reorder_point"
+                         id="id_reorder_point"
+                         placeholder="Reorder Point"
+                         class="form-control {% if errors.reorder_point %}is-invalid{% endif %}"
+                         value="{{ form_data.reorder_point|default:'' }}">
+                  <label for="id_reorder_point" class="form-label">Reorder Point</label>
+                  {% if errors.reorder_point %}
+                    <div class="invalid-feedback">
+                      {% for error in errors.reorder_point %}{{ error }}{% endfor %}
+                    </div>
+                  {% endif %}
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+        <div class="sticky-bottom-btn-bar border-top p-3">
+          <div class="d-flex gap-3">
+            <button type="submit" form="itemForm" class="btn btn-success">Save Changes</button>
+            <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
           </div>
         </div>
       </div>
-      <script src="{% static 'js/forms/edit_item.js' %}"></script> {# Ensure this points to the correct JS file #}
-    {% endblock %}
+    </div>
+    <script src="{% static 'js/forms/edit_item.js' %}"></script> {# Ensure this points to the correct JS file #}
+  {% endblock %}

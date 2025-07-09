@@ -29,15 +29,11 @@ document.addEventListener("DOMContentLoaded", function () {
         ],
         columnDefs: [
           {
-            targets: -4, // disables ordering for the last column (Track Inv.)
-            orderable: false,
-          },
-          {
-            targets: 9, // hidden created_at column
+            targets: 8, // hidden created_at column
             visible: false,
           },
         ],
-        order: [[9, "desc"]],
+        order: [[8, "desc"]],
       });
 
       // Export buttons to custom container
