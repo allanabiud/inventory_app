@@ -104,25 +104,30 @@ class InventoryAdjustment(models.Model):
     def save(self, *args, **kwargs):
         is_new = self._state.adding
 
-        if is_new:
-            if self.adjustment_type == self.DECREASE:
-                if (
-                    self.item.current_stock is not None
-                    and self.item.current_stock < self.quantity_adjusted
-                ):
-                    raise ValidationError(
-                        f"Cannot decrease stock by {self.quantity_adjusted}."
-                        f" Only {self.item.current_stock} in stock."
-                    )
-                self.item.current_stock = (
-                    self.item.current_stock or 0
-                ) - self.quantity_adjusted
-            elif self.adjustment_type == self.INCREASE:
-                self.item.current_stock = (
-                    self.item.current_stock or 0
-                ) + self.quantity_adjusted
-            self.item.save()
+        # Reverse previous adjustment if updating
+        if not is_new:
+            previous = InventoryAdjustment.objects.get(pk=self.pk)
 
+            if previous.adjustment_type == self.INCREASE:
+                self.item.current_stock -= previous.quantity_adjusted
+            elif previous.adjustment_type == self.DECREASE:
+                self.item.current_stock += previous.quantity_adjusted
+
+        # Apply new adjustment
+        if self.adjustment_type == self.DECREASE:
+            if (
+                self.item.current_stock is not None
+                and self.item.current_stock < self.quantity_adjusted
+            ):
+                raise ValidationError(
+                    f"Cannot decrease stock by {self.quantity_adjusted}."
+                    f" Only {self.item.current_stock} in stock."
+                )
+            self.item.current_stock -= self.quantity_adjusted
+        elif self.adjustment_type == self.INCREASE:
+            self.item.current_stock += self.quantity_adjusted
+
+        self.item.save()
         super().save(*args, **kwargs)
 
     def __str__(self):

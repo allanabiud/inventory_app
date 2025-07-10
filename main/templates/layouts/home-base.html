@@ -3,9 +3,6 @@
 <html lang="en" data-bs-theme="dark">
   <head>
     <meta charset="UTF-8" />
-    <title>
-      {% block title %}Inventory App{% endblock %}
-    </title>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <!-- Load Theme Script -->
     {% include "partials/theme-toggle/theme-script.html" %}
@@ -20,6 +17,9 @@
           href="{% static 'images/favicons/favicon-16x16.png' %}">
     <link rel="manifest" href="{% static 'images/favicons/site.webmanifest' %}">
     <link rel="shortcut icon" href="{% static 'images/favicons/favicon.ico' %}">
+    <title>
+      {% block title %}Inventory App{% endblock %}
+    </title>
     <!-- Bootstrap CSS -->
     <link href="{% static 'css/vendor/bootstrap.min.css' %}" rel="stylesheet" />
     <!-- Bootstrap Icons -->
@@ -30,6 +30,10 @@
           href="{% static 'css/vendor/dataTables.bootstrap5.min.css' %}" />
     <link rel="stylesheet"
           href="{% static 'css/vendor/buttons.bootstrap5.min.css' %}" />
+    <!-- Select2 for Bootstrap 5 -->
+    <link rel="stylesheet" href="{% static 'css/vendor/select2.min.css' %}" />
+    <link rel="stylesheet"
+          href="{% static 'css/vendor/select2-bootstrap5.min.css' %}" />
     <!-- Custom CSS -->
     <link rel="stylesheet" href="{% static 'css/_navbar.css' %}" />
     <link rel="stylesheet" href="{% static 'css/_sidebar.css' %}" />
@@ -53,6 +57,8 @@
     <!-- Bootstrap Bundle -->
     <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"
             crossorigin="anonymous"></script>
+    <!-- Select2 -->
+    <script src="{% static 'js/vendor/select2.min.js' %}"></script>
     <!-- DataTables -->
     <script src="{% static 'js/vendor/jquery.dataTables.min.js' %}"></script>
     <!-- DataTables Buttons -->
@@ -63,9 +69,9 @@
     <!-- DataTables Buttons HTML5 -->
     <script src="{% static 'js/vendor/buttons.html5.min.js' %}"></script>
     <script src="{% static 'js/vendor/buttons.print.min.js' %}"></script>
-    <!-- pdfmake (too big to download) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/pdfmake.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdfmake/0.2.7/vfs_fonts.js"></script>
+    <!-- pdfmake -->
+    <script src="{% static 'js/vendor/pdfmake.min.js' %}"></script>
+    <script src="{% static 'js/vendor/vfs_fonts.js' %}"></script>
     <!-- Custom Scripts -->
     <script src="{% static 'js/home.js' %}" defer></script>
     <script src="{% static 'js/theme-toggle.js' %}" defer></script>

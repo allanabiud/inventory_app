@@ -1,0 +1,105 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}View Unit - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Unit: {{ unit.name }}</h4>
+        <div class="d-flex align-items-center gap-2">
+          <a href="{% url 'edit_unit' unit.pk %}" class="btn btn-sm btn-success">Edit Unit</a>
+          {% if items|length == 0 %}
+            <button type="button"
+                    class="btn btn-sm btn-danger"
+                    data-bs-toggle="modal"
+                    data-bs-target="#deleteUnitModal">Delete Unit</button>
+          {% endif %}
+          <a href="{% url 'units' %}">
+            <i class="bi bi-x-lg fs-4"></i>
+          </a>
+        </div>
+      </div>
+      <div class="px-5 pt-3">
+        {% if messages %}
+          {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+        {% endif %}
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Abbreviation</p>
+            <p class="lead">{{ unit.abbreviation|default:"—" }}</p>
+          </div>
+          <div class="col-md-12">
+            <p class="mb-1 text-muted small">Description</p>
+            <p class="lead">{{ unit.description|default:"No description provided." }}</p>
+          </div>
+        </div>
+        <div class="my-4">
+          <hr>
+        </div>
+        <h5 class="mb-3">Items Using This Unit</h5>
+        {% if items %}
+          <div class="table-responsive mb-4">
+            <table class="table table-striped table-hover align-middle">
+              <thead>
+                <tr>
+                  <th>Name</th>
+                  <th>SKU</th>
+                  <th>Category</th>
+                  <th>Purchase Price</th>
+                  <th>Selling Price</th>
+                  <th>Opening Stock</th>
+                  <th>Current Stock</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for item in items %}
+                  <tr>
+                    <td>{{ item.name }}</td>
+                    <td>{{ item.sku }}</td>
+                    <td>{{ item.category.name|default:"—" }}</td>
+                    <td>KES {{ item.purchase_price|default:"0.00" }}</td>
+                    <td>KES {{ item.selling_price|default:"0.00" }}</td>
+                    <td>{{ item.opening_stock }}</td>
+                    <td>{{ item.current_stock }}</td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+            </table>
+          </div>
+        {% else %}
+          <div class="alert alert-info">No items found using this unit.</div>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+  <!-- Delete Unit Modal -->
+  <div class="modal fade"
+       id="deleteUnitModal"
+       tabindex="-1"
+       aria-labelledby="deleteUnitModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteUnitModalLabel">Confirm Delete</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete "<strong>{{ unit.name }}</strong>"? This will remove the unit reference from items but not delete the items themselves.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_unit' unit.pk %}"
+                method="post"
+                class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

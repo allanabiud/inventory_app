@@ -1,0 +1,113 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}View Adjustment - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Adjustment for: {{ adjustment.item.name }} ({{ adjustment.item.sku }})</h4>
+        <div class="d-flex align-items-center gap-2">
+          <a href="{% url 'edit_adjustment' adjustment.pk %}"
+             class="btn btn-sm btn-success">Edit Adjustment</a>
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteAdjustmentModal">Delete Adjustment</button>
+          <a href="{% url 'inventory_adjustments' %}">
+            <i class="bi bi-x-lg fs-4"></i>
+          </a>
+        </div>
+      </div>
+      <div class="px-5 pt-3">
+        {% if messages %}
+          {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+        {% endif %}
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Adjustment Type</p>
+            <p class="lead">{{ adjustment.get_adjustment_type_display }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Quantity Adjusted</p>
+            <p class="lead">
+              {{ adjustment.quantity_adjusted }}
+              <span class="text-muted small">{{ adjustment.item.unit.abbreviation|default:adjustment.item.unit.name }}</span>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Cost Price</p>
+            <p class="lead">KES {{ adjustment.cost_price|default:"0.00" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Reason</p>
+            <p class="lead">{{ adjustment.get_reason_display }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Adjusted By</p>
+            <div class="d-flex align-items-center mt-1">
+              {% if user_profile and user_profile.profile_image %}
+                <img src="{{ user_profile.profile_image.url }}"
+                     alt="{{ adjustment.user.username }}'s profile"
+                     class="rounded-circle me-3"
+                     style="width: 48px;
+                            height: 48px;
+                            object-fit: cover">
+              {% else %}
+                <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
+                     style="width: 48px;
+                            height: 48px">
+                  <i class="bi bi-person text-white"></i>
+                </div>
+              {% endif %}
+              <div>
+                <p class="mb-0 fw-bold">{{ adjustment.user.get_full_name|default:adjustment.user.username|default:"Unknown" }}</p>
+                <p class="text-muted mb-0 small">{{ adjustment.user.email }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Date</p>
+            <p class="lead">{{ adjustment.date|date:"M d, Y H:i" }}</p>
+          </div>
+          <div class="col-md-12">
+            <p class="mb-1 text-muted small">Description</p>
+            <p class="lead">{{ adjustment.description|default:"No description provided." }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Delete Adjustment Modal -->
+  <div class="modal fade"
+       id="deleteAdjustmentModal"
+       tabindex="-1"
+       aria-labelledby="deleteAdjustmentModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteAdjustmentModalLabel">Confirm Delete</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this adjustment for
+          "<strong>{{ adjustment.item.name }}</strong>"
+          (SKU: {{ adjustment.item.sku }})?
+          This action will reverse the stock change made by this adjustment.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_adjustment' adjustment.pk %}"
+                method="post"
+                class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

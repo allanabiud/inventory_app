@@ -1,6 +1,5 @@
 from django.contrib import admin
 
-from .forms import InventoryAdjustmentAdminForm
 from .models import Category, InventoryAdjustment, Item, ItemImage, UnitOfMeasure
 
 
@@ -46,7 +45,6 @@ class ItemAdmin(admin.ModelAdmin):
 
 @admin.register(InventoryAdjustment)
 class InventoryAdjustmentAdmin(admin.ModelAdmin):
-    form = InventoryAdjustmentAdminForm
     list_display = (
         "item",
         "adjustment_type",

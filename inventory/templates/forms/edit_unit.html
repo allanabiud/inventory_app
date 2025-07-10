@@ -1,0 +1,79 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}Edit Unit - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Edit Unit: {{ unit.name }}</h4>
+        <a href="{% url 'view_unit' unit.pk %}">
+          <i class="bi bi-x-lg fs-4"></i>
+        </a>
+      </div>
+      <div class="px-5 pt-3">
+        <form method="post" id="unitForm">
+          {% csrf_token %}
+          {% if messages %}
+            {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+          {% endif %}
+          <div class="row g-4 mb-4">
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text"
+                       name="name"
+                       id="id_name"
+                       class="form-control {% if errors.name %}is-invalid{% endif %}"
+                       placeholder="Unit Name"
+                       value="{{ form_data.name|default:'' }}"
+                       required>
+                <label for="id_name">Unit Name</label>
+                {% if errors.name %}
+                  <div class="invalid-feedback">
+                    {% for error in errors.name %}{{ error }}{% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-6">
+              <div class="form-floating">
+                <input type="text"
+                       name="abbreviation"
+                       id="id_abbreviation"
+                       class="form-control {% if errors.abbreviation %}is-invalid{% endif %}"
+                       placeholder="Abbreviation"
+                       value="{{ form_data.abbreviation|default:'' }}">
+                <label for="id_abbreviation">Abbreviation (optional)</label>
+                {% if errors.abbreviation %}
+                  <div class="invalid-feedback">
+                    {% for error in errors.abbreviation %}{{ error }}{% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+            <div class="col-md-12">
+              <div class="form-floating">
+                <textarea name="description"
+                          id="id_description"
+                          class="form-control {% if errors.description %}is-invalid{% endif %}"
+                          placeholder="Description"
+                          style="height: 120px">{{ form_data.description|default:'' }}</textarea>
+                <label for="id_description">Description (optional)</label>
+                {% if errors.description %}
+                  <div class="invalid-feedback">
+                    {% for error in errors.description %}{{ error }}{% endfor %}
+                  </div>
+                {% endif %}
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="sticky-bottom-btn-bar border-top p-3">
+        <div class="d-flex gap-3">
+          <button type="submit" form="unitForm" class="btn btn-success">Save Changes</button>
+          <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

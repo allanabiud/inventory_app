@@ -52,6 +52,10 @@ a:hover {
   color: var(--link-hover-color) !important;
 }
 
+.dropdown-item:active {
+  background-color: var(--emerald-green) !important;
+}
+
 /* --- Button Styling Overrides --- */
 /* These variables are already set via --bs-btn-* in _theme.css */
 /* This block can be removed if Bootstrap's default .btn-success and .btn-secondary */

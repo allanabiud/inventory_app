@@ -5,7 +5,7 @@
   <div class="container-fluid mt-3 slide-in-left">
     <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
       <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
-        <h4 class="mb-0">Item Details: {{ item.name }}</h4>
+        <h4 class="mb-0">Item: {{ item.name }}</h4>
         <div class="d-flex align-items-center gap-2">
           <a href="{% url 'edit_item' item.pk %}" class="btn btn-sm btn-success">Edit Item</a>
           <button type="button"

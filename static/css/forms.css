@@ -67,8 +67,22 @@
   }
 }
 
+#loginCarousel {
+  position: relative;
+  min-height: 300px;
+}
+
+.carousel-inner {
+  min-height: 300px;
+}
+
 .carousel-indicators {
-  bottom: -60px;
+  position: absolute;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  margin: 0;
+  z-index: 2;
 }
 
 .carousel-indicators [data-bs-target] {

@@ -21,7 +21,7 @@
       </li>
       <!-- Inventory -->
       <li class="nav-item">
-        {% with item_related_urls='items add_item import_items view_item edit_item' %}
+        {% with item_related_urls='items add_item import_items view_item edit_item categories add_category view_category edit_category units add_unit view_unit edit_unit inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in item_related_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#inventoryCollapse"
@@ -38,14 +38,28 @@
         <div class="collapse" id="inventoryCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
-              <a href="{% url 'items' %}"
-                 class="nav-link link-body-emphasis sidebar-sub-item rounded {% if request.resolver_match.url_name == 'items' %}active{% endif %}">Items</a>
+              {% with item_related_urls='items add_item import_items view_item edit_item' %}
+                <a href="{% url 'items' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in item_related_urls.split %}active{% endif %}">Items</a>
+              {% endwith %}
             </li>
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Categories</a>
+              {% with category_related_urls='categories add_category edit_category view_category' %}
+                <a href="{% url 'categories' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in category_related_urls.split %}active{% endif %}">Categories</a>
+              {% endwith %}
             </li>
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Adjustments</a>
+              {% with unit_related_urls='units add_unit edit_unit view_unit' %}
+                <a href="{% url 'units' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in unit_related_urls.split %}active{% endif %}">Units of Measure</a>
+              {% endwith %}
+            </li>
+            <li>
+              {% with adjustment_related_urls='inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
+                <a href="{% url 'inventory_adjustments' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in adjustment_related_urls %}active{% endif %}">Adjustments</a>
+              {% endwith %}
             </li>
           </ul>
         </div>

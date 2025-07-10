@@ -272,3 +272,7 @@
 .sidebar-sub-item:hover {
   background-color: var(--sidebar-item-hover-bg);
 }
+
+.nav-pills .nav-link {
+  border-radius: 0;
+}

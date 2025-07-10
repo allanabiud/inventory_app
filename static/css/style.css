@@ -78,6 +78,10 @@
   box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
 }
 
+option:checked {
+  background-color: var(--emerald-green);
+}
+
 #imageUploadContainer {
   border: 1px dashed rgba(var(--emerald-green-rgb), 0.7);
   border-radius: 10px;
@@ -164,4 +168,65 @@ thead th.sorting_desc::after {
 
 .table-hover tbody tr.clickable-row:hover td {
   color: var(--primary-green);
+}
+
+/* Select2 Bootstrap 5 theme */
+.select2-container--bootstrap-5 .select2-selection {
+  background-color: var(--bs-body-bg);
+  color: var(--text-color);
+  border: 1px solid var(--color-gray-light-border);
+}
+
+.select2-search.select2-search--dropdown {
+  background-color: var(--bs-body-bg);
+}
+
+.select2-container--bootstrap-5 .select2-dropdown .select2-results__options {
+  background-color: var(--bs-body-bg);
+}
+
+.select2-container--bootstrap-5
+  .select2-selection--single
+  .select2-selection__rendered {
+  color: var(--text-color);
+}
+
+.select2-container--bootstrap-5
+  .select2-dropdown
+  .select2-results__options
+  .select2-results__option.select2-results__option--selected,
+.select2-container--bootstrap-5
+  .select2-dropdown
+  .select2-results__options
+  .select2-results__option[aria-selected="true"]:not(
+    .select2-results__option--highlighted
+  ) {
+  background-color: var(--primary-green);
+}
+
+.select2-container--bootstrap-5
+  .select2-dropdown
+  .select2-search
+  .select2-search__field {
+  background-color: var(--navbar-input-bg-color);
+  color: var(--text-color);
+  border-color: var(--color-medium-gray);
+}
+
+.select2-container--bootstrap-5
+  .select2-dropdown
+  .select2-search
+  .select2-search__field:focus {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+}
+
+.select2-container--bootstrap-5.select2-container--focus .select2-selection,
+.select2-container--bootstrap-5.select2-container--open .select2-selection {
+  border-color: var(--primary-green);
+  box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.25);
+}
+
+.select2-container--bootstrap-5 .select2-dropdown {
+  border-color: var(--primary-green);
 }

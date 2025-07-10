@@ -5,7 +5,7 @@
         <div class="input-group">
           <input class="form-control focus-ring"
                  type="search"
-                 placeholder="Search Product Name or SKU"
+                 placeholder="Search Item Name, SKU, or Category"
                  aria-label="Search">
           <button class="btn btn-success" type="submit">
             <i class="bi bi-search text-white"></i>
@@ -48,9 +48,11 @@
         <li class="nav-item">
           <a class="nav-link" href="#"><i class="bi bi-bell"></i></a>
         </li>
-        <li class="nav-item">
-          <a class="nav-link" href="#"><i class="bi bi-gear"></i></a>
-        </li>
+        {% if user.is_superuser %}
+          <li class="nav-item">
+            <a class="nav-link" href="#"><i class="bi bi-gear"></i></a>
+          </li>
+        {% endif %}
         <li class="nav-item dropdown">
           <a class="nav-link dropdown-toggle"
              href="#"
@@ -70,6 +72,9 @@
             {% endif %}
           </a>
           <ul class="dropdown-menu dropdown-menu-end">
+            <li>
+              <a class="dropdown-item d-flex align-items-center" href=""><i class="bi bi-person-circle me-2"></i>Profile</a>
+            </li>
             <li>
               <a class="dropdown-item d-flex align-items-center"
                  href="{% url 'signout' %}"><i class="bi bi-box-arrow-left me-2"></i>Sign Out</a>

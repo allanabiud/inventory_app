@@ -48,7 +48,7 @@
               </div>
             </div>
             <div class="col-md-9 d-flex align-items-center">
-              <div class="row g-5 w-100">
+              <div class="row g-3 w-100">
                 <div class="col-md-6">
                   <div class="form-floating">
                     <input type="text"
@@ -99,7 +99,11 @@
                           {% for error in errors.sku %}{{ error }}{% endfor %}
                         </div>
                       {% endif %}
-                      <div class="form-text">e.g., "SKU-001", "PROD-A005"</div>
+                      <div class="form-text">
+                        The Stock Keeping Unit (SKU) uniquely identifies this item.
+                        <br>
+                        e.g., "SKU-001", "PROD-A005"
+                      </div>
                     </div>
                     <div class="col-md-6">
                       <div class="form-floating">
@@ -111,7 +115,11 @@
                           {% for unit_obj in units %}
                             <option value="{{ unit_obj.id }}"
                                     {% if form_data.unit|stringformat:"s" == unit_obj.id|stringformat:"s" %}selected{% endif %}>
-                              {{ unit_obj.name }} ({{ unit_obj.abbreviation }})
+                              {% if unit_obj.abbreviation %}
+                                {{ unit_obj.name }} ({{ unit_obj.abbreviation }})
+                              {% else %}
+                                {{ unit_obj.name }}
+                              {% endif %}
                             </option>
                           {% endfor %}
                         </select>
@@ -151,6 +159,7 @@
                 <hr>
               </div>
               <h5 class="mb-3">Pricing</h5>
+              <p class="text-muted small mb-3">Specify how much you buy and sell this item for. Leave blank if not applicable.</p>
               <div class="row g-3 mb-4">
                 <div class="col-md-6">
                   <div class="input-group">
@@ -197,6 +206,7 @@
                 <hr>
               </div>
               <h5 class="mb-3">Inventory</h5>
+              <p class="text-muted small mb-3">Track starting, current, and reorder stock levels. You can update these anytime.</p>
               <div id="inventoryFieldsContainer" class="row mb-4">
                 <div class="col-md-4">
                   <div class="form-floating">
@@ -244,6 +254,7 @@
                         {% for error in errors.reorder_point %}{{ error }}{% endfor %}
                       </div>
                     {% endif %}
+                    <div class="form-text">The stock level at which you'll need to restock this item.</div>
                   </div>
                 </div>
               </div>

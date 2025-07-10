@@ -27,7 +27,7 @@ def signin_view(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            messages.success(request, "Signed in successfully.")
+            messages.success(request, "Signed in.")
             return redirect("home")
         else:
             messages.error(request, "Invalid login credentials.")
@@ -41,7 +41,7 @@ def signin_view(request):
 
 def signout_view(request):
     logout(request)
-    messages.success(request, "Signed out successfully.")
+    messages.success(request, "Signed out.")
     return redirect("signin")
 
 
