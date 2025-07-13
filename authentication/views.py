@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth import authenticate, login, logout
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponseForbidden
 from django.shortcuts import redirect, render
 from itsdangerous import BadSignature, SignatureExpired, URLSafeTimedSerializer
@@ -39,6 +40,7 @@ def signin_view(request):
     return render(request, "signin.html", {"form": form})
 
 
+@login_required
 def signout_view(request):
     logout(request)
     messages.success(request, "Signed out.")
@@ -59,10 +61,14 @@ def signup(request, token):
         if form.is_valid():
             user = form.save(commit=False)
             user.email = invited_user.email
+            user.first_name = form.cleaned_data["first_name"]
+            user.last_name = form.cleaned_data["last_name"]
             user.save()
 
             # Create user profile
-            UserProfile.objects.create(user=user)
+            UserProfile.objects.create(
+                user=user,
+            )
 
             # Link invited user
             invited_user.user = user

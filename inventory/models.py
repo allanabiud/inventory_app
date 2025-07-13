@@ -30,7 +30,9 @@ class Category(models.Model):
 class Item(models.Model):
     name = models.CharField(max_length=200)
     sku = models.CharField(max_length=100, unique=True)
-    unit = models.ForeignKey(UnitOfMeasure, on_delete=models.PROTECT)
+    unit = models.ForeignKey(
+        UnitOfMeasure, on_delete=models.SET_NULL, null=True, related_name="items"
+    )
     category = models.ForeignKey(
         Category, on_delete=models.SET_NULL, null=True, blank=True
     )

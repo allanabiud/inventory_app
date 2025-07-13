@@ -321,7 +321,7 @@ def add_item(request):
 @login_required
 def edit_item(request, pk):
     item = get_object_or_404(Item, pk=pk)
-    current_item_image = item.images.first()
+    current_item_image = item.images.first()  # type: ignore
     errors = {}
     form_data = {}
 
@@ -336,7 +336,6 @@ def edit_item(request, pk):
         purchase_price_str = request.POST.get("purchase_price", "").strip()
 
         opening_stock_str = request.POST.get("opening_stock", "").strip()
-        current_stock_str = request.POST.get("current_stock", "").strip()
         reorder_point_str = request.POST.get("reorder_point", "").strip()
 
         new_image_file = request.FILES.get("image")
@@ -420,7 +419,6 @@ def edit_item(request, pk):
 
         # Inventory fields
         opening_stock = None
-        current_stock = None
         reorder_point = None
 
         # Opening Stock
@@ -434,19 +432,6 @@ def edit_item(request, pk):
             except ValueError:
                 errors.setdefault("opening_stock", []).append(
                     "Opening Stock must be a whole number."
-                )
-
-        # Current Stock
-        if current_stock_str:
-            try:
-                current_stock = int(current_stock_str)
-                if current_stock < 0:
-                    errors.setdefault("current_stock", []).append(
-                        "Current Stock cannot be negative."
-                    )
-            except ValueError:
-                errors.setdefault("current_stock", []).append(
-                    "Current Stock must be a whole number."
                 )
 
         # Reorder Point
@@ -473,7 +458,6 @@ def edit_item(request, pk):
                     item.selling_price = selling_price
                     item.purchase_price = purchase_price
                     item.opening_stock = opening_stock
-                    item.current_stock = current_stock
                     item.reorder_point = reorder_point
                     item.save()
 
@@ -836,9 +820,9 @@ def delete_all_categories(request):
 ## UNITS
 @login_required
 def units_view(request):
-    units = UnitOfMeasure.objects.all().annotate(item_count=Count("item"))
+    units = UnitOfMeasure.objects.all().annotate(item_count=Count("items"))
     total_units = units.count()
-    all_units_empty = all(unit.item_count == 0 for unit in units)
+    all_units_empty = all(unit.item_count == 0 for unit in units)  # type: ignore
 
     return render(
         request,
@@ -1030,6 +1014,7 @@ def add_adjustment(request):
         }
 
         # Validation
+        item = None
         if not item_id:
             errors["item"] = ["Please select an item."]
         else:
@@ -1041,16 +1026,18 @@ def add_adjustment(request):
         if adjustment_type not in dict(InventoryAdjustment.ADJUSTMENT_TYPES):
             errors["adjustment_type"] = ["Invalid adjustment type."]
 
-        if (
-            not quantity_adjusted
-            or not quantity_adjusted.isdigit()
-            or int(quantity_adjusted) <= 0
-        ):
+        quantity = None
+        try:
+            quantity = float(quantity_adjusted)
+            if quantity <= 0:
+                raise ValueError
+        except (ValueError, TypeError):
             errors["quantity_adjusted"] = ["Enter a valid quantity."]
 
+        cost = None
         if cost_price:
             try:
-                float(cost_price)
+                cost = float(cost_price)
             except ValueError:
                 errors["cost_price"] = ["Enter a valid cost price."]
 
@@ -1059,11 +1046,11 @@ def add_adjustment(request):
 
         if not errors:
             try:
-                adj = InventoryAdjustment.objects.create(
+                InventoryAdjustment.objects.create(
                     item=item,
                     adjustment_type=adjustment_type,
                     quantity_adjusted=int(quantity_adjusted),
-                    cost_price=cost_price or None,
+                    cost_price=cost or None,
                     reason=reason,
                     description=description or "",
                     user=request.user,
@@ -1133,6 +1120,7 @@ def edit_adjustment(request, pk):
             errors["adjustment_type"] = ["Invalid adjustment type."]
 
         # Validate quantity
+        quantity = None
         try:
             quantity = int(form_data["quantity_adjusted"])
             if quantity <= 0:

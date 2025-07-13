@@ -16,7 +16,7 @@ def send_invitation_email(invited_user):
     signup_path = reverse("signup", kwargs={"token": token})
     signup_url = f"{settings.SITE_DOMAIN}{signup_path}"
 
-    subject = "You're Invited to Join Inventory System"
+    subject = "You're Invited to Join Stockflow"
     from_email = settings.DEFAULT_FROM_EMAIL
     to_email = [invited_user.email]
 

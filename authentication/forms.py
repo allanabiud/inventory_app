@@ -1,6 +1,7 @@
 from crispy_bootstrap5.bootstrap5 import FloatingField
 from crispy_forms.helper import FormHelper
-from crispy_forms.layout import Layout, Submit
+from crispy_forms.layout import Column, Layout, Row, Submit
+from django import forms
 from django.contrib.auth.forms import AuthenticationForm, BaseUserCreationForm
 from django.contrib.auth.models import User
 
@@ -19,9 +20,12 @@ class CustomAuthenticationForm(AuthenticationForm):
 
 
 class CustomUserCreationForm(BaseUserCreationForm):
+    first_name = forms.CharField(max_length=150, required=True, label="First Name")
+    last_name = forms.CharField(max_length=150, required=True, label="Last Name")
+
     class Meta:
         model = User
-        fields = ("username", "password1", "password2")
+        fields = ("first_name", "last_name", "username", "password1", "password2")
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -39,6 +43,11 @@ class CustomUserCreationForm(BaseUserCreationForm):
         self.helper = FormHelper()
         self.helper.form_method = "post"
         self.helper.layout = Layout(
+            Row(
+                Column(FloatingField("first_name"), css_class="col-md-6"),
+                Column(FloatingField("last_name"), css_class="col-md-6"),
+                css_class="g-2",
+            ),
             FloatingField("username"),
             FloatingField("password1"),
             FloatingField("password2"),

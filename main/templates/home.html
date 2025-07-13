@@ -14,7 +14,11 @@
             </div>
             <!-- Greeting -->
             <div>
-              <h5 class="mb-1 fw-semibold">Hello, {{ user.username }}</h5>
+              {% if user.first_name and user.last_name %}
+                <h5 class="mb-1 fw-semibold">Hello, {{ user.first_name }} {{ user.last_name }}</h5>
+              {% else %}
+                <h5 class="mb-1 fw-semibold">Hello, {{ user.username }}</h5>
+              {% endif %}
               <p class="placeholder-glow mb-0">
                 <span class="placeholder rounded col-12"></span>
               </p>
