@@ -822,7 +822,6 @@ def delete_all_categories(request):
 def units_view(request):
     units = UnitOfMeasure.objects.all().annotate(item_count=Count("items"))
     total_units = units.count()
-    all_units_empty = all(unit.item_count == 0 for unit in units)  # type: ignore
 
     return render(
         request,
@@ -830,7 +829,6 @@ def units_view(request):
         {
             "units": units,
             "total_units": total_units,
-            "all_units_empty": all_units_empty,
         },
     )
 

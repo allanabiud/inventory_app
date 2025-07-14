@@ -8,12 +8,10 @@
         <h4 class="mb-0">Unit: {{ unit.name }}</h4>
         <div class="d-flex align-items-center gap-2">
           <a href="{% url 'edit_unit' unit.pk %}" class="btn btn-sm btn-success">Edit Unit</a>
-          {% if items|length == 0 %}
-            <button type="button"
-                    class="btn btn-sm btn-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#deleteUnitModal">Delete Unit</button>
-          {% endif %}
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteUnitModal">Delete Unit</button>
           <a href="{% url 'units' %}">
             <i class="bi bi-x-lg fs-4"></i>
           </a>

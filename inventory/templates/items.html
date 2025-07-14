@@ -71,7 +71,11 @@
                     <td>{{ item.name }}</td>
                     <td>{{ item.sku }}</td>
                     <td>{{ item.category.name|default:"N/A" }}</td>
-                    <td>{{ item.unit.name }}</td>
+                    {% if item.unit %}
+                      <td>{{ item.unit.name }}</td>
+                    {% else %}
+                      <td>N/A</td>
+                    {% endif %}
                     <td>KES {{ item.purchase_price|floatformat:2|intcomma }}</td>
                     <td>KES {{ item.selling_price|floatformat:2|intcomma }}</td>
                     <td>{{ item.opening_stock }}</td>

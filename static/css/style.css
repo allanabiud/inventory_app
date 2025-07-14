@@ -29,6 +29,14 @@
   color: var(--color-white);
 }
 
+.btn-outline-success {
+  color: var(--text-color);
+}
+
+.btn-outline-success i {
+  color: var(--text-color);
+}
+
 .slide-in-left {
   animation: slideInFromLeft 0.4s ease forwards;
 }
@@ -229,4 +237,11 @@ thead th.sorting_desc::after {
 
 .select2-container--bootstrap-5 .select2-dropdown {
   border-color: var(--primary-green);
+}
+
+/* Charts */
+.chart-container {
+  position: relative;
+  width: 100%;
+  max-width: 200px;
 }

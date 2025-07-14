@@ -25,14 +25,12 @@
           <a href="{% url 'add_unit' %}" class="btn btn-success">
             <i class="bi bi-plus-lg"></i> Add Unit
           </a>
-          {% if all_units_empty %}
-            <button type="button"
-                    class="btn btn-danger"
-                    data-bs-toggle="modal"
-                    data-bs-target="#confirmDeleteAllModal">
-              <i class="bi bi-trash"></i> Delete All
-            </button>
-          {% endif %}
+          <button type="button"
+                  class="btn btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#confirmDeleteAllModal">
+            <i class="bi bi-trash"></i> Delete All
+          </button>
         </div>
       </div>
       <div class="card shadow-sm">

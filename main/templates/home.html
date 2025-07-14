@@ -46,18 +46,27 @@
             </div>
             <div class="card-body">
               <div class="row g-0 h-100">
-                <div class="col-5 d-flex flex-column justify-content-center">
+                <div class="col-5 d-flex flex-column justify-content-start">
+                  <div class="mb-3">
+                    <h5 class="text-muted">Inventory Overview</h5>
+                  </div>
                   <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-muted fs-6">All Items</span>
-                    <span class="fs-5 fw-bold">{{ num_items }}</span>
+                    <span class="fs-5 fw-bold count-up" data-target="{{ num_items }}">0</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center mb-3">
                     <span class="text-muted fs-6">All Categories</span>
-                    <span class="fs-5 fw-bold">{{ num_categories }}</span>
+                    <span class="fs-5 fw-bold count-up" data-target="{{ num_categories }}">0</span>
                   </div>
                   <div class="d-flex justify-content-between align-items-center">
                     <span class="text-danger fs-6">Low Stock Items</span>
-                    <span class="fs-5 fw-bold text-danger">0</span>
+                    <span class="fs-5 fw-bold count-up" data-target="{{ low_stock_count }}">0</span>
+                  </div>
+                  <!-- View Items Button -->
+                  <div class="mt-auto">
+                    <a href="{% url 'items' %}" class="btn btn-outline-success w-100">
+                      <i class="bi bi-eye-fill"></i> View All Items
+                    </a>
                   </div>
                 </div>
                 <!-- Separator Line -->
@@ -67,9 +76,14 @@
                 <!-- Right Column for Doughnut Chart -->
                 <div class="col-6 d-flex flex-column justify-content-center align-items-center">
                   <div class="chart-container text-center">
-                    <h5 class="text-muted mb-2">Active Items</h5>
-                    <div class="doughnut-chart-placeholder bg-success d-flex align-items-center justify-content-center rounded-circle">
-                      <span class="text-white fw-bold">100%</span>
+                    <h5 class="text-muted mb-2">Stock Status</h5>
+                    <canvas id="stockChart" width="150" height="150"></canvas>
+                    <div id="totalItemsOverlay"
+                         class="position-absolute top-50 start-50 translate-middle text-white fw-bold"
+                         style="pointer-events: none;
+                                font-size: 1.2rem"
+                         data-target="{{ num_items }}">
+                      <span id="totalItemsCount" class="fs-5">0</span> <span class="fs-5">items</span>
                     </div>
                   </div>
                 </div>
@@ -169,4 +183,11 @@
       </div>
     </div>
   </div>
+  <script src="{% static 'js/home/count-up-animation.js' %}"></script>
+  <script>
+    var numItems = {{ num_items }};
+    var lowStockCount = {{ low_stock_count }};
+    var sufficientStockCount = {{ sufficient_stock_count }};
+  </script>
+  <script src="{% static 'js/charts/item-donut.js' %}"></script>
 {% endblock %}
