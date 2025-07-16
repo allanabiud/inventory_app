@@ -115,7 +115,10 @@
                         class="form-select {% if errors.reason %}is-invalid{% endif %}"
                         required>
                   {% for val, label in reason_choices %}
-                    <option value="{{ val }}" {% if form_data.reason == val %}selected{% endif %}>{{ label }}</option>
+                    <option value="{{ val }}"
+                      {# Assign data-type based on the value #}
+                      data-type="{% if val == '' %}BOTH{% elif val == 'PURCHASE' or val == 'STOCK_COUNT_INCREASE' or val == 'OTHER_INCREASE' %}INCREASE{% elif val == 'SALE' or val == 'STOLEN' or val == 'DAMAGED' or val == 'STOCK_COUNT_DECREASE' or val == 'OTHER_DECREASE' %}DECREASE{% else %}BOTH{% endif %}"
+                      {% if form_data.reason == val %}selected{% endif %}>{{ label }}</option>
                   {% endfor %}
                 </select>
                 <label for="id_reason">Reason</label>

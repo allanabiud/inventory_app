@@ -32,6 +32,9 @@
 .btn-outline-success {
   color: var(--text-color);
 }
+.btn-outline-danger {
+  color: var(--text-color);
+}
 
 .btn-outline-success i {
   color: var(--text-color);

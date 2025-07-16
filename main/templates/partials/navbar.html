@@ -1,12 +1,40 @@
+{% load static %}
 <nav class="navbar navbar-expand-lg rounded-2">
   <div class="container-fluid">
     <div class="collapse navbar-collapse" id="navbarNavDropdown">
-      <form class="d-flex me-auto" role="search">
+      <form class="d-flex me-auto"
+            role="search"
+            action="{% url 'search_results' %}"
+            method="get">
         <div class="input-group">
+          <button class="btn btn-outline-secondary dropdown-toggle"
+                  type="button"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false"
+                  id="searchDropdownButton">
+            <span id="selectedSearchOption">All</span>
+          </button>
+          <ul class="dropdown-menu" aria-labelledby="searchDropdownButton">
+            <li>
+              <a class="dropdown-item" href="#" data-search-scope="all">All</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" data-search-scope="items">Items</a>
+            </li>
+            <li>
+              <a class="dropdown-item" href="#" data-search-scope="categories">Categories</a>
+            </li>
+            {# Temporarily commented out until Customers and Vendors are implemented #}
+            {# <li><a class="dropdown-item" href="#" data-search-scope="customers">Customers</a></li> #}
+            {# <li><a class="dropdown-item" href="#" data-search-scope="vendors">Vendors</a></li> #}
+          </ul>
           <input class="form-control focus-ring"
                  type="search"
-                 placeholder="Search Item Name, SKU, or Category"
-                 aria-label="Search">
+                 placeholder="Perform a global search"
+                 aria-label="Search"
+                 name="q"
+                 id="searchQueryInput">
+          <input type="hidden" name="scope" id="hiddenSearchScope" value="all">
           <button class="btn btn-success" type="submit">
             <i class="bi bi-search text-white"></i>
           </button>
@@ -14,17 +42,15 @@
       </form>
       <ul class="navbar-nav d-flex align-items-center">
         <li class="nav-item dropdown me-3">
-          {# Added dropdown class to nav-item #}
-          <button class="btn btn-success btn-sm dropdown-toggle" {# Added dropdown-toggle class #}
-            type="button"
-            id="quickAddDropdown" {# Unique ID for the dropdown #}
-            data-bs-toggle="dropdown" {# Data attribute to trigger dropdown #}
-            aria-expanded="false">
+          <button class="btn btn-success btn-sm dropdown-toggle"
+                  type="button"
+                  id="quickAddDropdown"
+                  data-bs-toggle="dropdown"
+                  aria-expanded="false">
             <i class="bi bi-plus-lg"></i>
           </button>
           <ul class="dropdown-menu dropdown-menu-end"
               aria-labelledby="quickAddDropdown">
-            {# Positioned to align to the end #}
             <li>
               <h6 class="dropdown-header">Quick Add</h6>
             </li>
@@ -85,3 +111,4 @@
     </div>
   </div>
 </nav>
+<script src="{% static 'js/navbar.js' %}"></script>

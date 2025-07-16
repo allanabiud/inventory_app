@@ -89,12 +89,15 @@ class InventoryAdjustment(models.Model):
     user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True)
 
     REASON_CHOICES = (
-        ("PURCHASE", "Purchase"),
-        ("SALE", "Sale"),
-        ("STOCK_COUNT", "Stock Count"),
-        ("STOLEN", "Stolen Goods"),
-        ("DAMAGED", "Damaged Goods"),
-        ("OTHER", "Other"),
+        ("", "---"),
+        ("PURCHASE", "Purchase (Increase)"),
+        ("STOCK_COUNT_INCREASE", "Stock Count (Increase)"),
+        ("OTHER_INCREASE", "Other (Increase)"),
+        ("SALE", "Sale (Decrease)"),
+        ("STOCK_COUNT_DECREASE", "Stock Count (Decrease)"),
+        ("STOLEN", "Stolen Goods (Decrease)"),
+        ("DAMAGED", "Damaged Goods (Decrease)"),
+        ("OTHER_DECREASE", "Other (Decrease)"),
     )
     reason = models.CharField(
         max_length=100, choices=REASON_CHOICES, default="STOCK_COUNT"

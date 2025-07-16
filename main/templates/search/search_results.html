@@ -1,0 +1,178 @@
+{% extends "layouts/home-base.html" %}
+{% load static %}
+{% block title %}Search Results - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card shadow-sm mb-4">
+      <div class="card-body">
+        <div class="row align-items-center">
+          <div class="col-md-8">
+            <h4 class="mb-0 text-primary">
+              <i class="bi bi-search me-2"></i> Search Results
+            </h4>
+            {% if query %}
+              <p class="text-muted mb-0">
+                Displaying results for "<strong>{{ query }}</strong>" in <strong>{{ scope|capfirst }}</strong>.
+              </p>
+            {% else %}
+              <p class="text-muted mb-0">Enter a query to start searching.</p>
+            {% endif %}
+          </div>
+          <div class="col-md-4 text-end">
+            <button type="button"
+                    class="btn btn-sm btn-outline-secondary"
+                    onclick="window.history.back()">
+              <i class="bi bi-arrow-left"></i> Back
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    {% if not query %}
+      {# Display this section if no query is entered yet #}
+      <div class="alert alert-info text-center" role="alert">
+        Please enter a search term in the search bar above to see results.
+      </div>
+    {% elif not item_results and not category_results and not customer_results and not vendor_results %}
+      {# Display this if a query was entered, but no results found across all active scopes #}
+      <div class="alert alert-warning text-center" role="alert">
+        <i class="bi bi-exclamation-triangle-fill me-2"></i> No results found for "<strong>{{ query }}</strong>" in <strong>{{ scope|capfirst }}</strong>.
+        Try a different search term or change the search scope.
+      </div>
+    {% else %}
+      {# Display results based on scope or all #}
+      {% if scope == 'items' or scope == 'all' %}
+        <div class="card shadow-sm mb-4">
+          {# Removed justify-content-center from here #}
+          <div class="card-header bg-primary text-white d-flex align-items-center">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-boxes me-2"></i> Item Results
+              {% if scope == 'all' %}
+                <span class="badge bg-light text-primary ms-2">{{ item_results|length }} found</span>
+              {% endif %}
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            {% if item_results %}
+              <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">SKU</th>
+                      <th scope="col">Category</th>
+                      <th scope="col">Current Stock</th>
+                      <th scope="col">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for item in item_results %}
+                      <tr>
+                        <td>{{ item.name }}</td>
+                        <td>{{ item.sku }}</td>
+                        <td>{{ item.category.name|default:"N/A" }}</td>
+                        <td>
+                          {{ item.current_stock }}
+                          {% if item.reorder_point and item.current_stock <= item.reorder_point %}
+                            <span class="badge bg-warning text-dark ms-2">Low Stock</span>
+                          {% endif %}
+                        </td>
+                        <td>
+                          <a href="{% url 'view_item' item.pk %}"
+                             class="btn btn-sm btn-outline-primary">
+                            <i class="bi bi-eye-fill"></i> View
+                          </a>
+                        </td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="p-4 text-center text-muted">No items found matching your search.</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      {% if scope == 'categories' or scope == 'all' %}
+        <div class="card shadow-sm mb-4">
+          {# Removed justify-content-center from here #}
+          <div class="card-header bg-success text-white d-flex align-items-center">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-folder-fill me-2"></i> Category Results
+              {% if scope == 'all' %}
+                <span class="badge bg-light text-success ms-2">{{ category_results|length }} found</span>
+              {% endif %}
+            </h5>
+          </div>
+          <div class="card-body p-0">
+            {% if category_results %}
+              <div class="table-responsive">
+                <table class="table table-hover table-striped mb-0">
+                  <thead>
+                    <tr>
+                      <th scope="col">Name</th>
+                      <th scope="col">Description</th>
+                      <th scope="col">Number of Items</th>
+                      {# Add actions if you have a category view page #}
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for category in category_results %}
+                      <tr>
+                        <td>{{ category.name }}</td>
+                        <td>{{ category.description|default:"N/A"|truncatechars:50 }}</td>
+                        <td>{{ category.item_set.count }}</td>
+                        {# Assuming a reverse relation from Category to Item #}
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+              </div>
+            {% else %}
+              <div class="p-4 text-center text-muted">No categories found matching your search.</div>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      {# Placeholder for Customers results #}
+      {% if scope == 'customers' or scope == 'all' %}
+        <div class="card shadow-sm mb-4">
+          {# Removed justify-content-center from here #}
+          <div class="card-header bg-info text-white d-flex align-items-center">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-people-fill me-2"></i> Customer Results (Coming Soon)
+            </h5>
+          </div>
+          <div class="card-body p-4 text-center text-muted">
+            Customer search functionality is not yet implemented.
+            {% if scope == 'all' and query %}
+              <p class="mt-2 mb-0">
+                No customer results for "<strong>{{ query }}</strong>".
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+      {# Placeholder for Vendors results #}
+      {% if scope == 'vendors' or scope == 'all' %}
+        <div class="card shadow-sm mb-4">
+          {# Removed justify-content-center from here #}
+          <div class="card-header bg-warning text-dark d-flex align-items-center">
+            <h5 class="mb-0 d-flex align-items-center">
+              <i class="bi bi-shop me-2"></i> Vendor Results (Coming Soon)
+            </h5>
+          </div>
+          <div class="card-body p-4 text-center text-muted">
+            Vendor search functionality is not yet implemented.
+            {% if scope == 'all' and query %}
+              <p class="mt-2 mb-0">
+                No vendor results for "<strong>{{ query }}</strong>".
+              </p>
+            {% endif %}
+          </div>
+        </div>
+      {% endif %}
+    {% endif %}
+  </div>
+{% endblock %}

@@ -19,15 +19,16 @@
           </div>
         </a>
       </li>
-      <!-- Inventory -->
       <li class="nav-item">
-        {% with item_related_urls='items add_item import_items view_item edit_item categories add_category view_category edit_category units add_unit view_unit edit_unit inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
-          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in item_related_urls.split %}active{% endif %}"
-             data-bs-toggle="collapse"
-             href="#inventoryCollapse"
-             role="button"
-             aria-expanded="false"
-             aria-controls="inventoryCollapse">
+        {# Define all URLs that should cause 'Inventory' to expand #}
+        {% with inventory_group_urls='items add_item import_items view_item edit_item categories add_category view_category edit_category units add_unit view_unit edit_unit inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
+          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in inventory_group_urls.split %}active{% endif %}"
+            data-bs-toggle="collapse"
+            href="#inventoryCollapse"
+            role="button"
+            {# Set aria-expanded based on whether a URL inside this group is active #}
+            aria-expanded="{% if request.resolver_match.url_name in inventory_group_urls.split %}true{% else %}false{% endif %}"
+            aria-controls="inventoryCollapse">
             <div>
               <i class="bi bi-box-seam fs-5 me-1"></i>
               <span class="sidebar-label">Inventory</span>
@@ -35,50 +36,56 @@
             <i class="bi bi-chevron-down sidebar-chevron"></i>
           </a>
         {% endwith %}
-        <div class="collapse" id="inventoryCollapse">
+        {# Add 'show' class to the collapse div if any of its child URLs are active #}
+        <div class="collapse {% if request.resolver_match.url_name in inventory_group_urls.split %}show{% endif %}"
+             id="inventoryCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
-              {% with item_related_urls='items add_item import_items view_item edit_item' %}
+              {% with item_urls='items add_item import_items view_item edit_item' %}
                 <a href="{% url 'items' %}"
-                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in item_related_urls.split %}active{% endif %}">Items</a>
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in item_urls.split %}active{% endif %}">Items</a>
               {% endwith %}
             </li>
             <li>
-              {% with category_related_urls='categories add_category edit_category view_category' %}
+              {% with category_urls='categories add_category edit_category view_category' %}
                 <a href="{% url 'categories' %}"
-                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in category_related_urls.split %}active{% endif %}">Categories</a>
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in category_urls.split %}active{% endif %}">Categories</a>
               {% endwith %}
             </li>
             <li>
-              {% with unit_related_urls='units add_unit edit_unit view_unit' %}
+              {% with unit_urls='units add_unit edit_unit view_unit' %}
                 <a href="{% url 'units' %}"
-                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in unit_related_urls.split %}active{% endif %}">Units of Measure</a>
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in unit_urls.split %}active{% endif %}">Units of Measure</a>
               {% endwith %}
             </li>
             <li>
-              {% with adjustment_related_urls='inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
+              {% with adjustment_urls='inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
                 <a href="{% url 'inventory_adjustments' %}"
-                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in adjustment_related_urls %}active{% endif %}">Adjustments</a>
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in adjustment_urls %}active{% endif %}">Adjustments</a>
               {% endwith %}
             </li>
           </ul>
         </div>
       </li>
-      <!-- Sales -->
       <li class="nav-item">
-        <a class="nav-link sidebar-item"
-           data-bs-toggle="collapse"
-           href="#salesCollapse"
-           role="button"
-           aria-expanded="false"
-           aria-controls="salesCollapse">
-          <div>
-            <i class="bi bi-cart2 fs-5 me-1"></i>
-            <span class="sidebar-label">Sales</span>
-          </div>
-          <i class="bi bi-chevron-down sidebar-chevron"></i>
-        </a>
-        <div class="collapse" id="salesCollapse">
+        {# Example for Sales - adjust sales_group_urls with your actual sales URLs #}
+        {% with sales_group_urls='new_sale_url sales_history_url customers_url' %}
+          {# Replace with actual URL names #}
+          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in sales_group_urls.split %}active{% endif %}"
+             data-bs-toggle="collapse"
+             href="#salesCollapse"
+             role="button"
+             aria-expanded="{% if request.resolver_match.url_name in sales_group_urls.split %}true{% else %}false{% endif %}"
+             aria-controls="salesCollapse">
+            <div>
+              <i class="bi bi-cart2 fs-5 me-1"></i>
+              <span class="sidebar-label">Sales</span>
+            </div>
+            <i class="bi bi-chevron-down sidebar-chevron"></i>
+          </a>
+        {% endwith %}
+        <div class="collapse {% if request.resolver_match.url_name in sales_group_urls.split %}show{% endif %}"
+             id="salesCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">New Sale</a>
@@ -92,21 +99,25 @@
           </ul>
         </div>
       </li>
-      <!-- Purchases -->
       <li class="nav-item">
-        <a class="nav-link sidebar-item"
-           data-bs-toggle="collapse"
-           href="#purchasesCollapse"
-           role="button"
-           aria-expanded="false"
-           aria-controls="purchasesCollapse">
-          <div>
-            <i class="bi bi-bag fs-5 me-1"></i>
-            <span class="sidebar-label">Purchases</span>
-          </div>
-          <i class="bi bi-chevron-down sidebar-chevron"></i>
-        </a>
-        <div class="collapse" id="purchasesCollapse">
+        {# Example for Purchases - adjust purchase_group_urls with your actual purchase URLs #}
+        {% with purchase_group_urls='new_purchase_url purchase_orders_url suppliers_url' %}
+          {# Replace with actual URL names #}
+          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in purchase_group_urls.split %}active{% endif %}"
+             data-bs-toggle="collapse"
+             href="#purchasesCollapse"
+             role="button"
+             aria-expanded="{% if request.resolver_match.url_name in purchase_group_urls.split %}true{% else %}false{% endif %}"
+             aria-controls="purchasesCollapse">
+            <div>
+              <i class="bi bi-bag fs-5 me-1"></i>
+              <span class="sidebar-label">Purchases</span>
+            </div>
+            <i class="bi bi-chevron-down sidebar-chevron"></i>
+          </a>
+        {% endwith %}
+        <div class="collapse {% if request.resolver_match.url_name in purchase_group_urls.split %}show{% endif %}"
+             id="purchasesCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">New Purchase</a>
@@ -120,21 +131,25 @@
           </ul>
         </div>
       </li>
-      <!-- Reports -->
       <li class="nav-item">
-        <a class="nav-link sidebar-item"
-           data-bs-toggle="collapse"
-           href="#reportsCollapse"
-           role="button"
-           aria-expanded="false"
-           aria-controls="reportsCollapse">
-          <div>
-            <i class="bi bi-bar-chart fs-5 me-1"></i>
-            <span class="sidebar-label">Reports</span>
-          </div>
-          <i class="bi bi-chevron-down sidebar-chevron"></i>
-        </a>
-        <div class="collapse" id="reportsCollapse">
+        {# Example for Reports - adjust report_group_urls with your actual report URLs #}
+        {% with report_group_urls='sales_report_url inventory_report_url profit_loss_url' %}
+          {# Replace with actual URL names #}
+          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in report_group_urls.split %}active{% endif %}"
+             data-bs-toggle="collapse"
+             href="#reportsCollapse"
+             role="button"
+             aria-expanded="{% if request.resolver_match.url_name in report_group_urls.split %}true{% else %}false{% endif %}"
+             aria-controls="reportsCollapse">
+            <div>
+              <i class="bi bi-bar-chart fs-5 me-1"></i>
+              <span class="sidebar-label">Reports</span>
+            </div>
+            <i class="bi bi-chevron-down sidebar-chevron"></i>
+          </a>
+        {% endwith %}
+        <div class="collapse {% if request.resolver_match.url_name in report_group_urls.split %}show{% endif %}"
+             id="reportsCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Sales Report</a>

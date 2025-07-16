@@ -41,7 +41,6 @@ def add_item(request):
     if request.method == "POST":
         # 1. Retrieve Data from POST & FILES
         name = request.POST.get("name", "").strip()
-        # SKU is received as a single combined string from the hidden field
         sku = request.POST.get("sku", "").strip()
 
         unit_id = request.POST.get("unit")
@@ -61,9 +60,9 @@ def add_item(request):
 
         form_data = {
             "name": name,
-            "sku_prefix": sku_prefix_for_form,  # For re-populating the form's prefix field
-            "sku_number": sku_number_for_form,  # For re-populating the form's number field
-            "sku": sku,  # The actual combined SKU
+            "sku_prefix": sku_prefix_for_form,
+            "sku_number": sku_number_for_form,
+            "sku": sku,
             "unit": unit_id,
             "category": category_id,
             "selling_price": selling_price_str,
@@ -71,9 +70,7 @@ def add_item(request):
             "opening_stock": opening_stock_str,
             "current_stock": current_stock_str,
             "reorder_point": reorder_point_str,
-            "image_exists": bool(
-                image_file
-            ),  # For previewing the uploaded image on error
+            "image_exists": bool(image_file),
         }
 
         # 2. Validation
@@ -87,9 +84,12 @@ def add_item(request):
 
         if not name:
             errors["name"] = ["Name is required."]
+        elif len(name) < 3:
+            errors["name"] = ["Name must be at least 3 characters long."]
         if not sku:
-            errors["sku"] = ["SKU is required."]  # Validation for the combined SKU
+            errors["sku"] = ["SKU is required."]
 
+        # Check SKU uniqueness only if it's not already empty/invalid
         if "sku" not in errors and sku and Item.objects.filter(sku=sku).exists():
             errors["sku"] = ["An item with this SKU already exists."]
 
@@ -116,7 +116,7 @@ def add_item(request):
                         "Selling price cannot be negative."
                     )
             else:
-                validated_selling_price = None  # Set to None if blank
+                validated_selling_price = None
         except (ValueError, InvalidOperation):
             errors.setdefault("selling_price", []).append(
                 "Please enter a valid selling price."
@@ -130,15 +130,15 @@ def add_item(request):
                         "Purchase price cannot be negative."
                     )
             else:
-                validated_purchase_price = None  # Set to None if blank
+                validated_purchase_price = None
         except (ValueError, InvalidOperation):
             errors.setdefault("purchase_price", []).append(
                 "Please enter a valid purchase price."
             )
 
-        # Validate and convert inventory fields (now independent, no 'track_inventory' dependency)
+        # Validate and convert inventory fields
         try:
-            if opening_stock_str:  # opening_stock is nullable
+            if opening_stock_str:
                 validated_opening_stock = int(opening_stock_str)
                 if validated_opening_stock < 0:
                     errors.setdefault("opening_stock", []).append(
@@ -152,23 +152,21 @@ def add_item(request):
             )
 
         try:
-            if (
-                current_stock_str
-            ):  # current_stock has default=0 but can be explicitly set
+            if current_stock_str:
                 validated_current_stock = int(current_stock_str)
                 if validated_current_stock < 0:
                     errors.setdefault("current_stock", []).append(
                         "Current stock cannot be negative."
                     )
             else:
-                validated_current_stock = 0  # Default if not provided
+                validated_current_stock = 0
         except ValueError:
             errors.setdefault("current_stock", []).append(
                 "Please enter a valid number for Current Stock."
             )
 
         try:
-            if reorder_point_str:  # reorder_point is nullable
+            if reorder_point_str:
                 validated_reorder_point = int(reorder_point_str)
                 if validated_reorder_point < 0:
                     errors.setdefault("reorder_point", []).append(
@@ -182,17 +180,7 @@ def add_item(request):
             )
 
         if errors:
-            # Add general messages for errors for user feedback
-            for field, error_list in errors.items():
-                for error_msg in error_list:
-                    # Avoid showing 'sku_prefix', 'sku_number' specific errors if the combined 'sku' error is sufficient
-                    if field not in [
-                        "sku_prefix",
-                        "sku_number",
-                    ]:  # Only show general messages for actual model fields
-                        messages.error(
-                            request, f"{field.replace('_', ' ').title()}: {error_msg}"
-                        )
+            # ONLY send ONE general error message if there are any field-specific errors
             messages.error(request, "Please correct the errors below.")
 
             units = UnitOfMeasure.objects.all()
@@ -207,10 +195,10 @@ def add_item(request):
 
         # 3. Create and Save Item if no errors
         try:
-            with transaction.atomic():  # Use transaction for atomicity
+            with transaction.atomic():
                 item = Item(
                     name=name,
-                    sku=sku,  # Use the combined SKU
+                    sku=sku,
                     unit=validated_unit,
                     category=validated_category,
                     selling_price=validated_selling_price,
@@ -232,14 +220,15 @@ def add_item(request):
 
         except IntegrityError:
             # This catches database-level errors, e.g., unique constraint violation for SKU
+            # This specific error is often better handled by a direct `Item.objects.filter(sku=sku).exists()` check
+            # earlier, but it's good to have this as a fallback.
             errors["sku"] = [
                 "An item with this SKU already exists (database conflict)."
             ]
             messages.error(
                 request,
-                "A database error occurred, possibly a duplicate SKU. Please try again.",
+                "A database error occurred, possibly a duplicate SKU. Please correct the highlighted field.",  # More specific message
             )
-
             units = UnitOfMeasure.objects.all()
             categories = Category.objects.all()
             context = {
@@ -251,17 +240,27 @@ def add_item(request):
             return render(request, "forms/add_item.html", context)
 
         except ValidationError as e:
-            # This catches model's clean() method errors (though our clean is empty now)
+            # This catches model's clean() method errors (if you add any later)
             # and potentially default Django form validation if using ModelForms
+            # Aggregate all messages into one general error message for the user.
+            all_validation_errors = []
             for field, field_errors in e.message_dict.items():
                 errors[field] = (
                     errors.get(field, []) + field_errors
-                )  # Append to existing errors
+                )  # Ensure field-specific errors are still passed to context
                 for error_msg in field_errors:
-                    messages.error(
-                        request, f"{field.replace('_', ' ').title()}: {error_msg}"
+                    all_validation_errors.append(
+                        f"{field.replace('_', ' ').title()}: {error_msg}"
                     )
-            messages.error(request, "Please correct the errors below.")
+
+            if all_validation_errors:
+                messages.error(
+                    request,
+                    "Please correct the following issues: "
+                    + "; ".join(all_validation_errors),
+                )
+            else:
+                messages.error(request, "Please correct the errors below.")
 
             units = UnitOfMeasure.objects.all()
             categories = Category.objects.all()
@@ -273,9 +272,11 @@ def add_item(request):
             }
             return render(request, "forms/add_item.html", context)
 
-        except Exception as e:
+        except Exception:
             # Catch any other unexpected errors
-            messages.error(request, f"An unexpected error occurred: {e}")
+            messages.error(
+                request, "An unexpected server error occurred. Please try again."
+            )  # Generic user message
             import traceback
 
             traceback.print_exc()  # For debugging: print full traceback to console/logs
@@ -286,16 +287,18 @@ def add_item(request):
                 "units": units,
                 "categories": categories,
                 "form_data": form_data,
-                "errors": {"general": [f"An unexpected error occurred: {e}"]},
+                "errors": {
+                    "general": ["An unexpected error occurred."]
+                },  # Provide a generic error for frontend in 'errors'
             }
             return render(request, "forms/add_item.html", context)
 
     else:  # GET request: Render empty form or with default values
         form_data = {
             "name": "",
-            "sku_prefix": "SKU",  # Default prefix
+            "sku_prefix": "SKU",
             "sku_number": "",
-            "sku": "",  # This will be set by JS
+            "sku": "",
             "unit": "",
             "category": "",
             "selling_price": "",
@@ -303,7 +306,7 @@ def add_item(request):
             "opening_stock": "",
             "current_stock": "",
             "reorder_point": "",
-            "image_exists": False,  # No image on initial load
+            "image_exists": False,
         }
 
     units = UnitOfMeasure.objects.all()
@@ -341,12 +344,18 @@ def edit_item(request, pk):
         new_image_file = request.FILES.get("image")
         clear_image_requested = request.POST.get("clear_image") == "true"
 
+        # Use request.POST directly for form_data to retain all submitted values
+        # This is important for re-populating the form fields accurately on error
         form_data = request.POST.copy()
 
         # --- Validation ---
 
         if not name:
             errors.setdefault("name", []).append("Item name is required.")
+        elif len(name) < 3:
+            errors.setdefault("name", []).append(
+                "Name must be at least 3 characters long."
+            )
 
         # SKU logic
         combined_sku = ""
@@ -355,16 +364,23 @@ def edit_item(request, pk):
         elif sku_prefix:
             combined_sku = sku_prefix
         elif sku_number:
-            errors.setdefault("sku_prefix", []).append("SKU Prefix is required.")
-            errors.setdefault("sku_number", []).append("SKU Prefix is required.")
+            errors.setdefault("sku_prefix", []).append(
+                "SKU Prefix is required if SKU Number is provided."
+            )
+            errors.setdefault("sku_number", []).append(
+                "SKU Prefix is required if SKU Number is provided."
+            )
         else:
+            # If both are empty, consider SKU as required for editing unless it's explicitly allowed to be empty
+            # For now, let's assume SKU is always required.
             errors.setdefault("sku_prefix", []).append("SKU is required.")
             errors.setdefault("sku_number", []).append("SKU is required.")
 
         if combined_sku:
+            # Check for uniqueness, excluding the current item being edited
             existing_items = Item.objects.filter(sku=combined_sku).exclude(pk=item.pk)
             if existing_items.exists():
-                errors.setdefault("sku", []).append(
+                errors.setdefault("sku", []).append(  # Use 'sku' for the combined error
                     "An item with this SKU already exists."
                 )
 
@@ -397,8 +413,9 @@ def edit_item(request, pk):
                     )
             except InvalidOperation:
                 errors.setdefault("selling_price", []).append("Invalid Selling Price.")
-        else:
-            errors.setdefault("selling_price", []).append("Selling Price is required.")
+        # Removed 'else: errors.setdefault("selling_price", []).append("Selling Price is required.")'
+        # based on your previous 'add_item' logic where it's nullable.
+        # If it *is* required, uncomment the above line.
 
         purchase_price = None
         if purchase_price_str:
@@ -412,10 +429,9 @@ def edit_item(request, pk):
                 errors.setdefault("purchase_price", []).append(
                     "Invalid Purchase Price."
                 )
-        else:
-            errors.setdefault("purchase_price", []).append(
-                "Purchase Price is required."
-            )
+        # Removed 'else: errors.setdefault("purchase_price", []).append("Purchase Price is required.")'
+        # based on your previous 'add_item' logic where it's nullable.
+        # If it *is* required, uncomment the above line.
 
         # Inventory fields
         opening_stock = None
@@ -447,61 +463,165 @@ def edit_item(request, pk):
                     "Reorder Point must be a whole number."
                 )
 
-        # --- Save if No Errors ---
-        if not errors:
-            try:
-                with transaction.atomic():
-                    item.name = name
-                    item.sku = combined_sku
-                    item.unit = selected_unit
-                    item.category = selected_category
-                    item.selling_price = selling_price
-                    item.purchase_price = purchase_price
-                    item.opening_stock = opening_stock
-                    item.reorder_point = reorder_point
-                    item.save()
+        # --- Handle Errors and Render Form ---
+        if errors:
+            messages.error(
+                request, "Please correct the errors below."
+            )  # <--- Consolidated message
 
-                    # Clear image if requested
-                    if clear_image_requested and current_item_image:
+            # Recalculate image_exists and current_image_url for form re-population
+            current_image_url = (
+                current_item_image.image.url
+                if current_item_image and current_item_image.image
+                else None
+            )
+            image_exists = bool(current_item_image and current_item_image.image)
+            if clear_image_requested:
+                current_image_url = None
+                image_exists = False
+
+            context = {
+                "item": item,
+                "form_data": form_data,
+                "errors": errors,
+                "units": UnitOfMeasure.objects.all(),
+                "categories": Category.objects.all(),
+                "current_image_url": current_image_url,
+                "image_exists": image_exists,
+            }
+            return render(request, "forms/edit_item.html", context)
+
+        # --- Save if No Errors ---
+        try:
+            with transaction.atomic():
+                item.name = name
+                item.sku = combined_sku
+                item.unit = selected_unit
+                item.category = selected_category
+                item.selling_price = selling_price
+                item.purchase_price = purchase_price
+                item.opening_stock = opening_stock
+                item.reorder_point = reorder_point
+                item.save()
+
+                # Clear image if requested
+                if clear_image_requested and current_item_image:
+                    current_item_image.image.delete(save=False)
+                    current_item_image.delete()
+                    current_item_image = None
+
+                # Upload new image
+                if new_image_file:
+                    if (
+                        current_item_image
+                    ):  # Delete existing image if a new one is uploaded
                         current_item_image.image.delete(save=False)
                         current_item_image.delete()
-                        current_item_image = None
+                    ItemImage.objects.create(item=item, image=new_image_file)
 
-                    # Upload new image
-                    if new_image_file:
-                        if current_item_image:
-                            current_item_image.image.delete(save=False)
-                            current_item_image.delete()
-                        ItemImage.objects.create(item=item, image=new_image_file)
+            messages.success(request, f'Item "{item.name}" updated successfully!')
+            return redirect("view_item", pk=item.pk)
 
-                messages.success(request, f'Item "{item.name}" updated successfully!')
-                return redirect("view_item", pk=item.pk)
+        except IntegrityError:
+            # This catches database-level errors, e.g., unique constraint violation for SKU
+            errors["sku"] = [
+                "An item with this SKU already exists (database conflict)."
+            ]
+            messages.error(
+                request,
+                "A database error occurred, possibly a duplicate SKU. Please correct the highlighted field.",
+            )
+            # Re-render with errors
+            current_image_url = (
+                current_item_image.image.url
+                if current_item_image and current_item_image.image
+                else None
+            )
+            image_exists = bool(current_item_image and current_item_image.image)
+            if clear_image_requested:
+                current_image_url = None
+                image_exists = False
 
-            except Exception as e:
-                messages.error(request, f"An unexpected error occurred: {e}")
-                errors.setdefault("general", []).append(
-                    f"Server error: {e}. Please try again."
+            context = {
+                "item": item,
+                "form_data": form_data,
+                "errors": errors,
+                "units": UnitOfMeasure.objects.all(),
+                "categories": Category.objects.all(),
+                "current_image_url": current_image_url,
+                "image_exists": image_exists,
+            }
+            return render(request, "forms/edit_item.html", context)
+
+        except ValidationError as e:
+            all_validation_errors = []
+            for field, field_errors in e.message_dict.items():
+                errors[field] = errors.get(field, []) + field_errors
+                for error_msg in field_errors:
+                    all_validation_errors.append(
+                        f"{field.replace('_', ' ').title()}: {error_msg}"
+                    )
+
+            if all_validation_errors:
+                messages.error(
+                    request,
+                    "Please correct the following issues: "
+                    + "; ".join(all_validation_errors),
                 )
+            else:
+                messages.error(request, "Please correct the errors below.")
 
-        current_image_url = (
-            current_item_image.image.url
-            if current_item_image and current_item_image.image
-            else None
-        )
-        image_exists = bool(current_item_image and current_item_image.image)
-        if clear_image_requested:
-            current_image_url = None
-            image_exists = False
+            # Re-render with errors
+            current_image_url = (
+                current_item_image.image.url
+                if current_item_image and current_item_image.image
+                else None
+            )
+            image_exists = bool(current_item_image and current_item_image.image)
+            if clear_image_requested:
+                current_image_url = None
+                image_exists = False
 
-        context = {
-            "item": item,
-            "form_data": form_data,
-            "errors": errors,
-            "units": UnitOfMeasure.objects.all(),
-            "categories": Category.objects.all(),
-            "current_image_url": current_image_url,
-            "image_exists": image_exists,
-        }
+            context = {
+                "item": item,
+                "form_data": form_data,
+                "errors": errors,
+                "units": UnitOfMeasure.objects.all(),
+                "categories": Category.objects.all(),
+                "current_image_url": current_image_url,
+                "image_exists": image_exists,
+            }
+            return render(request, "forms/edit_item.html", context)
+
+        except Exception:
+            messages.error(
+                request, "An unexpected server error occurred. Please try again."
+            )
+            import traceback
+
+            traceback.print_exc()
+
+            # Re-render with errors
+            current_image_url = (
+                current_item_image.image.url
+                if current_item_image and current_item_image.image
+                else None
+            )
+            image_exists = bool(current_item_image and current_item_image.image)
+            if clear_image_requested:
+                current_image_url = None
+                image_exists = False
+
+            context = {
+                "item": item,
+                "form_data": form_data,
+                "errors": {"general": ["An unexpected error occurred."]},
+                "units": UnitOfMeasure.objects.all(),
+                "categories": Category.objects.all(),
+                "current_image_url": current_image_url,
+                "image_exists": image_exists,
+            }
+            return render(request, "forms/edit_item.html", context)
 
     else:  # GET
         form_data = {

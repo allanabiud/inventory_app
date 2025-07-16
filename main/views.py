@@ -1,8 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.db import models
+from django.db.models import Q
 from django.shortcuts import render
 
 from inventory.models import Category, Item
+
+# from .models import Customer, Vendor # Uncomment when you implement these models
 
 
 @login_required
@@ -23,3 +26,54 @@ def home(request):
         "sufficient_stock_count": sufficient_stock_count,
     }
     return render(request, "home.html", context)
+
+
+@login_required
+def search_results_view(request):
+    query = request.GET.get("q", "").strip()
+    scope = request.GET.get("scope", "all")  # Default scope to 'all'
+
+    # Initialize results containers
+    item_results = None
+    category_results = None
+    customer_results = None  # Will remain None until implemented
+    vendor_results = None  # Will remain None until implemented
+
+    if query:
+        # Search in Items
+        if scope == "items" or scope == "all":
+            item_results = Item.objects.filter(
+                Q(name__icontains=query) | Q(sku__icontains=query)
+            ).distinct()
+
+        # Search in Categories
+        if scope == "categories" or scope == "all":
+            category_results = Category.objects.filter(name__icontains=query).distinct()
+
+        # When Customer and Vendor models are implemented, uncomment and add search logic here:
+        # if scope == 'customers' or scope == 'all':
+        #     customer_results = Customer.objects.filter(
+        #         Q(name__icontains=query) |
+        #         Q(email__icontains=query) |
+        #         Q(phone_number__icontains=query)
+        #     ).distinct()
+
+        # if scope == 'vendors' or scope == 'all':
+        #     vendor_results = Vendor.objects.filter(
+        #         Q(name__icontains=query) |
+        #         Q(contact_person__icontains=query) |
+        #         Q(email__icontains=query) |
+        #         Q(phone_number__icontains=query)
+        #     ).distinct()
+
+    context = {
+        "query": query,
+        "scope": scope,  # Pass back to the template to restore state
+        "item_results": item_results,
+        "category_results": category_results,
+        "customer_results": customer_results,
+        "vendor_results": vendor_results,
+    }
+    return render(
+        request, "search/search_results.html", context
+    )  # You'll need to create this template

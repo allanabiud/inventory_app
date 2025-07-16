@@ -83,7 +83,11 @@
                          style="pointer-events: none;
                                 font-size: 1.2rem"
                          data-target="{{ num_items }}">
-                      <span id="totalItemsCount" class="fs-5">0</span> <span class="fs-5">items</span>
+                      {% if num_items > 0 %}
+                        <span id="totalItemsCount" class="fs-5">{{ num_items }}</span> <span class="fs-5">items</span>
+                      {% else %}
+                        <span class="fs-5 text-muted">No data</span>
+                      {% endif %}
                     </div>
                   </div>
                 </div>

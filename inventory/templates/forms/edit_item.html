@@ -13,9 +13,6 @@
       <div class="px-5 pt-3">
         <form method="post" enctype="multipart/form-data" id="itemForm">
           {% csrf_token %}
-          {% if messages %}
-            {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
-          {% endif %}
           <div class="row g-4 mb-4 align-items-stretch">
             <div class="col-md-3 d-flex flex-column">
               <div class="w-100 d-flex flex-column justify-content-center align-items-center p-2"
@@ -185,13 +182,13 @@
                            value="{{ form_data.selling_price|default:'' }}"
                            step="0.01">
                     <label for="id_selling_price">Selling Price</label>
-                    {% if errors.selling_price %}
-                      <div class="invalid-feedback">
-                        {% for error in errors.selling_price %}{{ error }}{% endfor %}
-                      </div>
-                    {% endif %}
                   </div>
                 </div>
+                {% if errors.selling_price %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in errors.selling_price %}{{ error }}{% endfor %}
+                  </div>
+                {% endif %}
               </div>
               <div class="col-md-6">
                 <div class="input-group">
@@ -205,13 +202,13 @@
                            value="{{ form_data.purchase_price|default:'' }}"
                            step="0.01">
                     <label for="id_purchase_price">Purchase Price</label>
-                    {% if errors.purchase_price %}
-                      <div class="invalid-feedback">
-                        {% for error in errors.purchase_price %}{{ error }}{% endfor %}
-                      </div>
-                    {% endif %}
                   </div>
                 </div>
+                {% if errors.purchase_price %}
+                  <div class="invalid-feedback d-block">
+                    {% for error in errors.purchase_price %}{{ error }}{% endfor %}
+                  </div>
+                {% endif %}
               </div>
             </div>
             <div class="my-4">
