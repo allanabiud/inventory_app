@@ -2,10 +2,11 @@ from django.contrib.auth.decorators import login_required
 from django.db import models
 from django.db.models import Q
 from django.shortcuts import render
+from django.utils import timezone
 
 from inventory.models import Category, Item
 
-# from .models import Customer, Vendor # Uncomment when you implement these models
+# from inventory.models import Customer, Vendor # Uncomment when these models are implemented
 
 
 @login_required
@@ -24,6 +25,7 @@ def home(request):
         "num_categories": num_categories,
         "low_stock_count": low_stock_count,
         "sufficient_stock_count": sufficient_stock_count,
+        "now": timezone.now(),
     }
     return render(request, "home.html", context)
 
@@ -36,8 +38,8 @@ def search_results_view(request):
     # Initialize results containers
     item_results = None
     category_results = None
-    customer_results = None  # Will remain None until implemented
-    vendor_results = None  # Will remain None until implemented
+    customer_results = None  # None until implemented
+    vendor_results = None  # None until implemented
 
     if query:
         # Search in Items
@@ -50,7 +52,6 @@ def search_results_view(request):
         if scope == "categories" or scope == "all":
             category_results = Category.objects.filter(name__icontains=query).distinct()
 
-        # When Customer and Vendor models are implemented, uncomment and add search logic here:
         # if scope == 'customers' or scope == 'all':
         #     customer_results = Customer.objects.filter(
         #         Q(name__icontains=query) |
@@ -74,6 +75,4 @@ def search_results_view(request):
         "customer_results": customer_results,
         "vendor_results": vendor_results,
     }
-    return render(
-        request, "search/search_results.html", context
-    )  # You'll need to create this template
+    return render(request, "search/search_results.html", context)

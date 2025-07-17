@@ -29,8 +29,6 @@ document.addEventListener("DOMContentLoaded", function () {
       return; // Stop further validation
     }
 
-    // Add any other client-side validations here if needed
-    // For example, validating if a reason is selected after filtering
     const reasonSelect = document.getElementById("id_reason");
     if (!reasonSelect.value) {
       alert("Please select a reason for the adjustment.");
@@ -83,8 +81,6 @@ document.addEventListener("DOMContentLoaded", function () {
       // If the previously selected reason is no longer valid, or if no type was selected, reset
       if (!reasonFoundInFiltered && currentSelectedReason !== "") {
         reasonSelect.value = ""; // Reset the selection
-        // Optional: Trigger change event if other listeners depend on it
-        // reasonSelect.dispatchEvent(new Event('change'));
       }
     } else {
       // If no adjustment type is selected, make sure no specific reason is selected either
@@ -99,9 +95,4 @@ document.addEventListener("DOMContentLoaded", function () {
 
   // Call the function on page load to set the initial state
   filterReasonOptions();
-
-  // Optional: If you want to retain the selected reason after a form submission
-  // and there were server-side errors, you'd handle it here.
-  // Since Django's template already sets 'selected' based on form_data,
-  // filterReasonOptions() on DOMContentLoaded will handle this for us.
 });

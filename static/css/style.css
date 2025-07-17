@@ -14,7 +14,6 @@
     background-color 0.3s ease,
     box-shadow 0.3s ease,
     color 0.3s ease;
-  /* border: 1px solid var(--color-gray-light-border); */
 }
 
 .btn {
@@ -36,7 +35,23 @@
   color: var(--text-color);
 }
 
+.btn-outline-secondary {
+  color: var(--text-color);
+}
+
+.btn-outline-secondary i {
+  color: var(--text-color);
+}
+
 .btn-outline-success i {
+  color: var(--text-color);
+}
+
+.btn-outline-danger i {
+  color: var(--text-color);
+}
+
+.btn span {
   color: var(--text-color);
 }
 

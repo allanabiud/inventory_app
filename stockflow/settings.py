@@ -132,6 +132,7 @@ TIME_ZONE = "UTC"
 
 USE_I18N = True
 
+TIME_ZONE = "Africa/Nairobi"
 USE_TZ = True
 
 
@@ -169,4 +170,4 @@ EMAIL_HOST_PASSWORD = config(
 )
 DEFAULT_FROM_EMAIL = f"Stockflow <{EMAIL_HOST_USER}>"
 
-SITE_DOMAIN = "http://localhost:8000"  # or your deployed URL
+SITE_DOMAIN = "http://localhost:8000"  # deployed URL

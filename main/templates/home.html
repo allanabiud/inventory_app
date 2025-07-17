@@ -1,12 +1,13 @@
 {% extends "layouts/home-base.html" %}
 {% block title %}Home - Stockflow{% endblock %}
 {% load static %}
+{% load tz %}
 {% block content %}
   <div class="container-fluid mt-3 slide-in-left">
     <div class="card shadow-sm h-100">
       <div class="card-body">
         <div class="row align-items-start">
-          <!-- Left: Icon + Greeting (col-8 or adjust as needed) -->
+          <!-- Left: Icon + Greeting -->
           <div class="col-md-8 d-flex gap-3">
             <!-- Icon -->
             <div class="d-flex align-items-center">
@@ -19,25 +20,25 @@
               {% else %}
                 <h5 class="mb-1 fw-semibold">Hello, {{ user.username }}</h5>
               {% endif %}
-              <p class="placeholder-glow mb-0">
-                <span class="placeholder rounded col-12"></span>
-              </p>
+              <p class="mb-0 text-muted">{% localtime on %}{{ now|date:"l, F j, Y – H:i" }}{% endlocaltime %}</p>
             </div>
           </div>
-          <!-- Right: Info (col-4, text end-aligned) -->
-          <div class="col-md-4 text-end">
-            <p class="placeholder-glow mb-1">
-              <span class="placeholder rounded col-8 d-inline-block"></span>
+          <!-- Right: Info -->
+          <div class="col-md-4 text-end small">
+            <p class="mb-1">
+              <span>Contact:</span>
+              <span><a href="tel:+1-206-555-0100">+254712345678</a></span>
             </p>
-            <p class="placeholder-glow mb-0">
-              <span class="placeholder rounded col-6 d-inline-block"></span>
+            <p class="mb-0">
+              <span>Email:</span>
+              <span><a href="mailto:support@stockflow.com">support@stockflow.com</a></span>
             </p>
           </div>
         </div>
       </div>
     </div>
     <!-- Dashboard Section -->
-    <div class="mt-4" id="dashboardSection">
+    <div class="mt-3" id="dashboardSection">
       <div class="row">
         <div class="col-md-6 col-lg-6">
           <div class="card shadow-sm h-100">

@@ -4,11 +4,11 @@ document.addEventListener("DOMContentLoaded", function () {
   const imagePreviewWrapper = document.getElementById("imagePreviewWrapper");
   const imagePlaceholder = document.getElementById("imagePlaceholder");
   const clearImageBtn = document.getElementById("clearImageBtn");
-  const clearImageHiddenInput = document.getElementById("id_clear_image"); // SKU prefix and number fields
+  const clearImageHiddenInput = document.getElementById("id_clear_image");
 
   const skuPrefixInput = document.getElementById("id_sku_prefix");
   const skuNumberInput = document.getElementById("id_sku_number");
-  const skuHiddenInput = document.getElementById("id_sku"); // --- Removed: Inventory Toggling Logic ---
+  const skuHiddenInput = document.getElementById("id_sku");
   function updateImagePreview(file) {
     if (file) {
       const reader = new FileReader();
@@ -21,7 +21,6 @@ document.addEventListener("DOMContentLoaded", function () {
       };
       reader.readAsDataURL(file);
     } else {
-      // No file selected (e.g., clear button pressed or initial load with no image)
       imagePreview.src = "#";
       imagePreview.classList.add("d-none"); // Hide the img element
       imagePreviewWrapper.classList.add("d-none"); // Hide the container as well
@@ -71,9 +70,6 @@ document.addEventListener("DOMContentLoaded", function () {
 });
 
 // Global function for the image container click (if you prefer inline onclick)
-// This function is still needed if you have `onclick="document.getElementById('id_image').click();"`
-// on `imageUploadContainer` and `onclick="clearImage(event)"` on `clearImageBtn`.
-// The event listener on clearImageBtn is the preferred way, but keeping this if inline is used.
 function clearImage(event) {
   event.stopPropagation(); // Prevent click from bubbling to imageUploadContainer
   const imageInput = document.getElementById("id_image");

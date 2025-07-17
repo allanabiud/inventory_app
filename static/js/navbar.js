@@ -2,7 +2,7 @@ document.addEventListener("DOMContentLoaded", function () {
   const selectedSearchOption = document.getElementById("selectedSearchOption");
   const hiddenSearchScope = document.getElementById("hiddenSearchScope");
   const dropdownItems = document.querySelectorAll(
-    ".dropdown-menu .dropdown-item",
+    "#searchDropdownButton + .dropdown-menu .dropdown-item",
   );
   const searchQueryInput = document.getElementById("searchQueryInput");
 
@@ -28,7 +28,7 @@ document.addEventListener("DOMContentLoaded", function () {
     });
   });
 
-  // Optional: Restore selected option and query from URL on page load
+  // Restore selected option and query from URL on page load
   const urlParams = new URLSearchParams(window.location.search);
   const currentScope = urlParams.get("scope");
   const currentQuery = urlParams.get("q");
