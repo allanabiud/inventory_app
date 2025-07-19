@@ -8,7 +8,6 @@
   transition:
     background-color 0.3s ease,
     box-shadow 0.3s ease;
-  /* box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1); */
   position: sticky;
   top: 0.5rem;
   z-index: 1020;
@@ -27,7 +26,7 @@
 }
 
 .navbar .form-control {
-  background-color: var(--navbar-input-bg-color); /* ADD THIS LINE */
+  background-color: var(--navbar-input-bg-color);
 }
 
 .navbar .container-fluid {
@@ -98,4 +97,8 @@ nav .nav-item i:hover {
 }
 .navbar .form-control:-ms-input-placeholder {
   font-size: 0.85rem;
+}
+
+#selectedSearchOption {
+  color: var(--text-color);
 }

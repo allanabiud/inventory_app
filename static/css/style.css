@@ -51,10 +51,6 @@
   color: var(--text-color);
 }
 
-.btn span {
-  color: var(--text-color);
-}
-
 .slide-in-left {
   animation: slideInFromLeft 0.4s ease forwards;
 }
@@ -186,7 +182,7 @@ thead th.sorting_desc::after {
 /* Active page */
 .dataTables_wrapper .dataTables_paginate .page-item.active .page-link {
   background-color: var(--primary-green) !important;
-  color: var(--color-white) !important;
+  color: var(--text-color) !important;
   font-weight: bold;
   border-radius: 0.25rem;
   border-color: var(--primary-green);

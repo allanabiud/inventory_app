@@ -8,11 +8,14 @@
         <h4 class="mb-0">Category: {{ category.name }}</h4>
         <div class="d-flex align-items-center gap-2">
           <a href="{% url 'edit_category' category.pk %}"
-             class="btn btn-sm btn-success">Edit Category</a>
+             class="btn btn-sm btn-outline-success">
+            <i class="bi bi-pencil-square me-1"></i>Edit Category</a>
           <button type="button"
-                  class="btn btn-sm btn-danger"
+                  class="btn btn-sm btn-outline-danger"
                   data-bs-toggle="modal"
-                  data-bs-target="#deleteCategoryModal">Delete Category</button>
+                  data-bs-target="#deleteCategoryModal">
+            <i class="bi bi-trash me-1"></i>Delete Category
+          </button>
           <a href="{% url 'categories' %}">
             <i class="bi bi-x-lg fs-4"></i>
           </a>

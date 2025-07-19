@@ -1,7 +1,7 @@
 /* Inter Regular (400) */
 @font-face {
   font-family: "Inter";
-  src: url("../fonts/Inter_18pt-Regular.ttf") format("truetype"); /* Adjust path and filename */
+  src: url("../fonts/Inter_18pt-Regular.ttf") format("truetype");
   font-weight: 400;
   font-style: normal;
   font-display: swap;
@@ -10,7 +10,7 @@
 /* Inter Medium (500) */
 @font-face {
   font-family: "Inter";
-  src: url("../fonts/Inter_18pt-Medium.ttf") format("truetype"); /* Adjust path and filename */
+  src: url("../fonts/Inter_18pt-Medium.ttf") format("truetype");
   font-weight: 500;
   font-style: normal;
   font-display: swap;
@@ -19,7 +19,7 @@
 /* Inter SemiBold (600) */
 @font-face {
   font-family: "Inter";
-  src: url("../fonts/Inter_18pt-SemiBold.ttf") format("truetype"); /* Adjust path and filename */
+  src: url("../fonts/Inter_18pt-SemiBold.ttf") format("truetype");
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -28,28 +28,8 @@
 /* Inter Bold (700) */
 @font-face {
   font-family: "Inter";
-  src: url("../fonts/Inter_18pt-Bold.ttf") format("truetype"); /* Adjust path and filename */
+  src: url("../fonts/Inter_18pt-Bold.ttf") format("truetype");
   font-weight: 700;
   font-style: normal;
   font-display: swap;
 }
-
-/*
-Optional: If you want to include other weights or italics, you'd add more @font-face rules:
-
-@font-face {
-    font-family: 'Inter';
-    src: url('../fonts/Inter_18pt-Light.ttf') format('truetype');
-    font-weight: 300; // Light
-    font-style: normal;
-    font-display: swap;
-}
-
-@font-face {
-    font-family: 'Inter';
-    src: url('../fonts/Inter_18pt-Italic.ttf') format('truetype');
-    font-weight: 400; // Regular Italic
-    font-style: italic; // IMPORTANT: Set font-style to italic
-    font-display: swap;
-}
-*/
