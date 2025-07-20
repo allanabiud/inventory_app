@@ -1,3 +1,4 @@
+{% load static %}
 <div class="sidebar d-flex flex-column py-2 rounded-2 shadow-lg"
      id="sidebar">
   <a href="{% url 'home' %}"
@@ -20,15 +21,13 @@
         </a>
       </li>
       <li class="nav-item">
-        {# Define all URLs that should cause 'Inventory' to expand #}
         {% with inventory_group_urls='items add_item import_items view_item edit_item categories add_category view_category edit_category units add_unit view_unit edit_unit inventory_adjustments add_adjustment view_adjustment edit_adjustment' %}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in inventory_group_urls.split %}active{% endif %}"
-            data-bs-toggle="collapse"
-            href="#inventoryCollapse"
-            role="button"
-            {# Set aria-expanded based on whether a URL inside this group is active #}
-            aria-expanded="{% if request.resolver_match.url_name in inventory_group_urls.split %}true{% else %}false{% endif %}"
-            aria-controls="inventoryCollapse">
+             data-bs-toggle="collapse"
+             href="#inventoryCollapse"
+             role="button"
+             aria-expanded="{% if request.resolver_match.url_name in inventory_group_urls.split %}true{% else %}false{% endif %}"
+             aria-controls="inventoryCollapse">
             <div>
               <i class="bi bi-box-seam fs-5 me-1"></i>
               <span class="sidebar-label">Inventory</span>
@@ -36,7 +35,6 @@
             <i class="bi bi-chevron-down sidebar-chevron"></i>
           </a>
         {% endwith %}
-        {# Add 'show' class to the collapse div if any of its child URLs are active #}
         <div class="collapse {% if request.resolver_match.url_name in inventory_group_urls.split %}show{% endif %}"
              id="inventoryCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
@@ -68,7 +66,6 @@
         </div>
       </li>
       <li class="nav-item">
-        {# Example for Sales - adjust sales_group_urls with your actual sales URLs #}
         {% with sales_group_urls='new_sale_url sales_history_url customers_url' %}
           {# Replace with actual URL names #}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in sales_group_urls.split %}active{% endif %}"
@@ -100,9 +97,7 @@
         </div>
       </li>
       <li class="nav-item">
-        {# Example for Purchases - adjust purchase_group_urls with your actual purchase URLs #}
         {% with purchase_group_urls='new_purchase_url purchase_orders_url suppliers_url' %}
-          {# Replace with actual URL names #}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in purchase_group_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#purchasesCollapse"
@@ -132,9 +127,7 @@
         </div>
       </li>
       <li class="nav-item">
-        {# Example for Reports - adjust report_group_urls with your actual report URLs #}
         {% with report_group_urls='sales_report_url inventory_report_url profit_loss_url' %}
-          {# Replace with actual URL names #}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in report_group_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#reportsCollapse"
@@ -173,3 +166,4 @@
   </div>
 </div>
 <div id="floatingChevronContainer"></div>
+<script src="{% static 'js/partials/sidebar.js' %}"></script>
