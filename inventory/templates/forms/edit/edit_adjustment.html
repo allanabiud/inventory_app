@@ -1,0 +1,33 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Edit Adjustment - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">Edit Adjustment for: {{ adjustment.item.name }}</h4>
+        <a href="{% url 'view_adjustment' adjustment.pk %}">
+          <i class="bi bi-x-lg fs-4"></i>
+        </a>
+      </div>
+      <div class="px-5 pt-3">
+        <form method="post" id="adjustmentForm">
+          {% csrf_token %}
+          {% if messages %}
+            {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+          {% endif %}
+          {% crispy form %}
+        </form>
+      </div>
+      <div class="sticky-bottom-btn-bar border-top p-3">
+        <div class="d-flex gap-3">
+          <button type="submit" form="adjustmentForm" class="btn btn-success">Save Changes</button>
+          <a href="{% url 'view_adjustment' adjustment.pk %}"
+             class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'js/forms/edit_adjustment.js' %}"></script>
+{% endblock %}

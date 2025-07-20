@@ -7,10 +7,10 @@ from django.db import IntegrityError, transaction
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
-from django.utils import timezone
 
 from authentication.models import UserProfile
 
+from .forms import CategoryForm, InventoryAdjustmentForm, UnitOfMeasureForm
 from .models import Category, InventoryAdjustment, Item, ItemImage, UnitOfMeasure
 from .utils import generate_item_csv_template, process_item_csv_upload
 
@@ -191,7 +191,7 @@ def add_item(request):
                 "form_data": form_data,
                 "errors": errors,  # Pass detailed errors for field-specific invalid-feedback
             }
-            return render(request, "forms/add_item.html", context)
+            return render(request, "forms/add/add_item.html", context)
 
         # 3. Create and Save Item if no errors
         try:
@@ -237,12 +237,9 @@ def add_item(request):
                 "form_data": form_data,
                 "errors": errors,
             }
-            return render(request, "forms/add_item.html", context)
+            return render(request, "forms/add/add_item.html", context)
 
         except ValidationError as e:
-            # This catches model's clean() method errors (if you add any later)
-            # and potentially default Django form validation if using ModelForms
-            # Aggregate all messages into one general error message for the user.
             all_validation_errors = []
             for field, field_errors in e.message_dict.items():
                 errors[field] = (
@@ -270,7 +267,7 @@ def add_item(request):
                 "form_data": form_data,
                 "errors": errors,
             }
-            return render(request, "forms/add_item.html", context)
+            return render(request, "forms/add/add_item.html", context)
 
         except Exception:
             # Catch any other unexpected errors
@@ -291,7 +288,7 @@ def add_item(request):
                     "general": ["An unexpected error occurred."]
                 },  # Provide a generic error for frontend in 'errors'
             }
-            return render(request, "forms/add_item.html", context)
+            return render(request, "forms/add/add_item.html", context)
 
     else:  # GET request: Render empty form or with default values
         form_data = {
@@ -318,7 +315,7 @@ def add_item(request):
         "form_data": form_data,
         "errors": errors,  # Will be empty on GET request
     }
-    return render(request, "forms/add_item.html", context)
+    return render(request, "forms/add/add_item.html", context)
 
 
 @login_required
@@ -413,9 +410,6 @@ def edit_item(request, pk):
                     )
             except InvalidOperation:
                 errors.setdefault("selling_price", []).append("Invalid Selling Price.")
-        # Removed 'else: errors.setdefault("selling_price", []).append("Selling Price is required.")'
-        # based on your previous 'add_item' logic where it's nullable.
-        # If it *is* required, uncomment the above line.
 
         purchase_price = None
         if purchase_price_str:
@@ -429,9 +423,6 @@ def edit_item(request, pk):
                 errors.setdefault("purchase_price", []).append(
                     "Invalid Purchase Price."
                 )
-        # Removed 'else: errors.setdefault("purchase_price", []).append("Purchase Price is required.")'
-        # based on your previous 'add_item' logic where it's nullable.
-        # If it *is* required, uncomment the above line.
 
         # Inventory fields
         opening_stock = None
@@ -489,7 +480,7 @@ def edit_item(request, pk):
                 "current_image_url": current_image_url,
                 "image_exists": image_exists,
             }
-            return render(request, "forms/edit_item.html", context)
+            return render(request, "forms/edit/edit_item.html", context)
 
         # --- Save if No Errors ---
         try:
@@ -551,7 +542,7 @@ def edit_item(request, pk):
                 "current_image_url": current_image_url,
                 "image_exists": image_exists,
             }
-            return render(request, "forms/edit_item.html", context)
+            return render(request, "forms/edit/edit_item.html", context)
 
         except ValidationError as e:
             all_validation_errors = []
@@ -591,7 +582,7 @@ def edit_item(request, pk):
                 "current_image_url": current_image_url,
                 "image_exists": image_exists,
             }
-            return render(request, "forms/edit_item.html", context)
+            return render(request, "forms/edit/edit_item.html", context)
 
         except Exception:
             messages.error(
@@ -621,7 +612,7 @@ def edit_item(request, pk):
                 "current_image_url": current_image_url,
                 "image_exists": image_exists,
             }
-            return render(request, "forms/edit_item.html", context)
+            return render(request, "forms/edit/edit_item.html", context)
 
     else:  # GET
         form_data = {
@@ -655,7 +646,7 @@ def edit_item(request, pk):
             "image_exists": image_exists,
         }
 
-    return render(request, "forms/edit_item.html", context)
+    return render(request, "forms/edit/edit_item.html", context)
 
 
 @login_required
@@ -777,7 +768,7 @@ def import_items_view(request):
             return redirect("import_items")
 
     # For GET requests, just render the form
-    return render(request, "forms/import_form.html")
+    return render(request, "forms/import/import_items.html")
 
 
 ## CATEGORIES
@@ -797,93 +788,62 @@ def categories_view(request):
 
 @login_required
 def add_category(request):
+    """
+    View to handle adding a new category using Django forms and Crispy Forms.
+    """
     if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        description = request.POST.get("description", "").strip()
-        errors = {}
+        # Create a form instance and populate it with data from the request
+        form = CategoryForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category added successfully.")
+            return redirect("categories")
+        else:
+            # If the form is not valid, the form object itself will contain
+            # the submitted data and validation errors
+            pass
+    else:
+        # For GET requests, create a blank form
+        form = CategoryForm()
 
-        # Validation
-        if not name:
-            errors["name"] = ["Category name is required."]
-        elif Category.objects.filter(name__iexact=name).exists():
-            errors["name"] = ["A category with this name already exists."]
-
-        if errors:
-            return render(
-                request,
-                "forms/add_category.html",
-                {
-                    "form_data": {
-                        "name": name,
-                        "description": description,
-                    },
-                    "errors": errors,
-                },
-            )
-
-        # Save category
-        Category.objects.create(name=name, description=description)
-        messages.success(request, "Category added successfully.")
-        return redirect("categories")
-
-    return render(request, "forms/add_category.html")
+    return render(
+        request,
+        "forms/add/add_category.html",
+        {
+            "form": form,
+        },
+    )
 
 
 @login_required
 def edit_category(request, pk):
+    """
+    View to handle editing an existing category using Django forms and Crispy Forms.
+    """
+    # Retrieve the category object or return a 404 error if not found
     category = get_object_or_404(Category, pk=pk)
-    current_category_description = category.description
-    errors = {}
-    form_data = {}
 
     if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        description = request.POST.get("description", "").strip()
-        errors = {}
-
-        # Validation
-        if not name:
-            errors["name"] = ["Category name is required."]
-        # elif Category.objects.filter(name__iexact=name).exists():
-        elif (
-            Category.objects.exclude(pk=category.pk).filter(name__iexact=name).exists()
-        ):
-            errors["name"] = ["A category with this name already exists."]
-
-        if errors:
-            return render(
-                request,
-                "forms/edit_category.html",
-                {
-                    "form_data": {
-                        "name": name,
-                        "description": description,
-                    },
-                    "errors": errors,
-                },
-            )
-
-        # Save category
-        category.name = name
-        category.description = description
-        category.save()
-
-        messages.success(request, "Category updated successfully.")
-        return redirect("view_category", pk=pk)
-
-    else:  # GET
-        form_data = {
-            "name": category.name,
-            "description": current_category_description,
-        }
+        form = CategoryForm(request.POST, instance=category)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Category updated successfully.")
+            return redirect("view_category", pk=category.pk)
+        else:
+            # If the form is not valid, the form object itself will contain
+            # the submitted data and validation errors
+            pass
+    else:
+        # For GET requests, create a form instance pre-populated with the
+        # existing category's data by passing 'instance=category'.
+        form = CategoryForm(instance=category)
 
     return render(
         request,
-        "forms/edit_category.html",
+        "forms/edit/edit_category.html",
         {
+            "form": form,
             "category": category,
-            "form_data": form_data,
-            "errors": errors,
         },
     )
 
@@ -955,99 +915,64 @@ def units_view(request):
 
 @login_required
 def add_unit(request):
+    """
+    View to handle adding a new Unit of Measure using Django forms and Crispy Forms.
+    """
     if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        abbreviation = request.POST.get("abbreviation", "").strip()
-        description = request.POST.get("description", "").strip()
-        errors = {}
+        # Create a form instance and populate it with data from the request
+        form = UnitOfMeasureForm(request.POST)
+        if form.is_valid():
+            # If the form is valid, save the new unit instance.
+            form.save()
+            messages.success(request, "Unit added successfully.")
+            return redirect("units")  # Redirect to your units list page
+        else:
+            # If the form is not valid, the form object itself will contain
+            # the submitted data and validation errors.
+            pass
+    else:
+        # For GET requests, create a blank form
+        form = UnitOfMeasureForm()
 
-        # Validation
-        if not name:
-            errors["name"] = ["Unit name is required."]
-        elif UnitOfMeasure.objects.filter(name__iexact=name).exists():
-            errors["name"] = ["A unit with this name already exists."]
-
-        if errors:
-            return render(
-                request,
-                "forms/add_unit.html",
-                {
-                    "form_data": {
-                        "name": name,
-                        "abbreviation": abbreviation,
-                        "description": description,
-                    },
-                    "errors": errors,
-                },
-            )
-
-        # Save unit
-        UnitOfMeasure.objects.create(
-            name=name, abbreviation=abbreviation, description=description
-        )
-        messages.success(request, "Unit added successfully.")
-        return redirect("units")
-
-    return render(request, "forms/add_unit.html")
+    return render(
+        request,
+        "forms/add/add_unit.html",
+        {
+            "form": form,
+        },
+    )
 
 
 @login_required
 def edit_unit(request, pk):
+    """
+    View to handle editing an existing Unit of Measure using Django forms and Crispy Forms.
+    """
+    # Retrieve the UnitOfMeasure object or return a 404 error if not found
     unit = get_object_or_404(UnitOfMeasure, pk=pk)
-    errors = {}
-    form_data = {}
 
     if request.method == "POST":
-        name = request.POST.get("name", "").strip()
-        abbreviation = request.POST.get("abbreviation", "").strip()
-        description = request.POST.get("description", "").strip()
-
-        # Validation
-        if not name:
-            errors["name"] = ["Unit name is required."]
-        elif (
-            UnitOfMeasure.objects.exclude(pk=unit.pk).filter(name__iexact=name).exists()
-        ):
-            errors["name"] = ["A unit with this name already exists."]
-
-        if errors:
-            return render(
-                request,
-                "forms/edit_unit.html",
-                {
-                    "unit": unit,
-                    "form_data": {
-                        "name": name,
-                        "abbreviation": abbreviation,
-                        "description": description,
-                    },
-                    "errors": errors,
-                },
-            )
-
-        # Save changes
-        unit.name = name
-        unit.abbreviation = abbreviation or None
-        unit.description = description or None
-        unit.save()
-
-        messages.success(request, "Unit updated successfully.")
-        return redirect("view_unit", pk=pk)
-
+        form = UnitOfMeasureForm(request.POST, instance=unit)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Unit updated successfully.")
+            # Redirect to a view that shows the details of the updated unit
+            return redirect("view_unit", pk=unit.pk)
+        else:
+            # If the form is not valid, the form object itself will contain
+            # the submitted data and validation errors
+            pass
     else:
-        form_data = {
-            "name": unit.name,
-            "abbreviation": unit.abbreviation,
-            "description": unit.description,
-        }
+        # For GET requests, create a form instance pre-populated with the
+        # existing unit's data by passing 'instance=unit'.
+        form = UnitOfMeasureForm(instance=unit)
 
     return render(
         request,
-        "forms/edit_unit.html",
+        "forms/edit/edit_unit.html",
         {
+            "form": form,
             "unit": unit,
-            "form_data": form_data,
-            "errors": errors,
         },
     )
 
@@ -1108,85 +1033,52 @@ def inventory_adjustments(request):
 
 @login_required
 def add_adjustment(request):
-    items = Item.objects.all()
-    reason_choices = InventoryAdjustment.REASON_CHOICES
-    errors = {}
-    form_data = {}
-
     if request.method == "POST":
-        item_id = request.POST.get("item")
-        adjustment_type = request.POST.get("adjustment_type")
-        quantity_adjusted = request.POST.get("quantity_adjusted")
-        cost_price = request.POST.get("cost_price")
-        reason = request.POST.get("reason")
-        description = request.POST.get("description")
-
-        # Preserve form values
-        form_data = {
-            "item": item_id,
-            "adjustment_type": adjustment_type,
-            "quantity_adjusted": quantity_adjusted,
-            "cost_price": cost_price,
-            "reason": reason,
-            "description": description,
-        }
-
-        # Validation
-        item = None
-        if not item_id:
-            errors["item"] = ["Please select an item."]
-        else:
-            try:
-                item = Item.objects.get(pk=item_id)
-            except Item.DoesNotExist:
-                errors["item"] = ["Invalid item selected."]
-
-        if adjustment_type not in dict(InventoryAdjustment.ADJUSTMENT_TYPES):
-            errors["adjustment_type"] = ["Invalid adjustment type."]
-
-        quantity = None
-        try:
-            quantity = float(quantity_adjusted)
-            if quantity <= 0:
-                raise ValueError
-        except (ValueError, TypeError):
-            errors["quantity_adjusted"] = ["Enter a valid quantity."]
-
-        cost = None
-        if cost_price:
-            try:
-                cost = float(cost_price)
-            except ValueError:
-                errors["cost_price"] = ["Enter a valid cost price."]
-
-        if reason not in dict(reason_choices):
-            errors["reason"] = ["Please select a valid reason."]
-
-        if not errors:
-            try:
-                InventoryAdjustment.objects.create(
-                    item=item,
-                    adjustment_type=adjustment_type,
-                    quantity_adjusted=int(quantity_adjusted),
-                    cost_price=cost or None,
-                    reason=reason,
-                    description=description or "",
-                    user=request.user,
-                    date=timezone.now(),
-                )
-                messages.success(request, "Inventory adjustment recorded successfully.")
-                return redirect("inventory_adjustments")
-            except ValidationError as ve:
-                errors["quantity_adjusted"] = [str(ve.message)]
+        form = InventoryAdjustmentForm(request.POST)
+        if form.is_valid():
+            adjustment = form.save(commit=False)
+            adjustment.user = request.user
+            adjustment.save()
+            messages.success(request, "Inventory adjustment recorded successfully.")
+            return redirect("inventory_adjustments")
+    else:
+        form = InventoryAdjustmentForm()
 
     return render(
         request,
-        "forms/add_adjustment.html",
+        "forms/add/add_adjustment.html",
         {
-            "items": items,
-            "reason_choices": reason_choices,
-            "errors": errors,
-            "form_data": form_data,
+            "form": form,
+            "items": Item.objects.all(),
+            "reason_choices": InventoryAdjustment.REASON_CHOICES,
+            "errors": form.errors,
+            "form_data": form.data,
+        },
+    )
+
+
+def edit_adjustment(request, pk):
+    adjustment = get_object_or_404(InventoryAdjustment, pk=pk)
+
+    if request.method == "POST":
+        form = InventoryAdjustmentForm(request.POST, instance=adjustment)
+        print(adjustment.adjustment_type)
+        print(adjustment.reason)
+
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Inventory adjustment updated successfully.")
+            return redirect("view_adjustment", pk=adjustment.pk)
+        # If form is invalid, it will fall through to re-render with errors
+    else:
+        form = InventoryAdjustmentForm(instance=adjustment)
+
+    return render(
+        request,
+        "forms/edit/edit_adjustment.html",
+        {
+            "form": form,
+            "adjustment": adjustment,
         },
     )
 
@@ -1204,108 +1096,6 @@ def view_adjustment(request, pk):
         "user_profile": user_profile,
     }
     return render(request, "view/view_adjustment.html", context)
-
-
-@login_required
-def edit_adjustment(request, pk):
-    adjustment = get_object_or_404(InventoryAdjustment, pk=pk)
-    items = Item.objects.all()
-    reason_choices = InventoryAdjustment.REASON_CHOICES
-
-    if request.method == "POST":
-        form_data = {
-            "item": request.POST.get("item"),
-            "adjustment_type": request.POST.get("adjustment_type"),
-            "quantity_adjusted": request.POST.get("quantity_adjusted"),
-            "cost_price": request.POST.get("cost_price"),
-            "reason": request.POST.get("reason"),
-            "description": request.POST.get("description"),
-        }
-
-        errors = {}
-
-        # Validate item
-        try:
-            item = Item.objects.get(pk=form_data["item"])
-        except (Item.DoesNotExist, ValueError, TypeError):
-            errors["item"] = ["Invalid item selected."]
-            item = None
-
-        # Validate adjustment type
-        if form_data["adjustment_type"] not in dict(
-            InventoryAdjustment.ADJUSTMENT_TYPES
-        ):
-            errors["adjustment_type"] = ["Invalid adjustment type."]
-
-        # Validate quantity
-        quantity = None
-        try:
-            quantity = int(form_data["quantity_adjusted"])
-            if quantity <= 0:
-                raise ValueError
-        except (ValueError, TypeError):
-            errors["quantity_adjusted"] = ["Enter a valid positive integer."]
-
-        # Validate cost price
-        cost_price = None
-        if form_data["cost_price"]:
-            try:
-                cost_price = float(form_data["cost_price"])
-                if cost_price < 0:
-                    raise ValueError
-            except ValueError:
-                errors["cost_price"] = ["Enter a valid non-negative number."]
-
-        # Validate reason
-        if form_data["reason"] not in dict(reason_choices):
-            errors["reason"] = ["Select a valid reason."]
-
-        if errors:
-            return render(
-                request,
-                "forms/edit_adjustment.html",
-                {
-                    "adjustment": adjustment,
-                    "items": items,
-                    "reason_choices": reason_choices,
-                    "form_data": form_data,
-                    "errors": errors,
-                },
-            )
-
-        # Update and save adjustment (model handles stock correction)
-        adjustment.item = item
-        adjustment.adjustment_type = form_data["adjustment_type"]
-        adjustment.quantity_adjusted = quantity
-        adjustment.cost_price = cost_price
-        adjustment.reason = form_data["reason"]
-        adjustment.description = form_data["description"]
-        adjustment.save()  # Let the model handle reversing and applying the change
-
-        messages.success(request, "Inventory adjustment updated successfully.")
-        return redirect("view_adjustment", pk=adjustment.pk)
-
-    # Initial form data
-    form_data = {
-        "item": adjustment.item.id,
-        "adjustment_type": adjustment.adjustment_type,
-        "quantity_adjusted": adjustment.quantity_adjusted,
-        "cost_price": adjustment.cost_price,
-        "reason": adjustment.reason,
-        "description": adjustment.description,
-    }
-
-    return render(
-        request,
-        "forms/edit_adjustment.html",
-        {
-            "adjustment": adjustment,
-            "items": items,
-            "reason_choices": reason_choices,
-            "form_data": form_data,
-            "errors": {},
-        },
-    )
 
 
 @login_required
