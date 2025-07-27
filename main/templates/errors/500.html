@@ -1,0 +1,23 @@
+{% extends "layouts/error-base.html" %}
+{% load static %}
+{% block title %}500 - Server Error{% endblock %}
+{% block content %}
+  <div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-md-6 text-center mb-4">
+        <img src="{% static 'images/illustrations/500.svg' %}"
+             alt="Server error"
+             class="img-fluid"
+             style="max-height: 300px">
+      </div>
+      <div class="col-md-6 text-center text-md-start">
+        <h1 class="display-4 fw-bold text-danger">500</h1>
+        <p class="fs-4">Something went wrong on our end.</p>
+        <p class="text-muted">We’re working to fix it. Please try again later or contact support if the issue persists.</p>
+        <a href="{% url 'home' %}" class="btn btn-success btn-lg mt-3">
+          <i class="bi bi-arrow-repeat"></i> Try Again
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

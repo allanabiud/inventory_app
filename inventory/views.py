@@ -9,6 +9,7 @@ from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from authentication.models import UserProfile
+from sales.models import Sale
 
 from .forms import CategoryForm, InventoryAdjustmentForm, UnitOfMeasureForm
 from .models import Category, InventoryAdjustment, Item, ItemImage, UnitOfMeasure
@@ -652,9 +653,11 @@ def edit_item(request, pk):
 @login_required
 def view_item(request, pk):
     item = get_object_or_404(Item, pk=pk)
+    sales = Sale.objects.filter(item=item).order_by("-date")
 
     context = {
         "item": item,
+        "sales": sales,
     }
     return render(request, "view/view_item.html", context)
 

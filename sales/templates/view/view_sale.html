@@ -1,0 +1,117 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}View Sale - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-4">
+          Sale Details <span class="text-muted">({{ sale.sales_number }})</span>
+        </h4>
+        <div class="d-flex align-items-center gap-2">
+          <a href="{% url 'edit_sale' sale.pk %}" class="btn btn-sm btn-success">Edit Sale</a>
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteSaleModal">Delete Sale</button>
+          <a href="{% url 'sales' %}">
+            <i class="bi bi-x-lg fs-4"></i>
+          </a>
+        </div>
+      </div>
+      <div class="px-5 pt-3">
+        {% if messages %}
+          {% for message in messages %}<div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>{% endfor %}
+        {% endif %}
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Item</p>
+            <p class="lead">{{ sale.item.name }} ({{ sale.item.sku }})</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Quantity Sold</p>
+            <p class="lead">
+              {{ sale.quantity }}
+              <span class="text-muted small">{{ sale.item.unit.abbreviation|default:sale.item.unit.name }}</span>
+            </p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Selling Price (Per Unit)</p>
+            <p class="lead">KES {{ sale.unit_price|default:"0.00" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Selling Price (Total)</p>
+            <p class="lead">KES {{ sale.selling_price|default:"0.00" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Customer</p>
+            <p class="lead">{{ sale.customer.name|default:"Walk-in Customer" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Sold By</p>
+            <div class="d-flex align-items-center mt-1">
+              {% if user_profile and user_profile.profile_image %}
+                <img src="{{ user_profile.profile_image.url }}"
+                     alt="{{ sale.user.username }}'s profile"
+                     class="rounded-circle me-3"
+                     style="width: 48px;
+                            height: 48px;
+                            object-fit: cover">
+              {% else %}
+                <div class="rounded-circle bg-secondary me-3 d-flex align-items-center justify-content-center"
+                     style="width: 48px;
+                            height: 48px">
+                  <i class="bi bi-person text-white"></i>
+                </div>
+              {% endif %}
+              <div>
+                <p class="mb-0 fw-bold">{{ sale.user.get_full_name|default:sale.user.username|default:"Unknown" }}</p>
+                <p class="text-muted mb-0 small">{{ sale.user.email }}</p>
+              </div>
+            </div>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Date</p>
+            <p class="lead">{{ sale.created_at|date:"M d, Y H:i" }}</p>
+          </div>
+          <div class="col-md-12">
+            <p class="mb-1 text-muted small">Description</p>
+            <p class="lead">{{ sale.description|default:"No additional information provided." }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Delete Sale Modal -->
+  <div class="modal fade"
+       id="deleteSaleModal"
+       tabindex="-1"
+       aria-labelledby="deleteSaleModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteSaleModalLabel">Confirm Delete</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete this sale of
+          "<strong>{{ sale.item.name }}</strong>" (SKU: {{ sale.item.sku }})?
+          This action will reverse the stock deduction and any associated records.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_sale' sale.pk %}"
+                method="post"
+                class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

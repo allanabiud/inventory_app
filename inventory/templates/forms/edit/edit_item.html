@@ -181,7 +181,7 @@
                            placeholder="Selling Price"
                            value="{{ form_data.selling_price|default:'' }}"
                            step="0.01">
-                    <label for="id_selling_price">Selling Price</label>
+                    <label for="id_selling_price">Selling Price (per unit)</label>
                   </div>
                 </div>
                 {% if errors.selling_price %}
@@ -201,7 +201,7 @@
                            placeholder="Purchase Price"
                            value="{{ form_data.purchase_price|default:'' }}"
                            step="0.01">
-                    <label for="id_purchase_price">Purchase Price</label>
+                    <label for="id_purchase_price">Purchase Price (per unit)</label>
                   </div>
                 </div>
                 {% if errors.purchase_price %}

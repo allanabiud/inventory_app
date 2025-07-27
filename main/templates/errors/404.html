@@ -1,0 +1,23 @@
+{% extends "layouts/error-base.html" %}
+{% load static %}
+{% block title %}404 - Page Not Found{% endblock %}
+{% block content %}
+  <div class="container py-5">
+    <div class="row justify-content-center align-items-center">
+      <div class="col-md-6 text-center mb-4">
+        <img src="{% static 'images/illustrations/404.svg' %}"
+             alt="Page not found"
+             class="img-fluid"
+             style="max-height: 300px">
+      </div>
+      <div class="col-md-6 text-center text-md-start">
+        <h1 class="display-4 fw-bold text-danger">404</h1>
+        <p class="fs-4">Oops! The page you’re looking for doesn’t exist.</p>
+        <p class="text-muted">It might have been moved or deleted. Please check the URL or return home.</p>
+        <a href="{% url 'home' %}" class="btn btn-success btn-lg mt-3">
+          <i class="bi bi-house-door-fill"></i> Go to Homepage
+        </a>
+      </div>
+    </div>
+  </div>
+{% endblock %}

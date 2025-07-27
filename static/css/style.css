@@ -129,6 +129,18 @@ option:checked {
   justify-content: center;
 }
 
+.nav-link {
+  color: var(--text-color);
+}
+
+.nav-link:hover {
+  color: var(--emerald-green);
+}
+
+.nav-tabs .nav-link.active {
+  background-color: var(--primary-green);
+}
+
 /* Prevent export button from forcing horizontal scroll */
 .datatable-header {
   overflow-x: auto;

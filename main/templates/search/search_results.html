@@ -34,17 +34,14 @@
         Please enter a search term in the search bar above to see results.
       </div>
     {% elif not item_results and not category_results and not customer_results and not vendor_results %}
-      {# Display this if a query was entered, but no results found across all active scopes #}
       <div class="alert alert-warning text-center" role="alert">
         <i class="bi bi-exclamation-triangle-fill me-2"></i> No results found for "<strong>{{ query }}</strong>" in <strong>{{ scope|capfirst }}</strong>.
         Try a different search term or change the search scope.
       </div>
     {% else %}
-      {# Display results based on scope or all #}
       {% if scope == 'items' or scope == 'all' %}
         <div class="card shadow-sm mb-4">
-          {# Removed justify-content-center from here #}
-          <div class="card-header bg-primary text-white d-flex align-items-center">
+          <div class="card-header {% if item_results %}bg-success text-white{% else %}bg-body text-muted{% endif %} d-flex align-items-center">
             <h5 class="mb-0 d-flex align-items-center">
               <i class="bi bi-boxes me-2"></i> Item Results
               {% if scope == 'all' %}
@@ -96,8 +93,7 @@
       {% endif %}
       {% if scope == 'categories' or scope == 'all' %}
         <div class="card shadow-sm mb-4">
-          {# Removed justify-content-center from here #}
-          <div class="card-header bg-success text-white d-flex align-items-center">
+          <div class="card-header {% if category_results %}bg-success text-white{% else %}bg-body text-muted{% endif %} d-flex align-items-center">
             <h5 class="mb-0 d-flex align-items-center">
               <i class="bi bi-folder-fill me-2"></i> Category Results
               {% if scope == 'all' %}
@@ -114,7 +110,7 @@
                       <th scope="col">Name</th>
                       <th scope="col">Description</th>
                       <th scope="col">Number of Items</th>
-                      {# Add actions if you have a category view page #}
+                      <th scope="col">Actions</th>
                     </tr>
                   </thead>
                   <tbody>
@@ -123,7 +119,12 @@
                         <td>{{ category.name }}</td>
                         <td>{{ category.description|default:"N/A"|truncatechars:50 }}</td>
                         <td>{{ category.item_set.count }}</td>
-                        {# Assuming a reverse relation from Category to Item #}
+                        <td>
+                          <a href="{% url 'view_category' category.pk %}"
+                             class="btn btn-sm btn-outline-success">
+                            <i class="bi bi-eye-fill"></i> View
+                          </a>
+                        </td>
                       </tr>
                     {% endfor %}
                   </tbody>
@@ -138,8 +139,7 @@
       {# Placeholder for Customers results #}
       {% if scope == 'customers' or scope == 'all' %}
         <div class="card shadow-sm mb-4">
-          {# Removed justify-content-center from here #}
-          <div class="card-header bg-info text-white d-flex align-items-center">
+          <div class="card-header {% if customer_results %}bg-info text-white{% else %}bg-body text-muted{% endif %} d-flex align-items-center">
             <h5 class="mb-0 d-flex align-items-center">
               <i class="bi bi-people-fill me-2"></i> Customer Results (Coming Soon)
             </h5>
@@ -157,8 +157,7 @@
       {# Placeholder for Vendors results #}
       {% if scope == 'vendors' or scope == 'all' %}
         <div class="card shadow-sm mb-4">
-          {# Removed justify-content-center from here #}
-          <div class="card-header bg-warning text-dark d-flex align-items-center">
+          <div class="card-header {% if vendor_results %}bg-warning text-dark{% else %}bg-body text-muted{% endif %} d-flex align-items-center">
             <h5 class="mb-0 d-flex align-items-center">
               <i class="bi bi-shop me-2"></i> Vendor Results (Coming Soon)
             </h5>

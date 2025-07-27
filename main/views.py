@@ -1,10 +1,11 @@
 from django.contrib.auth.decorators import login_required
 from django.db import models
-from django.db.models import Q
+from django.db.models import ExpressionWrapper, F, FloatField, Q, Sum
 from django.shortcuts import render
 from django.utils import timezone
 
 from inventory.models import Category, Item
+from sales.models import Sale
 
 # from inventory.models import Customer, Vendor # Uncomment when these models are implemented
 
@@ -19,12 +20,32 @@ def home(request):
     low_stock_count = items.filter(current_stock__lte=models.F("reorder_point")).count()
     sufficient_stock_count = num_items - low_stock_count
 
+    # Top 10 selling items
+    top_selling_items = (
+        Sale.objects.values("item__name", "item__unit__name")
+        .annotate(
+            total_quantity=Sum("quantity"),
+            total_sales=Sum(
+                ExpressionWrapper(
+                    F("quantity") * F("unit_price"), output_field=FloatField()
+                )
+            ),
+        )
+        .order_by("-total_quantity")[:10]
+    )
+
+    recent_sales = Sale.objects.select_related("item", "item__unit").order_by("-date")[
+        :10
+    ]
+
     context = {
         "items": items,
         "num_items": num_items,
         "num_categories": num_categories,
         "low_stock_count": low_stock_count,
         "sufficient_stock_count": sufficient_stock_count,
+        "top_selling_items": top_selling_items,
+        "recent_sales": recent_sales,
         "now": timezone.now(),
     }
     return render(request, "home.html", context)
@@ -76,3 +97,12 @@ def search_results_view(request):
         "vendor_results": vendor_results,
     }
     return render(request, "search/search_results.html", context)
+
+
+# views.py
+def custom_404_view(request, exception):
+    return render(request, "errors/404.html")
+
+
+def custom_500_view(request):
+    return render(request, "errors/500.html")

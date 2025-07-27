@@ -1,0 +1,108 @@
+{% load custom_filters %}
+{# --- Sales Table --- #}
+{% if sales %}
+  <div class="d-flex align-items-baseline gap-2">
+    <i class="bi bi-cart2 fs-5"></i>
+    <h5 class="mb-0">Sales</h5>
+  </div>
+  <div class="table-responsive mb-4 rounded overflow-hidden border">
+    <table class="table table-sm table-hover table-bordered align-middle">
+      <thead class="table-body">
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Customer</th>
+          <th scope="col">Quantity Sold</th>
+          <th scope="col">Unit Price</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for sale in sales %}
+          <tr>
+            <td>{{ sale.date|date:"M d, Y" }}</td>
+            <td>{{ sale.customer.name }}</td>
+            <td>{{ sale.quantity }} {{ item.unit.abbreviation|default:item.unit.name }}</td>
+            <td>KES {{ sale.unit_price|floatformat:2 }}</td>
+            <td>KES {{ sale.quantity|mul:sale.unit_price|floatformat:2 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="text-muted text-center py-4">
+    <i class="bi bi-info-circle me-2"></i> No sales transactions available for this item.
+  </div>
+{% endif %}
+{# --- Purchases Table --- #}
+{% if purchases %}
+  <div class="d-flex align-items-baseline gap-2">
+    <i class="bi bi-bag fs-5"></i>
+    <h5 class="mb-0">Purchases</h5>
+  </div>
+  <div class="table-responsive mb-4">
+    <table class="table table-sm table-hover table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Supplier</th>
+          <th scope="col">Quantity Purchased</th>
+          <th scope="col">Unit Cost</th>
+          <th scope="col">Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for purchase in purchases %}
+          <tr>
+            <td>{{ purchase.date|date:"M d, Y" }}</td>
+            <td>{{ purchase.supplier.name }}</td>
+            <td>{{ purchase.quantity }} {{ item.unit.abbreviation|default:item.unit.name }}</td>
+            <td>KES {{ purchase.unit_cost|floatformat:2 }}</td>
+            <td>KES {{ purchase.quantity|mul:purchase.unit_cost|floatformat:2 }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="text-muted text-center py-4">
+    <i class="bi bi-info-circle me-2"></i> No purchase transactions available for this item.
+  </div>
+{% endif %}
+{# --- Inventory Adjustments Table --- #}
+{% if adjustments %}
+  <div class="d-flex align-items-baseline gap-2">
+    <i class="bi bi-calculator fs-5">
+    </i>
+    <h5 class="mb-0">Inventory Adjustments</h5>
+  </div>
+  <h6 class="mb-2">
+    <span class="badge bg-warning text-dark me-2">Adjustment</span> Inventory Adjustments
+  </h6>
+  <div class="table-responsive mb-4">
+    <table class="table table-sm table-hover table-bordered align-middle">
+      <thead class="table-light">
+        <tr>
+          <th scope="col">Date</th>
+          <th scope="col">Reason</th>
+          <th scope="col">Quantity</th>
+          <th scope="col">Adjusted By</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for adj in adjustments %}
+          <tr>
+            <td>{{ adj.date|date:"M d, Y" }}</td>
+            <td>{{ adj.reason }}</td>
+            <td>{{ adj.quantity }} {{ item.unit.abbreviation|default:item.unit.name }}</td>
+            <td>{{ adj.adjusted_by.get_full_name|default:adj.adjusted_by.username }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+{% else %}
+  <div class="text-muted text-center py-4">
+    <i class="bi bi-info-circle me-2"></i> No inventory adjustments available for this item.
+  </div>
+{% endif %}

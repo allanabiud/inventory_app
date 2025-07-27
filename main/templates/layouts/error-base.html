@@ -1,0 +1,23 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>
+      {% block title %}Error - Stockflow{% endblock %}
+    </title>
+    <!-- Bootstrap CSS -->
+    <link href="{% static 'css/vendor/bootstrap.min.css' %}" rel="stylesheet" />
+    <link rel="stylesheet"
+          href="{% static 'css/vendor/bootstrap-icons.min.css' %}" />
+    <link rel="stylesheet" href="{% static 'css/forms.css' %}" />
+  </head>
+  <body>
+    <div class="d-flex align-items-center justify-content-center"
+         style="min-height: 100vh">
+      {% block content %}{% endblock %}
+    </div>
+    <script src="{% static 'js/vendor/bootstrap.bundle.min.js' %}"></script>
+  </body>
+</html>

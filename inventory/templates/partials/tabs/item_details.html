@@ -1,0 +1,94 @@
+<div class="row g-4 mb-4 align-items-center">
+  {# Image Section #}
+  <div class="col-lg-3 col-md-4 d-flex flex-column align-items-center justify-content-center">
+    <div class="border rounded p-3 bg-body-tertiary d-flex flex-column align-items-center justify-content-center"
+         style="width: 100%;
+                overflow: hidden">
+      {# Removed height: 250px #}
+      {% with first_image=item.images.first %}
+        {% if first_image %}
+          <img src="{{ first_image.image.url }}"
+               alt="{{ item.name }} Image"
+               class="img-fluid h-100 w-100 object-fit-contain">
+        {% else %}
+          <i class="bi bi-image-fill fs-1 text-body-tertiary opacity-75"></i>
+          <p class="text-body-tertiary mb-0 mt-2">No Image Available</p>
+        {% endif %}
+      {% endwith %}
+    </div>
+  </div>
+  {# Basic Details Section #}
+  <div class="col-lg-9 col-md-8 d-flex flex-column">
+    <div class="col-12 mb-3">
+      <p class="mb-0 text-body-secondary small">Item Name</p>
+      <h5 class="fw-bold text-body">{{ item.name }}</h5>
+    </div>
+    <div class="row g-3 flex-grow-1">
+      <div class="col-sm-6 col-lg-4">
+        <p class="mb-0 text-body-secondary small">SKU</p>
+        <p class="lead fw-bold">{{ item.sku }}</p>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <p class="mb-0 text-body-secondary small">Unit of Measure</p>
+        <p class="lead">
+          {% if item.unit %}
+            {{ item.unit.name }}
+            {% if item.unit.abbreviation %}<span class="text-body-secondary">({{ item.unit.abbreviation }})</span>{% endif %}
+          {% else %}
+            <span class="text-body-secondary">N/A</span>
+          {% endif %}
+        </p>
+      </div>
+      <div class="col-sm-6 col-lg-4">
+        <p class="mb-0 text-body-secondary small">Category</p>
+        <p class="lead">
+          {% if item.category %}
+            {{ item.category.name }}
+          {% else %}
+            <span class="text-body-secondary">N/A</span>
+          {% endif %}
+        </p>
+      </div>
+      {# Add Description field here to utilize space if item has a description #}
+      {% if item.description %}
+        <div class="col-12">
+          <p class="mb-0 text-body-secondary small">Description</p>
+          <p class="lead">{{ item.description }}</p>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+<hr class="my-4">
+{# Pricing Section #}
+<h5 class="mb-3">Pricing Information</h5>
+<div class="row g-3 mb-4">
+  <div class="col-md-6 col-lg-4">
+    <p class="mb-1 text-body-secondary small">Selling Price</p>
+    <h5 class="fw-bold">KES {{ item.selling_price|default:"0.00"|floatformat:2 }}</h5>
+  </div>
+  <div class="col-md-6 col-lg-4">
+    <p class="mb-1 text-body-secondary small">Purchase Price</p>
+    <h5 class="fw-bold">KES {{ item.purchase_price|default:"0.00"|floatformat:2 }}</h5>
+  </div>
+</div>
+<hr class="my-4">
+{# Inventory Section #}
+<h5 class="mb-3">Inventory Status</h5>
+<div class="row g-3 mb-4">
+  <div class="col-md-4">
+    <p class="mb-1 text-body-secondary small">Opening Stock</p>
+    <h5 class="fw-bold">{{ item.opening_stock|default:"0" }}</h5>
+  </div>
+  <div class="col-md-4">
+    <p class="mb-1 text-body-secondary small">Current Stock</p>
+    <h5 class="fw-bold">{{ item.current_stock|default:"0" }}</h5>
+    {% if item.reorder_point and item.current_stock <= item.reorder_point %}
+      <span class="badge bg-warning text-dark mt-2">Below Reorder Point!</span>
+    {% endif %}
+  </div>
+  <div class="col-md-4">
+    <p class="mb-1 text-body-secondary small">Reorder Point</p>
+    <h5 class="fw-bold">{{ item.reorder_point|default:"0" }}</h5>
+  </div>
+</div>

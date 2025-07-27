@@ -1,5 +1,4 @@
 document.addEventListener("DOMContentLoaded", () => {
-  // Animate all elements with class .count-up
   const counters = document.querySelectorAll(".count-up");
 
   counters.forEach((counter) => {
@@ -21,7 +20,7 @@ document.addEventListener("DOMContentLoaded", () => {
     increment();
   });
 
-  // Animate #totalItemsOverlay
+  // Animate totalItemsOverlay if used
   const totalItemsOverlay = document.getElementById("totalItemsOverlay");
   const totalCountSpan = document.getElementById("totalItemsCount");
   if (totalItemsOverlay && totalCountSpan) {

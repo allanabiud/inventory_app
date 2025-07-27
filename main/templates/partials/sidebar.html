@@ -66,8 +66,7 @@
         </div>
       </li>
       <li class="nav-item">
-        {% with sales_group_urls='new_sale_url sales_history_url customers_url' %}
-          {# Replace with actual URL names #}
+        {% with sales_group_urls='sales add_sale view_sale edit_sale' %}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in sales_group_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#salesCollapse"
@@ -85,10 +84,12 @@
              id="salesCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">New Sale</a>
-            </li>
-            <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Sales History</a>
+              {% with sales_urls='sales add_sale view_sale edit_sale' %}
+                <a href="{% url 'sales' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in sales_urls.split %}active{% endif %}">
+                  Sales Records
+                </a>
+              {% endwith %}
             </li>
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Customers</a>
@@ -115,10 +116,7 @@
              id="purchasesCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">New Purchase</a>
-            </li>
-            <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Purchase Orders</a>
+              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Purchases</a>
             </li>
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Suppliers</a>

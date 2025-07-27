@@ -207,7 +207,7 @@ class InventoryAdjustmentForm(forms.ModelForm):
                                        id="id_cost_price"
                                        class="form-control {% if errors.cost_price %}is-invalid{% endif %}"
                                        placeholder="Cost Price"
-                                       value="{{ form_data.cost_price|default:'' }}"
+                                       value="{{ form.cost_price.value|default_if_none:'' }}"
                                        step="0.01">
                                 <label for="id_cost_price" class="form-label">Cost Price</label>
                             </div>
