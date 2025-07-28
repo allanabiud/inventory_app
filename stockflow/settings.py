@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     "main",
     "inventory",
     "sales",
+    "purchases",
     "authentication",
     "crispy_forms",
     "crispy_bootstrap5",

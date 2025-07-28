@@ -36,6 +36,10 @@ class Sale(models.Model):
         return f"{self.sales_number} - {self.customer or 'Walk-in'}"
 
     def clean(self):
+        # Skip validation if quantity or item or item.current_stock is missing
+        if self.quantity is None or not self.item_id or self.item.current_stock is None:  # type: ignore
+            return
+
         if self.pk:
             original = Sale.objects.get(pk=self.pk)
             restored_stock = self.item.current_stock + original.quantity
@@ -52,6 +56,12 @@ class Sale(models.Model):
 
         if not self.sales_number:
             self.sales_number = generate_sales_number()
+
+        # Use fallback if unit_price is missing
+        if self.unit_price is None:
+            if not self.item.selling_price:
+                raise ValidationError("No selling price set for this item.")
+            self.unit_price = self.item.selling_price
 
         # Run validation *before* changing stock
         self.full_clean()

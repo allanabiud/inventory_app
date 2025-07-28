@@ -4,17 +4,17 @@ from crispy_forms.layout import HTML, Column, Field, Layout, Row
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Sale
+from .models import Purchase
 
 
-class SaleForm(forms.ModelForm):
+class PurchaseForm(forms.ModelForm):
     class Meta:
-        model = Sale
+        model = Purchase
         fields = [
             "item",
-            "customer",
+            "supplier",
             "quantity",
-            "unit_price",
+            "unit_cost",
             "description",
             "date",
         ]
@@ -33,18 +33,18 @@ class SaleForm(forms.ModelForm):
             }
         )
 
-        self.fields["customer"].widget.attrs.update(
+        self.fields["supplier"].widget.attrs.update(
             {
-                "class": "select2-customer",
-                "data-placeholder": "Select a customer",
+                "class": "select2-supplier",
+                "data-placeholder": "Select a supplier",
             }
         )
 
         self.fields["quantity"].widget.attrs.update({"min": 1})
-        self.fields["unit_price"].required = False
-        self.fields["unit_price"].widget.attrs.update(
+        self.fields["unit_cost"].required = False
+        self.fields["unit_cost"].widget.attrs.update(
             {
-                "placeholder": "Unit price",
+                "placeholder": "Unit cost",
                 "step": "0.01",
                 "class": "form-control",
             }
@@ -56,7 +56,7 @@ class SaleForm(forms.ModelForm):
         self.helper.layout = Layout(
             Row(
                 Column(Field("item"), css_class="col-md-6"),
-                Column(Field("customer"), css_class="col-md-6"),
+                Column(Field("supplier"), css_class="col-md-6"),
                 css_class="g-4 mb-4",
             ),
             Row(
@@ -68,21 +68,21 @@ class SaleForm(forms.ModelForm):
                             <span class="input-group-text">KES</span>
                             <div class="form-floating flex-grow-1">
                                 <input type="number"
-                                       name="unit_price"
-                                       id="id_unit_price"
-                                       class="form-control {% if errors.unit_price %}is-invalid{% endif %}"
-                                       placeholder="Unit Price"
-                                       value="{{ form.unit_price.value|default_if_none:'' }}"
+                                       name="unit_cost"
+                                       id="id_unit_cost"
+                                       class="form-control {% if errors.unit_cost %}is-invalid{% endif %}"
+                                       placeholder="Unit Cost"
+                                       value="{{ form.unit_cost.value|default_if_none:'' }}"
                                        step="0.01">
-                                <label for="id_unit_price" class="form-label">Unit Price</label>
+                                <label for="id_unit_cost" class="form-label">Unit Cost</label>
                             </div>
                         </div>
                         <div class="form-text">
-                            Leave blank to use the item's default selling price.
+                            Leave blank to use the item's default purchasing price.
                         </div>
-                        {% if errors.unit_price %}
+                        {% if errors.unit_cost %}
                             <div class="invalid-feedback d-block">
-                                {% for error in errors.unit_price %}{{ error }}{% endfor %}
+                                {% for error in errors.unit_cost %}{{ error }}{% endfor %}
                             </div>
                         {% endif %}
                         """
@@ -104,29 +104,15 @@ class SaleForm(forms.ModelForm):
             raise ValidationError("Quantity must be a positive number.")
         return quantity
 
-    def clean_unit_price(self):
-        price = self.cleaned_data.get("unit_price")
-        if price is not None and price <= 0:
-            raise ValidationError("Unit price must be a positive number.")
-        return price
-
-    def clean(self):
-        cleaned_data = super().clean()
-        item = cleaned_data.get("item")  # type: ignore
-        quantity = cleaned_data.get("quantity")  # type: ignore
-
-        if self.instance.pk is None and item and quantity:
-            if item.current_stock < quantity:
-                self.add_error(
-                    "quantity",
-                    f"Not enough stock. Only {item.current_stock} unit(s) available.",
-                )
-
-        return cleaned_data
+    def clean_unit_cost(self):
+        cost = self.cleaned_data.get("unit_cost")
+        if cost is not None and cost <= 0:
+            raise ValidationError("Unit cost must be a positive number.")
+        return cost
 
     def save(self, commit=True):
         instance = super().save(commit=False)
-        # Sale's save() handles stock deduction and sales_number
+        # Purchase model's save() handles stock increase and purchase_number
         if commit:
             instance.save()
         return instance

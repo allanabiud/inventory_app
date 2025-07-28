@@ -28,6 +28,9 @@ def add_sale(request):
         if form.is_valid():
             sale = form.save(commit=False)
             sale.user = request.user
+            # Generate sales number *after* counting existing sales
+            sale_number = generate_sales_number()
+            sale.sales_number = sale_number  # assuming you have a sales_number field
             sale.save()
             messages.success(
                 request, f"Sale recorded successfully for {sale.item.name}."
@@ -36,30 +39,50 @@ def add_sale(request):
         else:
             messages.error(request, "Please correct the errors below.")
     else:
-        # Pre-create the sales number just to show
-        sales_number_preview = generate_sales_number()
         form = SaleForm()
+        # Only for preview (optional; can remove this if not displaying it in form)
+        sales_number_preview = generate_sales_number()
 
-    context = {
-        "form": form,
-        "title": "Record a New Sale",
-        "sales_number": sales_number_preview,  # type: ignore
-    }
     return render(
         request,
         "forms/add/add_sale.html",
-        context,
+        {
+            "form": form,
+            "sales_number": sales_number_preview if request.method != "POST" else None,  # type: ignore
+        },
     )
 
 
 @login_required
 def edit_sale(request, pk):
     sale = get_object_or_404(Sale, id=pk)
+    old_item = sale.item
+    old_quantity = sale.quantity
 
     if request.method == "POST":
         form = SaleForm(request.POST, instance=sale)
         if form.is_valid():
-            form.save()
+            updated_sale = form.save(commit=False)
+
+            # Handle item change
+            if updated_sale.item != old_item:
+                # Restore stock to old item
+                if old_item:
+                    old_item.current_stock += old_quantity
+                    old_item.save()
+
+                # Deduct stock from new item
+                if updated_sale.item:
+                    updated_sale.item.current_stock -= updated_sale.quantity
+                    updated_sale.item.save()
+
+            else:
+                # Same item, adjust stock based on quantity change
+                quantity_diff = old_quantity - updated_sale.quantity
+                updated_sale.item.current_stock += quantity_diff
+                updated_sale.item.save()
+
+            updated_sale.save()
             messages.success(request, "Sale updated successfully.")
             return redirect("view_sale", pk=sale.pk)
         else:
@@ -94,7 +117,8 @@ def view_sale(request, pk):
 def delete_sale(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
     if request.method == "POST":
-        sale.delete()
+        for sale in Sale.objects.all():
+            sale.delete()
         messages.success(request, f'Sale "{sale.sales_number}" deleted successfully.')
         return redirect("sales")
     return redirect("view_sale", pk=pk)

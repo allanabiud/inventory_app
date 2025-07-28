@@ -9,6 +9,7 @@ urlpatterns = [
     path("", include("authentication.urls")),
     path("", include("inventory.urls")),
     path("", include("sales.urls")),
+    path("", include("purchases.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = "main.views.custom_404_view"

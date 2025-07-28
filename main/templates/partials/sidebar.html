@@ -98,7 +98,7 @@
         </div>
       </li>
       <li class="nav-item">
-        {% with purchase_group_urls='new_purchase_url purchase_orders_url suppliers_url' %}
+        {% with purchase_group_urls='purchases' %}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in purchase_group_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#purchasesCollapse"
@@ -116,7 +116,12 @@
              id="purchasesCollapse">
           <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Purchases</a>
+              {% with purchase_urls='purchases' %}
+                <a href="{% url 'purchases' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in purchase_urls.split %}active{% endif %}">
+                  Purchases Records
+                </a>
+              {% endwith %}
             </li>
             <li>
               <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Suppliers</a>
