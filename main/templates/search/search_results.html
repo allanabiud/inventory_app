@@ -136,42 +136,6 @@
           </div>
         </div>
       {% endif %}
-      {# Placeholder for Customers results #}
-      {% if scope == 'customers' or scope == 'all' %}
-        <div class="card shadow-sm mb-4">
-          <div class="card-header {% if customer_results %}bg-info text-white{% else %}bg-body text-muted{% endif %} d-flex align-items-center">
-            <h5 class="mb-0 d-flex align-items-center">
-              <i class="bi bi-people-fill me-2"></i> Customer Results (Coming Soon)
-            </h5>
-          </div>
-          <div class="card-body p-4 text-center text-muted">
-            Customer search functionality is not yet implemented.
-            {% if scope == 'all' and query %}
-              <p class="mt-2 mb-0">
-                No customer results for "<strong>{{ query }}</strong>".
-              </p>
-            {% endif %}
-          </div>
-        </div>
-      {% endif %}
-      {# Placeholder for Vendors results #}
-      {% if scope == 'vendors' or scope == 'all' %}
-        <div class="card shadow-sm mb-4">
-          <div class="card-header {% if vendor_results %}bg-warning text-dark{% else %}bg-body text-muted{% endif %} d-flex align-items-center">
-            <h5 class="mb-0 d-flex align-items-center">
-              <i class="bi bi-shop me-2"></i> Vendor Results (Coming Soon)
-            </h5>
-          </div>
-          <div class="card-body p-4 text-center text-muted">
-            Vendor search functionality is not yet implemented.
-            {% if scope == 'all' and query %}
-              <p class="mt-2 mb-0">
-                No vendor results for "<strong>{{ query }}</strong>".
-              </p>
-            {% endif %}
-          </div>
-        </div>
-      {% endif %}
     {% endif %}
   </div>
 {% endblock %}

@@ -3,9 +3,9 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from authentication.models import UserProfile
-from sales.models import Sale
+from sales.models import Customer, Sale
 
-from .forms import SaleForm
+from .forms import CustomerForm, SaleForm
 from .utils import generate_sales_number
 
 
@@ -55,35 +55,14 @@ def add_sale(request):
 
 @login_required
 def edit_sale(request, pk):
-    sale = get_object_or_404(Sale, id=pk)
-    old_item = sale.item
-    old_quantity = sale.quantity
+    sale = get_object_or_404(Sale, pk=pk)
 
     if request.method == "POST":
         form = SaleForm(request.POST, instance=sale)
         if form.is_valid():
-            updated_sale = form.save(commit=False)
+            form.save()
 
-            # Handle item change
-            if updated_sale.item != old_item:
-                # Restore stock to old item
-                if old_item:
-                    old_item.current_stock += old_quantity
-                    old_item.save()
-
-                # Deduct stock from new item
-                if updated_sale.item:
-                    updated_sale.item.current_stock -= updated_sale.quantity
-                    updated_sale.item.save()
-
-            else:
-                # Same item, adjust stock based on quantity change
-                quantity_diff = old_quantity - updated_sale.quantity
-                updated_sale.item.current_stock += quantity_diff
-                updated_sale.item.save()
-
-            updated_sale.save()
-            messages.success(request, "Sale updated successfully.")
+            messages.success(request, f"Sale {sale.sales_number} updated successfully.")
             return redirect("view_sale", pk=sale.pk)
         else:
             messages.error(request, "Please correct the errors below.")
@@ -130,3 +109,78 @@ def delete_all_sales(request):
         Sale.objects.all().delete()
         messages.success(request, "All sales records deleted and stock levels reset.")
     return redirect("sales")
+
+
+@login_required
+def customers_view(request):
+    customers = Customer.objects.all().order_by("-created_at")
+    total_customers = customers.count()
+
+    return render(
+        request,
+        "customers.html",
+        {"customers": customers, "total_customers": total_customers},
+    )
+
+
+def add_customer(request):
+    """Handles creation of a new customer."""
+    if request.method == "POST":
+        form = CustomerForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Customer added successfully.")
+            return redirect("customers")
+    else:
+        form = CustomerForm()
+    return render(request, "forms/add/add_customer.html", {"form": form})
+
+
+def edit_customer(request, pk):
+    """Handles editing of an existing customer."""
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == "POST":
+        form = CustomerForm(request.POST, instance=customer)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Customer updated successfully.")
+            return redirect("customers")
+    else:
+        form = CustomerForm(instance=customer)
+    return render(
+        request, "forms/edit/edit_customer.html", {"form": form, "customer": customer}
+    )
+
+
+@login_required
+def view_customer(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    total_customers = Customer.objects.count()
+    context = {
+        "customer": customer,
+        "total_customers": total_customers,
+    }
+    return render(
+        request,
+        "view/view_customer.html",
+        context,
+    )
+
+
+@login_required
+def delete_customer(request, pk):
+    customer = get_object_or_404(Customer, pk=pk)
+    if request.method == "POST":
+        customer.delete()
+        messages.success(request, f'Customer "{customer.name}" deleted successfully.')
+        return redirect("customers")
+    return redirect("view_customer", pk=pk)
+
+
+@login_required
+def delete_all_customers(request):
+    if request.method == "POST":
+        for customer in Customer.objects.all():
+            customer.delete()
+        messages.success(request, "All customer records deleted.")
+    return redirect("customers")

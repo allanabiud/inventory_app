@@ -1,14 +1,21 @@
 <div class="dropdown">
-  <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
-          type="button"
-          data-bs-toggle="dropdown"
-          aria-expanded="false">{{ request.GET.time_filter|default:"This Month" }}</button>
-  <ul class="dropdown-menu dropdown-menu-end">
-    <li>
-      <a class="dropdown-item time-filter-option" href="?time_filter=month">This Month</a>
-    </li>
-    <li>
-      <a class="dropdown-item time-filter-option" href="?time_filter=year">This Year</a>
-    </li>
-  </ul>
+  {% with current_filter=request.GET.time_filter|default:'month' %}
+    <button class="btn btn-sm btn-outline-secondary dropdown-toggle"
+            id="timeFilterBtn"
+            type="button"
+            data-bs-toggle="dropdown"
+            aria-expanded="false">
+            {% if current_filter == 'year' %}This Year{% else %}This Month{% endif %}
+    </button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      <li>
+        <a class="dropdown-item time-filter-option {% if active_filter == 'month' %}active{% endif %}"
+           href="#" data-filter="month">This Month</a>
+      </li>
+      <li>
+        <a class="dropdown-item time-filter-option {% if active_filter == 'year' %}active{% endif %}"
+           href="#" data-filter="year">This Year</a>
+      </li>
+    </ul>
+  {% endwith %}
 </div>

@@ -4,7 +4,7 @@ from crispy_forms.layout import HTML, Column, Field, Layout, Row
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Sale
+from .models import Customer, Sale
 
 
 class SaleForm(forms.ModelForm):
@@ -22,6 +22,7 @@ class SaleForm(forms.ModelForm):
             "description": forms.Textarea(attrs={"style": "height: 100px"}),
             "date": forms.DateInput(attrs={"type": "date"}),
         }
+        labels = {"date": "Date of Sale", "quantity": "Quantity Sold"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -130,3 +131,45 @@ class SaleForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class CustomerForm(forms.ModelForm):
+    """Form for creating and updating customers, styled with Crispy Forms."""
+
+    class Meta:
+        model = Customer
+        fields = ["name", "email", "phone", "address"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    FloatingField("name", placeholder="Customer name"),
+                    css_class="col-md-6",
+                ),
+                Column(
+                    FloatingField("email", placeholder="Email address"),
+                    css_class="col-md-6",
+                ),
+                css_class="g-4 mb-4",
+            ),
+            Row(
+                Column(
+                    FloatingField("phone", placeholder="Phone number"),
+                    css_class="col-md-6",
+                ),
+                Column(
+                    FloatingField("address", placeholder="Physical or mailing address"),
+                    css_class="col-md-6",
+                ),
+                css_class="g-4 mb-4",
+            ),
+        )
+
+        # Optional fields
+        self.fields["email"].required = False
+        self.fields["phone"].required = False
+        self.fields["address"].required = False

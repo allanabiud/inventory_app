@@ -57,7 +57,9 @@
               </thead>
               <tbody>
                 {% for purchase in purchases %}
-                  <tr class="clickable-row" data-href="" style="cursor: pointer">
+                  <tr class="clickable-row"
+                      data-href="{% url 'view_purchase' purchase.pk %}"
+                      style="cursor: pointer">
                     <td>{{ purchase.purchase_number }}</td>
                     <td>{{ purchase.item.name }}</td>
                     <td>{{ purchase.quantity }}</td>
@@ -65,8 +67,8 @@
                     <td>KES {{ purchase.total_cost|floatformat:2|intcomma }}</td>
                     <td>{{ purchase.supplier.name }}</td>
                     <td>
-                      {{ purchase.created_at|date:"Y-m-d H:i A" }}
-                      <small class="text-muted d-block">({{ purchase.created_at|naturaltime }})</small>
+                      {{ purchase.date|date:"Y-m-d" }}
+                      <small class="text-muted d-block">({{ purchase.date }})</small>
                     </td>
                   </tr>
                 {% endfor %}

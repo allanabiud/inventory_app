@@ -44,16 +44,6 @@
                     aria-controls="transactions-tab-pane"
                     aria-selected="false">Transactions</button>
           </li>
-          <li class="nav-item" role="presentation">
-            <button class="nav-link"
-                    id="statistics-tab"
-                    data-bs-toggle="tab"
-                    data-bs-target="#statistics-tab-pane"
-                    type="button"
-                    role="tab"
-                    aria-controls="statistics-tab-pane"
-                    aria-selected="false">Statistics</button>
-          </li>
         </ul>
         <div class="tab-content" id="itemTabContent">
           <!-- Details Tab -->
@@ -68,12 +58,6 @@
                role="tabpanel"
                aria-labelledby="transactions-tab"
                tabindex="0">{% include "partials/tabs/item_transactions.html" %}</div>
-          <!-- Statistics Tab -->
-          <div class="tab-pane fade"
-               id="statistics-tab-pane"
-               role="tabpanel"
-               aria-labelledby="statistics-tab"
-               tabindex="0">{% include "partials/tabs/item_statistics.html" %}</div>
         </div>
       </div>
       {# end card-body #}
@@ -81,7 +65,6 @@
     {# end card #}
   </div>
   {# end container-fluid #}
-  {# Delete Item Modal (remains unchanged as it uses standard Bootstrap components) #}
   <div class="modal fade"
        id="deleteItemModal"
        tabindex="-1"

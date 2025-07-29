@@ -2,9 +2,10 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
-from purchases.models import Purchase
+from authentication.models import UserProfile
+from purchases.models import Purchase, Supplier
 
-from .forms import PurchaseForm
+from .forms import PurchaseForm, SupplierForm
 from .utils import generate_purchase_number
 
 
@@ -103,10 +104,19 @@ def edit_purchase(request, pk):
 @login_required
 def view_purchase(request, pk):
     purchase = get_object_or_404(Purchase, pk=pk)
+    user_profile = (
+        UserProfile.objects.filter(user=purchase.user).first()
+        if purchase.user
+        else None
+    )
+    context = {
+        "purchase": purchase,
+        "user_profile": user_profile,
+    }
     return render(
         request,
         "view/view_purchase.html",
-        {"purchase": purchase},
+        context,
     )
 
 
@@ -129,3 +139,72 @@ def delete_all_purchases(request):
             purchase.delete()  # Triggers signal
         messages.success(request, "All purchases deleted and stock levels updated.")
     return redirect("purchases")
+
+
+@login_required
+def supplier_view(request):
+    suppliers = Supplier.objects.all().order_by("-created_at")
+    total_suppliers = suppliers.count()
+    return render(
+        request,
+        "suppliers.html",
+        {"suppliers": suppliers, "total_suppliers": total_suppliers},
+    )
+
+
+def add_supplier(request):
+    """Handles creation of a new supplier."""
+    if request.method == "POST":
+        form = SupplierForm(request.POST)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Supplier added successfully.")
+            return redirect("suppliers")
+    else:
+        form = SupplierForm()
+    return render(request, "forms/add/add_supplier.html", {"form": form})
+
+
+def edit_supplier(request, pk):
+    """Handles editing of an existing supplier."""
+    supplier = get_object_or_404(Supplier, pk=pk)
+    if request.method == "POST":
+        form = SupplierForm(request.POST, instance=supplier)
+        if form.is_valid():
+            form.save()
+            messages.success(request, "Supplier updated successfully.")
+            return redirect("suppliers")
+    else:
+        form = SupplierForm(instance=supplier)
+    return render(
+        request, "forms/edit/edit_supplier.html", {"form": form, "supplier": supplier}
+    )
+
+
+@login_required
+def view_supplier(request, pk):
+    supplier = get_object_or_404(Supplier, pk=pk)
+    return render(
+        request,
+        "view/view_supplier.html",
+        {"supplier": supplier},
+    )
+
+
+@login_required
+def delete_supplier(request, pk):
+    supplier = get_object_or_404(Supplier, pk=pk)
+    if request.method == "POST":
+        supplier.delete()
+        messages.success(request, f'Supplier "{supplier.name}" deleted successfully.')
+        return redirect("suppliers")
+    return redirect("view_supplier", pk=pk)
+
+
+@login_required
+def delete_all_suppliers(request):
+    if request.method == "POST":
+        for supplier in Supplier.objects.all():
+            supplier.delete()  # Triggers signal
+        messages.success(request, "All suppliers deleted and stock levels updated.")
+    return redirect("suppliers")

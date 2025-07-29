@@ -4,7 +4,7 @@ from crispy_forms.layout import HTML, Column, Field, Layout, Row
 from django import forms
 from django.core.exceptions import ValidationError
 
-from .models import Purchase
+from .models import Purchase, Supplier
 
 
 class PurchaseForm(forms.ModelForm):
@@ -22,6 +22,7 @@ class PurchaseForm(forms.ModelForm):
             "description": forms.Textarea(attrs={"style": "height: 100px"}),
             "date": forms.DateInput(attrs={"type": "date"}),
         }
+        labels = {"date": "Date of Purchase", "quantity": "Quantity Purchased"}
 
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
@@ -116,3 +117,45 @@ class PurchaseForm(forms.ModelForm):
         if commit:
             instance.save()
         return instance
+
+
+class SupplierForm(forms.ModelForm):
+    """Form for creating and updating suppliers, styled with Crispy Forms."""
+
+    class Meta:
+        model = Supplier
+        fields = ["name", "email", "phone", "address"]
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.helper = FormHelper()
+        self.helper.form_method = "post"
+        self.helper.layout = Layout(
+            Row(
+                Column(
+                    FloatingField("name", placeholder="Supplier name"),
+                    css_class="col-md-6",
+                ),
+                Column(
+                    FloatingField("email", placeholder="Email address"),
+                    css_class="col-md-6",
+                ),
+                css_class="g-4 mb-4",
+            ),
+            Row(
+                Column(
+                    FloatingField("phone", placeholder="Phone number"),
+                    css_class="col-md-6",
+                ),
+                Column(
+                    FloatingField("address", placeholder="Physical or mailing address"),
+                    css_class="col-md-6",
+                ),
+                css_class="g-4 mb-4",
+            ),
+        )
+
+        # Optional fields
+        self.fields["email"].required = False
+        self.fields["phone"].required = False
+        self.fields["address"].required = False

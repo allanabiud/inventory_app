@@ -69,8 +69,8 @@
                     <td>KES {{ sale.discount|floatformat:2|intcomma }}</td>
                     <td>{{ sale.customer.name }}</td>
                     <td>
-                      {{ sale.created_at|date:"Y-m-d H:i A" }}
-                      <small class="text-muted d-block">({{ sale.created_at|naturaltime }})</small>
+                      {{ sale.date|date:"Y-m-d" }}
+                      <small class="text-muted d-block">({{ sale.date }})</small>
                     </td>
                   </tr>
                 {% endfor %}

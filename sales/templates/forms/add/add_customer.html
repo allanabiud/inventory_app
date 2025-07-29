@@ -1,0 +1,32 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% load crispy_forms_tags %}
+{% block title %}Add Customer - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-0">New Customer</h4>
+        <a href="javascript:history.back()"><i class="bi bi-x-lg fs-4"></i></a>
+      </div>
+      <div class="px-5 pt-3">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        <form method="post" id="customerForm">
+          {% csrf_token %}
+          {% crispy form %}
+        </form>
+      </div>
+      <div class="sticky-bottom-btn-bar border-top p-3">
+        <div class="d-flex gap-3">
+          <button type="submit" form="customerForm" class="btn btn-success">Save</button>
+          <a href="javascript:history.back()" class="btn btn-secondary">Cancel</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <script src="{% static 'js/forms/add_customer.js' %}"></script>
+{% endblock %}

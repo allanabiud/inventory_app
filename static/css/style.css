@@ -141,6 +141,39 @@ option:checked {
   background-color: var(--primary-green);
 }
 
+/* Custom Outline Button for Purchases */
+.btn-outline-purchase,
+.btn-outline-purchase i {
+  color: var(--text-color);
+  border-color: #6610f2;
+  background-color: transparent;
+}
+
+.btn-outline-purchase:hover {
+  color: var(--color-white);
+  background-color: #6610f2;
+  border-color: #6610f2;
+}
+
+/* Custom Outline Button for Sales */
+.btn-outline-sale,
+.btn-outline-sale i {
+  color: var(--text-color);
+  border-color: #a7288a;
+  background-color: transparent;
+}
+
+.btn-outline-sale:hover {
+  background-color: #a7288a;
+  border-color: #a7288a;
+}
+
+/* Ensure active state also looks good if button is clicked and held */
+.btn-outline-purchase-purple:active:focus {
+  box-shadow: 0 0 0 0.25rem rgba(102, 16, 242, 0.5);
+}
+
+/* DATATABLES */
 /* Prevent export button from forcing horizontal scroll */
 .datatable-header {
   overflow-x: auto;

@@ -66,7 +66,44 @@
         </div>
       </li>
       <li class="nav-item">
-        {% with sales_group_urls='sales add_sale view_sale edit_sale' %}
+        {% with purchase_group_urls='purchases add_purchase edit_purchase view_purchase suppliers add_supplier edit_supplier view_supplier' %}
+          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in purchase_group_urls.split %}active{% endif %}"
+             data-bs-toggle="collapse"
+             href="#purchasesCollapse"
+             role="button"
+             aria-expanded="{% if request.resolver_match.url_name in purchase_group_urls.split %}true{% else %}false{% endif %}"
+             aria-controls="purchasesCollapse">
+            <div>
+              <i class="bi bi-bag fs-5 me-1"></i>
+              <span class="sidebar-label">Purchases</span>
+            </div>
+            <i class="bi bi-chevron-down sidebar-chevron"></i>
+          </a>
+        {% endwith %}
+        <div class="collapse {% if request.resolver_match.url_name in purchase_group_urls.split %}show{% endif %}"
+             id="purchasesCollapse">
+          <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
+            <li>
+              {% with purchase_urls='purchases add_purchase edit_purchase view_purchase' %}
+                <a href="{% url 'purchases' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in purchase_urls.split %}active{% endif %}">
+                  Purchases Records
+                </a>
+              {% endwith %}
+            </li>
+            <li>
+              {% with supplier_urls='suppliers add_supplier edit_supplier view_supplier' %}
+              <a href="{% url 'suppliers' %}"
+                 class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in supplier_urls.split %}active{% endif %}">
+                Suppliers
+              </a>
+              {% endwith %}
+            </li>
+          </ul>
+        </div>
+      </li>
+      <li class="nav-item">
+        {% with sales_group_urls='sales add_sale view_sale edit_sale customers add_customer view_customer edit_customer' %}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in sales_group_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#salesCollapse"
@@ -92,39 +129,12 @@
               {% endwith %}
             </li>
             <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Customers</a>
-            </li>
-          </ul>
-        </div>
-      </li>
-      <li class="nav-item">
-        {% with purchase_group_urls='purchases' %}
-          <a class="nav-link sidebar-item {% if request.resolver_match.url_name in purchase_group_urls.split %}active{% endif %}"
-             data-bs-toggle="collapse"
-             href="#purchasesCollapse"
-             role="button"
-             aria-expanded="{% if request.resolver_match.url_name in purchase_group_urls.split %}true{% else %}false{% endif %}"
-             aria-controls="purchasesCollapse">
-            <div>
-              <i class="bi bi-bag fs-5 me-1"></i>
-              <span class="sidebar-label">Purchases</span>
-            </div>
-            <i class="bi bi-chevron-down sidebar-chevron"></i>
-          </a>
-        {% endwith %}
-        <div class="collapse {% if request.resolver_match.url_name in purchase_group_urls.split %}show{% endif %}"
-             id="purchasesCollapse">
-          <ul class="btn-toggle-nav fw-normal pb-1 ps-4 mt-1">
-            <li>
-              {% with purchase_urls='purchases' %}
-                <a href="{% url 'purchases' %}"
-                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in purchase_urls.split %}active{% endif %}">
-                  Purchases Records
+              {% with customers_urls='customers add_customer view_customer edit_customer' %}
+                <a href="{% url 'customers' %}"
+                   class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in customers_urls.split %}active{% endif %}">
+                  Customers
                 </a>
               {% endwith %}
-            </li>
-            <li>
-              <a href="#" class="nav-link link-body-emphasis sidebar-sub-item rounded">Suppliers</a>
             </li>
           </ul>
         </div>

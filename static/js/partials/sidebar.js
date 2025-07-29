@@ -4,8 +4,6 @@ document.addEventListener("DOMContentLoaded", () => {
   const toggleIcon = document.getElementById("sidebarToggleIcon");
   const sidebarItems = document.querySelectorAll(".sidebar-item");
 
-  const COLLAPSED_KEY = "sidebar-collapsed";
-
   const popoverInstances = new Map();
   let currentPopoverOwner = null;
 
@@ -82,16 +80,13 @@ document.addEventListener("DOMContentLoaded", () => {
           }
           item.removeAttribute("data-bs-toggle");
         }
-        // When sidebar collapses, all chevron should point down (default for popover state)
-        syncChevronRotation(item, false); // All chevrons point down initially for collapsed sidebar
+        syncChevronRotation(item, false);
       } else {
-        // Sidebar is expanded
         if (item.dataset.originalBsToggle === "collapse") {
           item.setAttribute("data-bs-toggle", "collapse");
           delete item.dataset.originalBsToggle;
         }
 
-        // Sync chevron based on the collapse's current 'show' state
         if (targetCollapse) {
           syncChevronRotation(item, targetCollapse.classList.contains("show"));
         }
@@ -107,11 +102,9 @@ document.addEventListener("DOMContentLoaded", () => {
       });
       setupPopovers(true);
     } else {
-      // Sidebar is expanded
       hidePopover();
       setupPopovers(false);
 
-      // Explicitly close collapses that are not marked 'show' by Django
       document.querySelectorAll("#sidebar .collapse").forEach((el) => {
         if (!el.classList.contains("show")) {
           const bsCollapse = bootstrap.Collapse.getInstance(el);
@@ -127,7 +120,7 @@ document.addEventListener("DOMContentLoaded", () => {
             );
             if (parentSidebarItem) {
               parentSidebarItem.setAttribute("aria-expanded", "false");
-              syncChevronRotation(parentSidebarItem, false); // Ensure chevron is down
+              syncChevronRotation(parentSidebarItem, false);
             }
           }
         }
@@ -136,9 +129,8 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   // --- Initial Load Logic ---
-  const storedCollapsedState = localStorage.getItem(COLLAPSED_KEY);
-  const isCollapsed = storedCollapsedState === "true";
-  applySidebarState(isCollapsed);
+  // Default to expanded state on every page load
+  applySidebarState(false); // Set to true if you want it collapsed by default
 
   // Initial chevron sync for all items on page load
   sidebarItems.forEach((item) => {
@@ -154,7 +146,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // --- Event Listeners ---
   toggleBtn.addEventListener("click", () => {
     const newState = !sidebar.classList.contains("collapsed");
-    localStorage.setItem(COLLAPSED_KEY, newState.toString());
     applySidebarState(newState);
   });
 
@@ -176,16 +167,15 @@ document.addEventListener("DOMContentLoaded", () => {
           const popover = popoverInstances.get(item);
           if (currentPopoverOwner === item) {
             hidePopover();
-            syncChevronRotation(item, false); // Chevron down when popover hides
+            syncChevronRotation(item, false);
           } else {
             hidePopover();
-            // Reset chevron for previous popover owner if any
             if (currentPopoverOwner) {
               syncChevronRotation(currentPopoverOwner, false);
             }
             popover.show();
             currentPopoverOwner = item;
-            syncChevronRotation(item, true); // Chevron up when popover shows
+            syncChevronRotation(item, true);
           }
         }
       } else if (href && href !== "#") {
@@ -230,7 +220,6 @@ document.addEventListener("DOMContentLoaded", () => {
       e.preventDefault();
       window.location.href = subItem.href;
       hidePopover();
-      // Ensure chevron resets if a sub-item click navigates away and closes popover
       if (currentPopoverOwner) {
         syncChevronRotation(currentPopoverOwner, false);
       }
@@ -244,7 +233,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
     if (!insidePopover && !insideTrigger) {
       if (currentPopoverOwner) {
-        // Only hide and reset chevron if a popover was actually open
         hidePopover();
         syncChevronRotation(currentPopoverOwner, false);
       }
@@ -257,7 +245,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const parentSidebarItem = document.querySelector(`[href="#${this.id}"]`);
       if (parentSidebarItem) {
         parentSidebarItem.setAttribute("aria-expanded", "false");
-        syncChevronRotation(parentSidebarItem, false); // Chevron down
+        syncChevronRotation(parentSidebarItem, false);
       }
     });
 
@@ -265,7 +253,7 @@ document.addEventListener("DOMContentLoaded", () => {
       const parentSidebarItem = document.querySelector(`[href="#${this.id}"]`);
       if (parentSidebarItem) {
         parentSidebarItem.setAttribute("aria-expanded", "true");
-        syncChevronRotation(parentSidebarItem, true); // Chevron up
+        syncChevronRotation(parentSidebarItem, true);
       }
     });
   });

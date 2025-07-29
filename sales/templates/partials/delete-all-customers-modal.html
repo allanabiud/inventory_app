@@ -1,12 +1,12 @@
 <div class="modal fade"
-     id="confirmDeleteAllPurchasesModal"
+     id="confirmDeleteAllCustomersModal"
      tabindex="-1"
-     aria-labelledby="confirmDeleteAllPurchasesModalLabel"
+     aria-labelledby="confirmDeleteAllCustomersModalLabel"
      aria-hidden="true">
   <div class="modal-dialog">
     <div class="modal-content">
       <div class="modal-header">
-        <h5 class="modal-title" id="confirmDeleteAllPurchasesModalLabel">Confirm Deletion</h5>
+        <h5 class="modal-title" id="confirmDeleteAllCustomersModalLabel">Confirm Deletion</h5>
         <button type="button"
                 class="btn-close"
                 data-bs-dismiss="modal"
@@ -14,15 +14,15 @@
       </div>
       <div class="modal-body">
         <p>
-          Are you sure you want to delete <strong>ALL purchases</strong>?
+          Are you sure you want to delete <strong>ALL customers</strong>?
         </p>
-        <p class="text-danger fw-bold">This action cannot be undone and will affect stock levels.</p>
+        <p class="text-danger fw-bold">This action cannot be undone.</p>
       </div>
       <div class="modal-footer">
         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-        <form method="post" action="{% url 'delete_all_purchases' %}">
+        <form method="post" action="{% url 'delete_all_customers' %}">
           {% csrf_token %}
-          <button type="submit" class="btn btn-danger">Delete All Purchases</button>
+          <button type="submit" class="btn btn-danger">Delete All Customers</button>
         </form>
       </div>
     </div>

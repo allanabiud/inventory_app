@@ -1,0 +1,83 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% block title %}View Customer - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="px-5 pt-5 pb-0 d-flex justify-content-between align-items-center">
+        <h4 class="mb-4">
+          Customer Details
+        </h4>
+        <div class="d-flex align-items-center gap-2">
+          <a href="{% url 'edit_customer' customer.pk %}" class="btn btn-sm btn-success">Edit Customer</a>
+          <button type="button"
+                  class="btn btn-sm btn-danger"
+                  data-bs-toggle="modal"
+                  data-bs-target="#deleteCustomerModal">Delete Customer</button>
+          <a href="{% url 'customers' %}">
+            <i class="bi bi-x-lg fs-4"></i>
+          </a>
+        </div>
+      </div>
+      <div class="px-5 pt-3">
+        {% if messages %}
+          {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}" role="alert">{{ message }}</div>
+          {% endfor %}
+        {% endif %}
+        <div class="row g-4 mb-4">
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Name</p>
+            <p class="lead">{{ customer.name|default:"—" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Phone</p>
+            <p class="lead">{{ customer.phone|default:"—" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Email</p>
+            <p class="lead">{{ customer.email|default:"—" }}</p>
+          </div>
+          <div class="col-md-6">
+            <p class="mb-1 text-muted small">Address</p>
+            <p class="lead">{{ customer.address|default:"—" }}</p>
+          </div>
+          <div class="col-md-12">
+            <p class="mb-1 text-muted small">Created At</p>
+            <p class="lead">{{ customer.created_at|date:"M d, Y H:i" }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade"
+       id="deleteCustomerModal"
+       tabindex="-1"
+       aria-labelledby="deleteCustomerModalLabel"
+       aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="deleteCustomerModalLabel">Confirm Delete</h5>
+          <button type="button"
+                  class="btn-close"
+                  data-bs-dismiss="modal"
+                  aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+          Are you sure you want to delete the customer "<strong>{{ customer.name }}</strong>"?
+          This action cannot be undone.
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+          <form action="{% url 'delete_customer' customer.pk %}" method="post" class="d-inline">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">Delete</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}
+
