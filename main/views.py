@@ -1,7 +1,8 @@
 import json
 from datetime import timedelta
 
-from django.contrib.auth.decorators import login_required
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.contrib.auth.models import User
 from django.db import models
 from django.db.models import (
     CharField,
@@ -16,7 +17,9 @@ from django.db.models import (
 from django.db.models.functions import TruncDay, TruncMonth
 from django.shortcuts import render
 from django.utils import timezone
+from django_celery_beat.models import PeriodicTask
 
+from authentication.models import InvitedUser
 from inventory.models import Category, Item
 from purchases.models import Purchase
 from sales.models import Sale
@@ -104,7 +107,7 @@ def home(request):
 
     all_recent_transactions = recent_sales.union(recent_purchases).order_by(
         "-date", "-created_at"
-    )[:10]
+    )[:5]
 
     today = timezone.now().date()
     current_year = today.year
@@ -271,10 +274,19 @@ def search_results_view(request):
     return render(request, "search/search_results.html", context)
 
 
-# views.py
 def custom_404_view(request, exception):
     return render(request, "errors/404.html")
 
 
 def custom_500_view(request):
     return render(request, "errors/500.html")
+
+
+@user_passes_test(lambda u: u.is_superuser)  # type: ignore
+@login_required
+def settings_view(request):
+    tasks = PeriodicTask.objects.exclude(task="celery.backend_cleanup")
+    users = User.objects.all().select_related("inviteduser")
+    pending_invites = InvitedUser.objects.filter(accepted=False, user__isnull=True)
+    context = {"tasks": tasks, "users": users, "pending_invites": pending_invites}
+    return render(request, "settings/settings.html", context)

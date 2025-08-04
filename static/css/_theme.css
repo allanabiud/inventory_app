@@ -84,6 +84,11 @@
   --bs-btn-secondary-disabled-bg: var(--card-bg-color);
   --bs-btn-secondary-disabled-border-color: var(--color-gray-light-border);
 
+  /* Tooltip Overrides */
+  --tooltip-bg-color: #f8f9fa;
+  --tooltip-text-color: #212529;
+  --tooltip-border-color: #dee2e6;
+
   /* Bootstrap Checkbox Overrides */
   --bs-form-check-input-checked-bg-color: var(--primary-green);
 
@@ -170,19 +175,17 @@
   --bs-btn-secondary-disabled-bg: var(--sidebar-bg-color);
   --bs-btn-secondary-disabled-border-color: var(--color-gray-light-border);
 
-  /* --- NEW ADDITIONS FOR DARK THEME ACTIVE LINK CONSISTENCY --- */
-  /* These target Bootstrap's default nav-link active states */
+  /* Tooltip Overrides */
+  --tooltip-bg-color: #343a40; /* Dark mode colors */
+  --tooltip-text-color: #fff;
+  --tooltip-border-color: #495057;
+
   --bs-nav-link-color: var(--color-white);
   --bs-nav-link-hover-color: var(--link-hover-color);
-  --bs-nav-link-active-color: var(
-    --color-white
-  ); /* Ensures active nav link text is white */
-  --bs-nav-link-active-bg: var(
-    --primary-green
-  ); /* Ensures active nav link background is primary green */
+  --bs-nav-link-active-color: var(--color-white);
+  --bs-nav-link-active-bg: var(--primary-green);
 }
 
-/* Ensure .btn-success explicitly uses your primary green variables in Light Mode */
 .btn-success {
   --bs-btn-bg: var(--primary-green);
   --bs-btn-border-color: var(--primary-green);
@@ -195,7 +198,6 @@
   --bs-btn-disabled-border-color: var(--primary-green);
 }
 
-/* Ensure .btn-success explicitly uses your primary green variables in Dark Mode */
 [data-bs-theme="dark"] .btn-success {
   --bs-btn-bg: var(--primary-green);
   --bs-btn-border-color: var(--primary-green);

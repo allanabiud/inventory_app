@@ -52,6 +52,21 @@
   color: var(--text-color);
 }
 
+.tooltip {
+  /* color: var(--text-color); */
+  color: black;
+}
+
+.tooltip-light .tooltip-inner {
+  background-color: var(--tooltip-bg-color);
+  color: var(--tooltip-text-color);
+  border: 1px solid var(--tooltip-border-color);
+}
+
+.tooltip-light .tooltip-arrow::before {
+  border-right-color: var(--tooltip-border-color) !important;
+}
+
 .slide-in-left {
   animation: slideInFromLeft 0.4s ease forwards;
 }

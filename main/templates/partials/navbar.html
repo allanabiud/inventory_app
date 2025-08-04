@@ -72,11 +72,19 @@
           </ul>
         </li>
         <li class="nav-item">
-          <a class="nav-link" href="#"><i class="bi bi-bell"></i></a>
+          <a class="nav-link" href="{% url 'stock_alerts' %}">
+            <span class="position-relative d-inline-block">
+              <i class="bi bi-bell fs-5"></i>
+              {% if low_stock > 0 %}
+                <span class="position-absolute top-0 start-100 translate-middle p-1 bg-danger border border-light rounded-circle small">
+                </span>
+              {% endif %}
+            </span>
+          </a>
         </li>
         {% if user.is_superuser %}
           <li class="nav-item">
-            <a class="nav-link" href="#"><i class="bi bi-gear"></i></a>
+            <a class="nav-link" href="{% url 'settings' %}"><i class="bi bi-gear"></i></a>
           </li>
         {% endif %}
         <li class="nav-item dropdown">
@@ -85,7 +93,6 @@
              role="button"
              data-bs-toggle="dropdown"
              aria-expanded="false">
-            <!-- Profile image -->
             {% if request.user.userprofile.profile_image %}
               <img src="{{ request.user.userprofile.profile_image.url }}"
                    alt="Profile"

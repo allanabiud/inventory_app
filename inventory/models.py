@@ -137,3 +137,15 @@ class InventoryAdjustment(models.Model):
 
     def __str__(self):
         return f"{self.adjustment_type} of {self.quantity_adjusted} for {self.item.name} on {self.date}"
+
+
+class StockAlert(models.Model):
+    item = models.ForeignKey("Item", on_delete=models.CASCADE, related_name="alerts")
+    alert_type = models.CharField(max_length=50, choices=[("low_stock", "Low Stock")])
+    message = models.TextField()
+    created_at = models.DateTimeField(default=timezone.now)
+    is_resolved = models.BooleanField(default=False)
+    notified_by_email = models.BooleanField(default=False)
+
+    def __str__(self):
+        return f"{self.alert_type.title()} - {self.item.name}"

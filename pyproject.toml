@@ -5,12 +5,15 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "celery>=5.5.3",
     "crispy-bootstrap5>=2025.6",
     "django>=5.2.3",
+    "django-celery-beat>=2.8.1",
     "django-crispy-forms>=2.4",
     "django-extensions>=4.1",
     "django-stubs>=5.2.1",
     "itsdangerous>=2.2.0",
     "pillow>=11.2.1",
     "python-decouple>=3.8",
+    "redis>=6.2.0",
 ]

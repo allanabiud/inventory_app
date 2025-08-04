@@ -1,6 +1,13 @@
 from django.contrib import admin
 
-from .models import Category, InventoryAdjustment, Item, ItemImage, UnitOfMeasure
+from .models import (
+    Category,
+    InventoryAdjustment,
+    Item,
+    ItemImage,
+    StockAlert,
+    UnitOfMeasure,
+)
 
 
 @admin.register(UnitOfMeasure)
@@ -59,3 +66,17 @@ class InventoryAdjustmentAdmin(admin.ModelAdmin):
     date_hierarchy = "date"
     readonly_fields = ("created_at",)
     ordering = ("-created_at",)
+
+
+@admin.register(StockAlert)
+class StockAlertAdmin(admin.ModelAdmin):
+    list_display = (
+        "item",
+        "alert_type",
+        "message",
+        "created_at",
+        "is_resolved",
+        "notified_by_email",
+    )
+    list_filter = ("alert_type", "is_resolved", "notified_by_email")
+    search_fields = ("item__name", "message")

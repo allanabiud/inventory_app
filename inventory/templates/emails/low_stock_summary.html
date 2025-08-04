@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <title>Low Stock Alert</title>
+  </head>
+  <body style="margin: 0;
+               padding: 20px;
+               background-color: #212529;
+               font-family: sans-serif">
+    <table role="presentation"
+           width="100%"
+           cellpadding="0"
+           cellspacing="0"
+           border="0">
+      <tr>
+        <td align="center">
+          <table role="presentation"
+                 cellpadding="0"
+                 cellspacing="0"
+                 style="max-width: 600px;
+                        width: 100%;
+                        background-color: #343a40;
+                        padding: 30px;
+                        border-radius: 8px;
+                        border: 1px solid #6c757d">
+            <tr>
+              <td align="center" style="color: #f8f9fa;">
+                <!-- Header -->
+                <div style="margin-bottom: 24px;
+                            display: flex;
+                            align-items: center;
+                            justify-content: center">
+                  <img src="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/icons/box2-fill.svg"
+                       alt="Stockflow"
+                       width="28"
+                       height="28"
+                       style="vertical-align: middle;
+                              filter: invert(100%);
+                              margin-right: 10px" />
+                  <span style="font-size: 1.6rem; font-weight: 600;">Stockflow</span>
+                </div>
+                <!-- Title -->
+                <h2 style="margin-bottom: 10px;">Low Stock Alerts</h2>
+                <p style="margin-top: 0;
+                          margin-bottom: 20px;
+                          font-size: 14px;
+                          color: #adb5bd">{{ date|date:"F j, Y" }}</p>
+                <!-- Table of alerts -->
+                <table role="presentation"
+                       width="100%"
+                       cellpadding="10"
+                       cellspacing="0"
+                       border="0"
+                       style="background-color: #495057;
+                              border-radius: 6px">
+                  <thead>
+                    <tr>
+                      <th align="left"
+                          style="color: #f8f9fa;
+                                 border-bottom: 1px solid #6c757d">Item</th>
+                      <th align="left"
+                          style="color: #f8f9fa;
+                                 border-bottom: 1px solid #6c757d">Message</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {% for alert in alerts %}
+                      <tr>
+                        <td style="color: #ffffff;">{{ alert.item.name }}</td>
+                        <td style="color: #dee2e6;">{{ alert.message }}</td>
+                      </tr>
+                    {% endfor %}
+                  </tbody>
+                </table>
+                <!-- Footer -->
+                <p style="margin-top: 30px; font-size: 14px; color: #ced4da;">Visit your inventory dashboard for more details.</p>
+                <p style="color: #f8f9fa; margin-top: 20px;">
+                  Regards,
+                  <br />
+                  <strong>Stockflow</strong>
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

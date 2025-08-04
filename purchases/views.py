@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from authentication.models import UserProfile
+from inventory.utils import check_and_create_low_stock_alert
 from purchases.models import Purchase, Supplier
 
 from .forms import PurchaseForm, SupplierForm
@@ -37,6 +38,9 @@ def add_purchase(request):
                 purchase_number  # assuming you have a purchase_number field
             )
             purchase.save()
+            # Check and create low stock alert if necessary
+            check_and_create_low_stock_alert(purchase.item)
+
             messages.success(
                 request, f"Purchase recorded successfully for {purchase.item.name}."
             )

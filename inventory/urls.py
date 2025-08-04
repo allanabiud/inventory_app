@@ -85,4 +85,11 @@ urlpatterns = [
         views.delete_all_adjustments,
         name="delete_all_adjustments",
     ),
+    # Stock Alerts
+    path("inventory/stock-alerts/", views.stock_alerts_view, name="stock_alerts"),
+    path(
+        "tasks/send-low-stock-email/",
+        views.trigger_low_stock_email,
+        name="send_low_stock_email",
+    ),
 ]

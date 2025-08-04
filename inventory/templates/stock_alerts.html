@@ -1,0 +1,26 @@
+{% extends 'layouts/home-base.html' %}
+{% block title %}Low Stock Alerts - Stockflow{% endblock %}
+{% block content %}
+  <div class="container mt-4">
+    <h4 class="mb-3">Low Stock Alerts</h4>
+    <ul class="list-group">
+      {% for alert in alerts %}
+        <li class="list-group-item">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <strong>{{ alert.item.name }}</strong>
+              <span class="text-muted">({{ alert.item.sku }})</span>
+              <br>
+              <small class="text-muted">
+                Current stock: {{ alert.item.current_stock }} | Reorder point: {{ alert.item.reorder_point }}
+              </small>
+            </div>
+            <span class="badge bg-danger">Low</span>
+          </div>
+        </li>
+      {% empty %}
+        <li class="list-group-item">No current low stock alerts.</li>
+      {% endfor %}
+    </ul>
+  </div>
+{% endblock %}

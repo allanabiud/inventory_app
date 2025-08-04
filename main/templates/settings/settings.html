@@ -1,0 +1,51 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% load custom_filters %}
+{% block title %}Settings - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="card p-0 mx-auto shadow-sm overflow-hidden d-flex flex-column">
+      <div class="p-5 pb-1 d-flex justify-content-between align-items-center border-0">
+        <h4 class="mb-0">Settings</h4>
+        <div>
+          <a href="{% url 'home' %}" class="btn btn-sm btn-outline-secondary">
+            <i class="bi bi-arrow-left me-1"></i> Back to Home
+          </a>
+        </div>
+      </div>
+      <div class="card-body px-5 pt-3">
+        <!-- Tabs -->
+        <ul class="nav nav-tabs mb-4" id="settingsTab" role="tablist">
+          <li class="nav-item" role="presentation">
+            <button class="nav-link active"
+                    id="users-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#users-tab-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="users-tab-pane"
+                    aria-selected="true">Users</button>
+          </li>
+          <li class="nav-item" role="presentation">
+            <button class="nav-link"
+                    id="tasks-tab"
+                    data-bs-toggle="tab"
+                    data-bs-target="#tasks-tab-pane"
+                    type="button"
+                    role="tab"
+                    aria-controls="tasks-tab-pane"
+                    aria-selected="false">Tasks</button>
+          </li>
+        </ul>
+        <div class="tab-content" id="settingsTabContent">
+          <!-- Users Tab -->
+          {% include "settings/tabs/users-tab.html" %}
+          <!-- Tasks Tab -->
+          {% include "settings/tabs/tasks-tab.html" %}
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Invite User Modal -->
+  {% include "settings/modal/invite_user.html" %}
+{% endblock %}

@@ -3,6 +3,7 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import get_object_or_404, redirect, render
 
 from authentication.models import UserProfile
+from inventory.utils import check_and_create_low_stock_alert
 from sales.models import Customer, Sale
 
 from .forms import CustomerForm, SaleForm
@@ -32,6 +33,9 @@ def add_sale(request):
             sale_number = generate_sales_number()
             sale.sales_number = sale_number  # assuming you have a sales_number field
             sale.save()
+            # Check and create low stock alert if necessary
+            check_and_create_low_stock_alert(sale.item)
+
             messages.success(
                 request, f"Sale recorded successfully for {sale.item.name}."
             )
@@ -96,8 +100,7 @@ def view_sale(request, pk):
 def delete_sale(request, pk):
     sale = get_object_or_404(Sale, pk=pk)
     if request.method == "POST":
-        for sale in Sale.objects.all():
-            sale.delete()
+        sale.delete()
         messages.success(request, f'Sale "{sale.sales_number}" deleted successfully.')
         return redirect("sales")
     return redirect("view_sale", pk=pk)

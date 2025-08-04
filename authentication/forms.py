@@ -38,6 +38,7 @@ class CustomUserCreationForm(BaseUserCreationForm):
                 field.widget.attrs["data-bs-html"] = "true"
                 field.widget.attrs["data-bs-placement"] = "right"
                 field.widget.attrs["title"] = field.help_text
+                field.widget.attrs["data-bs-custom-class"] = "tooltip-light"
                 field.help_text = ""
 
         self.helper = FormHelper()

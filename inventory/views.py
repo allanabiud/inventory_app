@@ -12,7 +12,15 @@ from authentication.models import UserProfile
 from sales.models import Sale
 
 from .forms import CategoryForm, InventoryAdjustmentForm, UnitOfMeasureForm
-from .models import Category, InventoryAdjustment, Item, ItemImage, UnitOfMeasure
+from .models import (
+    Category,
+    InventoryAdjustment,
+    Item,
+    ItemImage,
+    StockAlert,
+    UnitOfMeasure,
+)
+from .tasks import send_low_stock_summary_email
 from .utils import generate_item_csv_template, process_item_csv_upload
 
 
@@ -1138,3 +1146,20 @@ def delete_all_adjustments(request):
             request, "All inventory adjustments deleted and stock levels updated."
         )
     return redirect("inventory_adjustments")
+
+
+@login_required
+def stock_alerts_view(request):
+    alerts = (
+        StockAlert.objects.select_related("item")
+        .filter(is_resolved=False)
+        .order_by("created_at")
+    )
+    return render(request, "stock_alerts.html", {"alerts": alerts})
+
+
+@login_required
+def trigger_low_stock_email(request):
+    send_low_stock_summary_email.delay()  # type: ignore
+    messages.success(request, "Low stock summary email has been queued for sending.")
+    return redirect("settings")

@@ -86,3 +86,16 @@ def signup(request, token):
         form = CustomUserCreationForm(initial={"email": email})
 
     return render(request, "signup.html", {"form": form})
+
+
+def invite_user(request):
+    if request.method == "POST":
+        email = request.POST.get("email").strip().lower()
+
+        if InvitedUser.objects.filter(email=email).exists():
+            messages.warning(request, f"{email} has already been invited.")
+        else:
+            invited_user = InvitedUser.objects.create(email=email)
+            messages.success(request, f"Invitation sent to {email}.")
+
+    return redirect("settings")

@@ -1,0 +1,37 @@
+<div class="tab-pane fade"
+     id="tasks-tab-pane"
+     role="tabpanel"
+     aria-labelledby="tasks-tab"
+     tabindex="0">
+  <div class="d-flex justify-content-between align-items-center mb-3">
+    <h5 class="mb-0">Scheduled Tasks</h5>
+    <a href="{% url 'send_low_stock_email' %}"
+       class="btn btn-sm btn-outline-success">
+      <i class="bi bi-send"></i> Send Email Now
+    </a>
+  </div>
+  {% if tasks %}
+    <ul class="list-group shadow-sm">
+      {% for task in tasks %}
+        <li class="list-group-item d-flex justify-content-between align-items-center">
+          <div>
+            <strong>{{ task.name }}</strong>
+            <br>
+            <small class="text-muted">{{ task.task }}</small>
+          </div>
+          <span class="badge bg-primary rounded-pill">
+            {% if task.interval %}
+              {{ task.interval }}
+            {% elif task.crontab %}
+              At {{ task.crontab.hour }} every day
+            {% else %}
+              One-time
+            {% endif %}
+          </span>
+        </li>
+      {% endfor %}
+    </ul>
+  {% else %}
+    <p class="text-muted">No scheduled tasks found.</p>
+  {% endif %}
+</div>

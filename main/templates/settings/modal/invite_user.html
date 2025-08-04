@@ -1,0 +1,31 @@
+<!-- Invite User Modal -->
+<div class="modal fade"
+     id="inviteUserModal"
+     tabindex="-1"
+     aria-labelledby="inviteUserModalLabel"
+     aria-hidden="true">
+  <div class="modal-dialog">
+    <form method="POST" action="{% url 'invite_user' %}" class="modal-content">
+      {% csrf_token %}
+      <div class="modal-header">
+        <h5 class="modal-title" id="inviteUserModalLabel">Invite New User</h5>
+        <button type="button"
+                class="btn-close"
+                data-bs-dismiss="modal"
+                aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <label for="email" class="form-label">Email address</label>
+        <input type="email"
+               class="form-control"
+               name="email"
+               id="email"
+               required
+               placeholder="user@example.com">
+      </div>
+      <div class="modal-footer">
+        <button type="submit" class="btn btn-success">Send Invite</button>
+      </div>
+    </form>
+  </div>
+</div>

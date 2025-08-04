@@ -5,9 +5,12 @@ from datetime import datetime
 from decimal import Decimal, InvalidOperation
 from io import StringIO
 
+from django.conf import settings
 from django.core.exceptions import ValidationError
+from django.core.mail import EmailMultiAlternatives
 from django.db import IntegrityError, transaction
-from django.db.models import Q  # For OR conditions in lookups
+from django.db.models import Q
+from django.template.loader import render_to_string
 
 
 def item_image_upload_path(instance, filename):
@@ -27,14 +30,11 @@ def generate_item_csv_template():
         StringIO: A StringIO object containing the CSV data.
     """
     # Define the column headers for the CSV template.
-    # These should correspond to the fields in your Item model that you want
-    # users to be able to import or update.
-    # For ForeignKey fields (unit, category), we'll use their 'name' or 'abbreviation'.
     field_names = [
         "name",
         "sku",
-        "unit",  # Expects UnitOfMeasure.name or abbreviation
-        "category",  # Expects Category.name
+        "unit",
+        "category",
         "selling_price",
         "purchase_price",
         "opening_stock",
@@ -49,13 +49,12 @@ def generate_item_csv_template():
     # Write the header row
     writer.writerow(field_names)
 
-    # Optionally, write a sample row to guide the user
-    # This sample data should be illustrative of the expected format
+    # Sample data to guide the user
     sample_data = [
         "Sample Item A",
         "SKU-001",
-        "Pieces",  # Example UnitOfMeasure name
-        "Electronics",  # Example Category name
+        "Pieces",
+        "Electronics",
         "100.50",
         "75.25",
         "100",
@@ -89,7 +88,6 @@ def process_item_csv_upload(csv_file):
                   ]
               }
     """
-    # Moved imports inside the function to avoid circular dependency
     from .models import Category, Item, UnitOfMeasure
 
     decoded_file = csv_file.read().decode("utf-8")
@@ -373,3 +371,27 @@ def process_item_csv_upload(csv_file):
         "failed_imports": failed_imports,
         "errors": errors,
     }
+
+
+def check_and_create_low_stock_alert(item):
+    from .models import StockAlert
+
+    if item.reorder_point is not None and item.current_stock <= item.reorder_point:
+        # Check for existing unresolved alert
+        existing = StockAlert.objects.filter(
+            item=item, alert_type="low_stock", is_resolved=False
+        ).first()
+
+        if not existing:
+            # Create alert
+            alert = StockAlert.objects.create(
+                item=item,
+                alert_type="low_stock",
+                message=f"Stock for '{item.name}' is low (Current: {item.current_stock}, Reorder Point: {item.reorder_point})",
+            )
+
+    else:
+        # Resolve any unresolved low stock alerts
+        StockAlert.objects.filter(
+            item=item, alert_type="low_stock", is_resolved=False
+        ).update(is_resolved=True)

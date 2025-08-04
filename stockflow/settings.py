@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     "authentication",
     "crispy_forms",
     "crispy_bootstrap5",
+    "django_celery_beat",
 ]
 
 # CRISPY FORMS
@@ -77,6 +78,8 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                # custom context processors
+                "inventory.context_processors.low_stock_alerts",
             ],
         },
     },
@@ -176,3 +179,13 @@ EMAIL_HOST_PASSWORD = config(
 DEFAULT_FROM_EMAIL = f"Stockflow <{EMAIL_HOST_USER}>"
 
 SITE_DOMAIN = "http://localhost:8000"  # deployed URL
+
+# Celery
+CELERY_BROKER_URL = "redis://localhost:6379/0"
+CELERY_RESULT_BACKEND = "redis://localhost:6379/0"
+
+# Optional: timezone support
+CELERY_TIMEZONE = "Africa/Nairobi"
+CELERY_ENABLE_UTC = False
+# Load periodic tasks from the DB
+CELERY_BEAT_SCHEDULER = "django_celery_beat.schedulers:DatabaseScheduler"
