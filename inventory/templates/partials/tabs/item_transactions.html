@@ -42,7 +42,7 @@
   </div>
   <div class="table-responsive mb-4">
     <table class="table table-sm table-hover table-bordered align-middle">
-      <thead class="table-light">
+      <thead class="bg-body-tertiary">
         <tr>
           <th scope="col">Date</th>
           <th scope="col">Supplier</th>
@@ -92,10 +92,10 @@
       <tbody>
         {% for adj in adjustments %}
           <tr>
-            <td>{{ adj.date|date:"M d, Y" }}</td>
-            <td>{{ adj.reason }}</td>
-            <td>{{ adj.quantity }} {{ item.unit.abbreviation|default:item.unit.name }}</td>
-            <td>{{ adj.adjusted_by.get_full_name|default:adj.adjusted_by.username }}</td>
+            <td>{{ adjustment.date|date:"M d, Y" }}</td>
+            <td>{{ adjustment.reason }}</td>
+            <td>{{ adjustment.quantity }} {{ item.unit.abbreviation|default:item.unit.name }}</td>
+            <td>{{ adjustment.adjusted_by.get_full_name|default:adjustment.adjusted_by.username }}</td>
           </tr>
         {% endfor %}
       </tbody>

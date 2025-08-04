@@ -47,6 +47,7 @@ INSTALLED_APPS = [
     "sales",
     "purchases",
     "authentication",
+    "reports",
     "crispy_forms",
     "crispy_bootstrap5",
     "django_celery_beat",

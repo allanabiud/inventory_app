@@ -1,0 +1,112 @@
+{% extends 'layouts/home-base.html' %}
+{% load static %}
+{% load humanize %}
+{% block title %}Profit & Loss Report - Stockflow{% endblock %}
+{% block content %}
+  <div class="container-fluid mt-3 slide-in-left">
+    <div class="row align-items-center justify-content-between mb-3">
+      <!-- Left: Page title -->
+      <div class="col-md-auto">
+        <h2 class="mb-0">
+          Profit & Loss Report
+          {% if start_date and end_date %}
+            <span class="text-muted small fst-italic">({{ start_date }} to {{ end_date }})</span>
+          {% endif %}
+        </h2>
+      </div>
+      <!-- Center: Filter form -->
+      <div class="col-md-auto">
+        <form method="get" class="d-flex gap-1 flex-nowrap align-items-center">
+          <div class="input-group input-group-sm">
+            <input type="date"
+                   name="start"
+                   value="{{ start_date }}"
+                   class="form-control"
+                   required>
+            <input type="date"
+                   name="end"
+                   value="{{ end_date }}"
+                   class="form-control"
+                   required>
+            <button type="submit" class="btn btn-primary">
+              <i class="bi bi-funnel-fill"></i>
+            </button>
+          </div>
+        </form>
+      </div>
+      <!-- Right: Export buttons -->
+      {% if profit_data %}<div class="col-md-auto" id="exportButtonsContainer"></div>{% endif %}
+    </div>
+    {% if profit_data %}
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <div class="row align-items-center mb-3">
+            <!-- left: search -->
+            <div class="col-md-4 d-flex justify-content-start" id="searchContainer"></div>
+            <!-- right: show entries -->
+            <div class="col-md-8 d-flex justify-content-end flex-nowrap align-items-center"
+                 id="lengthContainer"></div>
+          </div>
+          <div class="table-responsive">
+            <table id="profitReportTable"
+                   class="table table-striped table-hover align-middle w-100">
+              <thead>
+                <tr>
+                  <th>Date</th>
+                  <th>Item</th>
+                  <th>Qty Sold</th>
+                  <th>Sale Price</th>
+                  <th>Total Sales</th>
+                  <th>Unit Cost</th>
+                  <th>Total Cost</th>
+                  <th>Profit</th>
+                </tr>
+              </thead>
+              <tbody>
+                {% for row in profit_data %}
+                  <tr>
+                    <td>{{ row.date }}</td>
+                    <td>{{ row.item.name }}</td>
+                    <td>{{ row.quantity }}</td>
+                    <td>KES {{ row.unit_price|floatformat:2|intcomma }}</td>
+                    <td>KES {{ row.total_sales|floatformat:2|intcomma }}</td>
+                    <td>KES {{ row.unit_cost|floatformat:2|intcomma }}</td>
+                    <td>KES {{ row.total_cost|floatformat:2|intcomma }}</td>
+                    <td class="fw-bold {% if row.profit < 0 %}text-danger{% else %}text-success{% endif %}">
+                      KES {{ row.profit|floatformat:2|intcomma }}
+                    </td>
+                  </tr>
+                {% endfor %}
+              </tbody>
+              <tfoot>
+                <tr>
+                  <th colspan="4" class="text-end">Totals:</th>
+                  <th>KES {{ total_sales|floatformat:2|intcomma }}</th>
+                  <th></th>
+                  <th>KES {{ total_cost|floatformat:2|intcomma }}</th>
+                  <th class="fw-bold {% if total_profit < 0 %}text-danger{% else %}text-success{% endif %}">
+                    KES {{ total_profit|floatformat:2|intcomma }}
+                  </th>
+                </tr>
+              </tfoot>
+            </table>
+          </div>
+        </div>
+      </div>
+    {% else %}
+      <div class="d-flex flex-column justify-content-center align-items-center text-center py-5"
+           style="min-height: calc(100vh - 200px)">
+        <img src="{% static 'images/illustrations/no_data.svg' %}"
+             alt="No profit data"
+             style="max-width: 100px"
+             class="mb-4">
+        <p class="lead mb-3 text-muted">No profit and loss data found.</p>
+        <a href="{% url 'profit_loss_report' %}"
+           class="btn btn-outline-secondary">
+          <i class="bi bi-arrow-clockwise me-1"></i> Reset Filter
+        </a>
+      </div>
+    {% endif %}
+  </div>
+  <script src="{% static 'js/datatables/profit-report-table.js' %}"></script>
+{% endblock %}
