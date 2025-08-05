@@ -3,12 +3,13 @@ from decimal import Decimal, InvalidOperation
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ValidationError
-from django.db import IntegrityError, transaction
+from django.db import IntegrityError, models, transaction
 from django.db.models import Count
 from django.http import HttpResponse
 from django.shortcuts import get_object_or_404, redirect, render
 
 from authentication.models import UserProfile
+from inventory.models import Item  # or your actual app name
 from purchases.models import Purchase
 from sales.models import Sale
 
@@ -1154,13 +1155,15 @@ def delete_all_adjustments(request):
 
 
 @login_required
-def stock_alerts_view(request):
-    alerts = (
-        StockAlert.objects.select_related("item")
-        .filter(is_resolved=False)
-        .order_by("created_at")
+def low_stock_view(request):
+    low_stock_items = Item.objects.filter(current_stock__lte=models.F("reorder_point"))
+    return render(
+        request,
+        "low_stock_alerts.html",
+        {
+            "items": low_stock_items,
+        },
     )
-    return render(request, "stock_alerts.html", {"alerts": alerts})
 
 
 @login_required

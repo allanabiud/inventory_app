@@ -2,7 +2,7 @@
 <html>
   <head>
     <meta charset="utf-8" />
-    <title>Low Stock Alert</title>
+    <title>Low Stock Report</title>
   </head>
   <body style="margin: 0;
                padding: 20px;
@@ -40,39 +40,48 @@
                               margin-right: 10px" />
                   <span style="font-size: 1.6rem; font-weight: 600;">Stockflow</span>
                 </div>
-                <!-- Title -->
-                <h2 style="margin-bottom: 10px;">Low Stock Alerts</h2>
+                <!-- Title and Date -->
+                <h2 style="margin-bottom: 10px;">Low Stock Report</h2>
                 <p style="margin-top: 0;
                           margin-bottom: 20px;
                           font-size: 14px;
                           color: #adb5bd">{{ date|date:"F j, Y" }}</p>
-                <!-- Table of alerts -->
-                <table role="presentation"
-                       width="100%"
-                       cellpadding="10"
-                       cellspacing="0"
-                       border="0"
-                       style="background-color: #495057;
-                              border-radius: 6px">
-                  <thead>
-                    <tr>
-                      <th align="left"
-                          style="color: #f8f9fa;
-                                 border-bottom: 1px solid #6c757d">Item</th>
-                      <th align="left"
-                          style="color: #f8f9fa;
-                                 border-bottom: 1px solid #6c757d">Message</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {% for alert in alerts %}
+                {% if items %}
+                  <!-- Section: Low stock items -->
+                  <table role="presentation"
+                         width="100%"
+                         cellpadding="10"
+                         cellspacing="0"
+                         border="0"
+                         style="background-color: #495057;
+                                border-radius: 6px;
+                                margin-bottom: 24px">
+                    <thead>
                       <tr>
-                        <td style="color: #ffffff;">{{ alert.item.name }}</td>
-                        <td style="color: #dee2e6;">{{ alert.message }}</td>
+                        <th align="left"
+                            style="color: #f8f9fa;
+                                   border-bottom: 1px solid #6c757d">Item</th>
+                        <th align="left"
+                            style="color: #f8f9fa;
+                                   border-bottom: 1px solid #6c757d">Stock</th>
+                        <th align="left"
+                            style="color: #f8f9fa;
+                                   border-bottom: 1px solid #6c757d">Reorder Point</th>
                       </tr>
-                    {% endfor %}
-                  </tbody>
-                </table>
+                    </thead>
+                    <tbody>
+                      {% for item in items %}
+                        <tr>
+                          <td style="color: #ffffff;">{{ item.name }}</td>
+                          <td style="color: #dee2e6;">{{ item.current_stock }}</td>
+                          <td style="color: #dee2e6;">{{ item.reorder_point }}</td>
+                        </tr>
+                      {% endfor %}
+                    </tbody>
+                  </table>
+                {% else %}
+                  <p style="color: #adb5bd;">There are no low stock items at the moment.</p>
+                {% endif %}
                 <!-- Footer -->
                 <p style="margin-top: 30px; font-size: 14px; color: #ced4da;">Visit your inventory dashboard for more details.</p>
                 <p style="color: #f8f9fa; margin-top: 20px;">
