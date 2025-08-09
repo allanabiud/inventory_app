@@ -140,7 +140,7 @@
         </div>
       </li>
       <li class="nav-item">
-        {% with report_group_urls='sales_report purchases_report profit_loss_report' %}
+        {% with report_group_urls='sales_report purchases_report profit_report' %}
           <a class="nav-link sidebar-item {% if request.resolver_match.url_name in report_group_urls.split %}active{% endif %}"
              data-bs-toggle="collapse"
              href="#reportsCollapse"
@@ -166,8 +166,8 @@
                  class="nav-link link-body-emphasis sidebar-sub-item">Purchases Report</a>
             </li>
             <li>
-              <a href="{% url 'profit_loss_report' %}"
-                 class="nav-link link-body-emphasis sidebar-sub-item">Profit &amp; Loss</a>
+              <a href="{% url 'profit_report' %}"
+                 class="nav-link link-body-emphasis sidebar-sub-item">Profit Report</a>
             </li>
           </ul>
         </div>

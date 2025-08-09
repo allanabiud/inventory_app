@@ -123,7 +123,7 @@ def purchases_report_view(request):
 
 
 @login_required
-def profit_loss_report_view(request):
+def profit_report_view(request):
     start_date = request.GET.get("start")
     end_date = request.GET.get("end")
 
@@ -169,4 +169,4 @@ def profit_loss_report_view(request):
         "end_date": end_date,
     }
 
-    return render(request, "profit_loss_report.html", context)
+    return render(request, "profit_report.html", context)

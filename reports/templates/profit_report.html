@@ -1,14 +1,14 @@
 {% extends 'layouts/home-base.html' %}
 {% load static %}
 {% load humanize %}
-{% block title %}Profit & Loss Report - Stockflow{% endblock %}
+{% block title %}Profit Report - Stockflow{% endblock %}
 {% block content %}
   <div class="container-fluid mt-3 slide-in-left">
     <div class="row align-items-center justify-content-between mb-3">
       <!-- Left: Page title -->
       <div class="col-md-auto">
         <h2 class="mb-0">
-          Profit & Loss Report
+          Profit Report
           {% if start_date and end_date %}
             <span class="text-muted small fst-italic">({{ start_date }} to {{ end_date }})</span>
           {% endif %}
