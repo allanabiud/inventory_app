@@ -7,10 +7,10 @@ urlpatterns = [
     path("admin/", admin.site.urls),
     path("", include("main.urls")),
     path("", include("authentication.urls")),
-    path("", include("inventory.urls")),
-    path("", include("sales.urls")),
-    path("", include("purchases.urls")),
-    path("", include("reports.urls")),
+    path("inventory/", include("inventory.urls")),
+    path("sales/", include("sales.urls")),
+    path("purchases/", include("purchases.urls")),
+    path("reports/", include("reports.urls")),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 handler404 = "main.views.custom_404_view"

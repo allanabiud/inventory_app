@@ -87,7 +87,7 @@
               {% with purchase_urls='purchases add_purchase edit_purchase view_purchase' %}
                 <a href="{% url 'purchases' %}"
                    class="nav-link link-body-emphasis sidebar-sub-item {% if request.resolver_match.url_name in purchase_urls.split %}active{% endif %}">
-                  Purchases Records
+                  Purchases
                 </a>
               {% endwith %}
             </li>

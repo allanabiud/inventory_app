@@ -14,14 +14,7 @@ from purchases.models import Purchase
 from sales.models import Sale
 
 from .forms import CategoryForm, InventoryAdjustmentForm, UnitOfMeasureForm
-from .models import (
-    Category,
-    InventoryAdjustment,
-    Item,
-    ItemImage,
-    StockAlert,
-    UnitOfMeasure,
-)
+from .models import Category, InventoryAdjustment, ItemImage, UnitOfMeasure
 from .tasks import send_low_stock_summary_email
 from .utils import generate_item_csv_template, process_item_csv_upload
 
