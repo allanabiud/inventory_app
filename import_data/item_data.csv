@@ -1,0 +1,26 @@
+name,sku,unit,category,selling_price,purchase_price,opening_stock,reorder_point,current_stock
+Laptop Pro,PROD-001,Units,Electronics,1200,950,50,10,5
+Wireless Mouse,PROD-002,Pieces,Electronics,25.5,18,200,50,40
+Organic Apples,FOOD-003,Kilograms,Groceries,3.2,2,300,50,280
+T-Shirt Cotton,CLO-004,Units,Apparel,15,8,500,100,450
+Coffee Maker,HOME-005,Units,Home Goods,85,60,30,5,28
+Notebook A4,OFFICE-006,Pieces,Stationery,4.99,2.5,150,30,25
+Hammer Claw,TOOL-007,Units,Tools,18.75,12,40,10,35
+LED Light Bulb,ELEC-008,Pieces,Electronics,7.5,4,250,50,45
+Milk Carton,FOOD-009,Liters,Groceries,1.8,1.2,100,20,95
+Jeans Denim,CLO-010,Units,Apparel,45,28,120,20,110
+Blender Deluxe,HOME-011,Units,Home Goods,110,80,25,5,20
+Pen Blue,OFFICE-012,Boxes,Stationery,12,6,80,15,75
+Screwdriver Set,TOOL-013,Units,Tools,30,20,30,8,28
+Smartphone X,PROD-014,Units,Electronics,800,650,20,5,18
+Olive Oil,FOOD-015,Liters,Groceries,9.99,7,70,15,65
+Dress Shirt,CLO-016,Units,Apparel,35,20,90,15,9
+Toaster 2-Slice,HOME-017,Units,Home Goods,40,25,35,10,30
+Stapler Heavy Duty,OFFICE-018,Pieces,Stationery,8.5,4.5,100,20,90
+Wrench Adjustable,TOOL-019,Units,Tools,22,15,25,7,22
+Headphones ANC,ELEC-020,Units,Electronics,150,100,60,10,55
+Bread Whole Wheat,FOOD-021,Pieces,Groceries,2.5,1.5,150,30,145
+Sweater Wool,CLO-022,Units,Apparel,55,35,80,15,75
+Vacuum Cleaner,HOME-023,Units,Home Goods,250,180,15,3,12
+Pencils HB,OFFICE-024,Boxes,Stationery,5,2,200,40,190
+Drill Cordless,TOOL-025,Units,Tools,75,50,20,5,18

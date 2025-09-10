@@ -1,0 +1,2 @@
+name,sku,unit,category,selling_price,purchase_price,opening_stock,reorder_point,current_stock
+Sample Item A,SKU-001,Pieces,Electronics,100.50,75.25,100,20,100
